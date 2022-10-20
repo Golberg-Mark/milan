@@ -5,9 +5,11 @@ import PageTitle from '@/components/PageTitle';
 import Input from '@/components/Input';
 import SearchInputs, { Service } from '@/components/AddOrder/SearchInputs';
 import OrderItem from '@/components/AddOrder/OrderItem';
-import { useDispatch } from 'react-redux';
-import { getOrderItemsAction } from '@/store/actions/userActions';
+import { useDispatch, useSelector } from 'react-redux';
+import { getOrderItemsAction, userActions } from '@/store/actions/userActions';
 import Footer from '@/components/AddOrder/Footer';
+import { PlaceOrder } from '@/store/reducers/user';
+import { selectProducts, selectTotalPrice } from '@/store/selectors/userSelectors';
 
 interface Region {
   region: string,
@@ -20,6 +22,7 @@ const mockedData: Region[] = [
     'services': [
       {
         'name': 'Title Reference',
+        'price': 0,
         'input': [
           {
             'name': 'Reference number',
@@ -30,6 +33,7 @@ const mockedData: Region[] = [
       },
       {
         'name': 'Address',
+        'price': 1.28,
         'input': [
           {
             'name': 'Street number',
@@ -50,10 +54,11 @@ const mockedData: Region[] = [
       },
       {
         'name': 'Owner(Individual)',
+        'price': 2.41,
         'input': [
           {
-            'name': 'First Name(s)',
-            'example': 'E.g John Albert',
+            'name': 'First Name',
+            'example': 'E.g Jon',
             'isRequired': false
           },
           {
@@ -65,7 +70,14 @@ const mockedData: Region[] = [
       },
       {
         'name': 'Owner(Organisation)',
-        'input': [{ 'name': 'Company Name', 'example': 'Acme Corporation' }]
+        'price': 3.36,
+        'input': [
+          {
+            'name': 'Company Name',
+            'example': 'Acme Corporation',
+            'isRequired': true
+          }
+        ]
       }
     ]
   },
@@ -74,6 +86,7 @@ const mockedData: Region[] = [
     'services': [
       {
         'name': 'Title Reference',
+        'price': 0,
         'input': [
           {
             'name': 'Reference number',
@@ -84,6 +97,7 @@ const mockedData: Region[] = [
       },
       {
         'name': 'Address',
+        'price': 1.28,
         'input': [
           {
             'name': 'Street number',
@@ -104,10 +118,11 @@ const mockedData: Region[] = [
       },
       {
         'name': 'Owner(Individual)',
+        'price': 2.41,
         'input': [
           {
             'name': 'First Name(s)',
-            'example': 'E.g John Albert',
+            'example': 'E.g Jon',
             'isRequired': false
           },
           {
@@ -119,6 +134,7 @@ const mockedData: Region[] = [
       },
       {
         'name': 'Owner(Organisation)',
+        'price': 3.36,
         'input': [
           {
             'name': 'Company Name',
@@ -129,6 +145,7 @@ const mockedData: Region[] = [
       },
       {
         'name': 'Previous Title Reference',
+        'price': 2.90,
         'input': [
           {
             'name': 'Reference number',
@@ -139,6 +156,7 @@ const mockedData: Region[] = [
       },
       {
         'name': 'Lot/Plan',
+        'price': 5.00,
         'input': [
           {
             'name': 'Lot/Plan Number',
@@ -154,6 +172,7 @@ const mockedData: Region[] = [
     'services': [
       {
         'name': 'Title Reference',
+        'price': 0,
         'input': [
           {
             'name': 'Reference number',
@@ -164,6 +183,7 @@ const mockedData: Region[] = [
       },
       {
         'name': 'Address',
+        'price': 1.28,
         'input': [
           {
             'name': 'Street number',
@@ -184,6 +204,7 @@ const mockedData: Region[] = [
       },
       {
         'name': 'Owner(Individual)',
+        'price': 2.41,
         'input': [
           {
             'name': 'First Name(s)',
@@ -199,6 +220,7 @@ const mockedData: Region[] = [
       },
       {
         'name': 'Owner(Organisation)',
+        'price': 3.36,
         'input': [
           {
             'name': 'Company Name',
@@ -214,6 +236,7 @@ const mockedData: Region[] = [
     'services': [
       {
         'name': 'Volume/Folio',
+        'price': 1.00,
         'input': [
           {
             'name': 'Volume/Folio',
@@ -224,6 +247,7 @@ const mockedData: Region[] = [
       },
       {
         'name': 'Address',
+        'price': 1.28,
         'input': [
           {
             'name': 'Unit Number',
@@ -248,6 +272,7 @@ const mockedData: Region[] = [
       },
       {
         'name': 'Owner(Individual)',
+        'price': 2.41,
         'input': [
           {
             'name': 'First Name(s)',
@@ -263,6 +288,7 @@ const mockedData: Region[] = [
       },
       {
         'name': 'Owner(Organisation)',
+        'price': 3.36,
         'input': [
           {
             'name': 'Company Name',
@@ -273,6 +299,7 @@ const mockedData: Region[] = [
       },
       {
         'name': 'Lot/Plan or List',
+        'price': 4.83,
         'input': [
           {
             'name': 'Company Name',
@@ -284,10 +311,416 @@ const mockedData: Region[] = [
       //TODO: add lot/plan or list
       {
         'name': 'Crown Description',
+        'price': 1.56,
         'input': [
           {
-            'name': 'Test Option',
-            'items': ['Free', 'Structured'],
+            'name': 'Crown Description',
+            'example': 'Allotments 12A Section B Parish of Hotham',
+            'isRequired': true
+          },
+          {
+            'name': 'Allotments',
+            'example': '123'
+          },
+          {
+            'name': 'Portion',
+            'example': '49'
+          },
+          {
+            'name': 'Block',
+            'example': '1'
+          },
+          {
+            'name': 'Section',
+            'example': 'A'
+          },
+          {
+            'name': 'Subdivision',
+            'example': 'Subdivision'
+          },
+          {
+            'name': 'Parish/Township',
+            'example': 'Albury-Wodonga',
+            'isRequired': true
+          }
+        ]
+      },
+      {
+        'name': 'Council Number',
+        'price': 4.05,
+        'input': [
+          {
+            'name': 'Council Number',
+            'example': 'E.g 12345',
+            'isRequired': true
+          },
+          {
+            'name': 'Municipality',
+            'example': 'Your Municipality',
+            'isRequired': true
+          }
+        ]
+      },
+      {
+        'name': 'SPI',
+        'price': 3.55,
+        'input': [
+          {
+            'name': 'SPI',
+            'example': 'E.g 12\\LP123456',
+            'isRequired': true
+          }
+        ]
+      },
+      {
+        'name': 'Application Index',
+        'price': 5.90,
+        'input': [
+          {
+            'name': 'Application Index',
+            'example': 'E.g AP123456E',
+            'isRequired': true
+          }
+        ]
+      },
+    ]
+  },
+  {
+    'region': 'SA',
+    'services': [
+      {
+        'name': 'Volume/Folio',
+        'price': 1.00,
+        'input': [
+          {
+            'name': 'Register',
+            'items': ['CT', 'CL', 'CR'],
+            'isRequired': true
+          },
+          {
+            'name': 'Volume/Folio',
+            'example': 'E.g 5359/705',
+            'isRequired': true
+          }
+        ]
+      },
+      {
+        'name': 'Address',
+        'price': 1.28,
+        'input': [
+          {
+            'name': 'Level',
+            'example': ''
+          },
+          {
+            'name': 'Lot',
+            'example': ''
+          },
+          {
+            'name': 'Unit Number',
+            'example': ''
+          },
+          {
+            'name': 'Street Number',
+            'example': ''
+          },
+          {
+            'name': 'Street Name',
+            'example': '',
+            'isRequired': true
+          },
+          {
+            'name': 'Suburb/Locality',
+            'example': ''
+          }
+        ]
+      },
+      {
+        'name': 'Plan/Parcel',
+        'price': 2.77,
+        'input': [
+          {
+            'name': 'Parcel',
+            'example': '2'
+          },
+          {
+            'name': 'Plan Type',
+            'items': ['Community Plan', 'Deposited Plan', 'Filed Plan', 'Hundred Plan', 'Road Plan', 'Strata Plan', 'Township Plan'],
+            'isRequired': true
+          },
+          {
+            'name': 'Plan Number',
+            'example': 'E.g 45754',
+            'isRequired': true
+          }
+        ]
+      },
+      {
+        'name': 'Owner(Individual)',
+        'price': 2.41,
+        'input': [
+          {
+            'name': 'First Name',
+            'example': 'E.g Jon',
+            'isRequired': true
+          },
+          {
+            'name': 'Last Name',
+            'example': 'E.g Smith',
+            'isRequired': true
+          }
+        ]
+      },
+      {
+        'name': 'Owner(Organisation)',
+        'price': 3.36,
+        'input': [
+          {
+            'name': 'Company Name',
+            'example': 'Acme Corporation',
+            'isRequired': true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    'region': 'ACT',
+    'services': [
+      {
+        'name': 'Volume/Folio',
+        'price': 1.00,
+        'input': [
+          {
+            'name': 'Volume/Folio',
+            'example': 'E.g 2146/36',
+            'isRequired': true
+          }
+        ]
+      },
+      {
+        'name': 'Address',
+        'price': 1.28,
+        'input': [
+          {
+            'name': 'Unit Number',
+            'example': ''
+          },
+          {
+            'name': 'Street Number',
+            'example': '',
+            'isRequired': true
+          },
+          {
+            'name': 'Street Name',
+            'example': '',
+            'isRequired': true
+          },
+          {
+            'name': 'Suburb/Locality',
+            'example': '',
+            'isRequired': true
+          }
+        ]
+      },
+      {
+        'name': 'Parcel',
+        'price': 2.70,
+        'input': [
+          {
+            'name': 'Distinct',
+            'items': [''],
+            'isRequired': true
+          },
+          {
+            'name': 'Section',
+            'example': 'E.g 156',
+            'isRequired': true
+          },
+          {
+            'name': 'Block',
+            'example': 'E.g 16',
+            'isRequired': true
+          },
+          {
+            'name': 'Unit',
+            'example': 'E.g 2'
+          }
+        ]
+      },
+      {
+        'name': 'Owner(Individual)',
+        'price': 2.41,
+        'input': [
+          {
+            'name': 'First Name',
+            'example': 'E.g Jon',
+            'isRequired': true
+          },
+          {
+            'name': 'Last Name',
+            'example': 'E.g Smith',
+            'isRequired': true
+          }
+        ]
+      },
+      {
+        'name': 'Owner(Organisation)',
+        'price': 3.36,
+        'input': [
+          {
+            'name': 'Company Name',
+            'example': 'Acme Corporation',
+            'isRequired': true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    'region': 'NT',
+    'services': [
+      {
+        'name': 'Volume/Folio',
+        'price': 1.00,
+        'input': [
+          {
+            'name': 'Volume/Folio',
+            'example': 'E.g 2146/36',
+            'isRequired': true
+          }
+        ]
+      },
+      {
+        'name': 'Address',
+        'price': 1.28,
+        'input': [
+          {
+            'name': 'Unit Number',
+            'example': ''
+          },
+          {
+            'name': 'Street Number',
+            'example': ''
+          },
+          {
+            'name': 'Street Name',
+            'example': '',
+            'isRequired': true
+          },
+          {
+            'name': 'Suburb/Locality',
+            'example': '',
+            'isRequired': true
+          }
+        ]
+      },
+      {
+        'name': 'Lot/Town',
+        'price': 4.32,
+        'input': [
+          {
+            'name': 'Lot',
+            'example': 'E.g 200',
+            'isRequired': true
+          },
+          {
+            'name': 'Town',
+            'example': 'E.g Town of Darwin',
+            'isRequired': true
+          }
+        ]
+      },
+      {
+        'name': 'Owner(Individual)',
+        'price': 2.41,
+        'input': [
+          {
+            'name': 'First Name',
+            'example': 'E.g Jon',
+            'isRequired': true
+          },
+          {
+            'name': 'Last Name',
+            'example': 'E.g Smith',
+            'isRequired': true
+          }
+        ]
+      },
+      {
+        'name': 'Owner(Organisation)',
+        'price': 3.36,
+        'input': [
+          {
+            'name': 'Company Name',
+            'example': 'Acme Corporation',
+            'isRequired': true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    'region': 'TAS',
+    'services': [
+      {
+        'name': 'Volume/Folio',
+        'price': 1.00,
+        'input': [
+          {
+            'name': 'Volume/Folio',
+            'example': 'E.g 2146/36',
+            'isRequired': true
+          }
+        ]
+      },
+      {
+        'name': 'Address',
+        'price': 1.28,
+        'input': [
+          {
+            'name': 'Unit Number',
+            'example': ''
+          },
+          {
+            'name': 'Street Number',
+            'example': ''
+          },
+          {
+            'name': 'Street Name',
+            'example': '',
+            'isRequired': true
+          },
+          {
+            'name': 'Suburb/Locality',
+            'example': '',
+            'isRequired': true
+          }
+        ]
+      },
+      {
+        'name': 'Owner(Individual)',
+        'price': 2.41,
+        'input': [
+          {
+            'name': 'First Name',
+            'example': 'E.g Jon',
+            'isRequired': true
+          },
+          {
+            'name': 'Last Name',
+            'example': 'E.g Smith',
+            'isRequired': true
+          }
+        ]
+      },
+      {
+        'name': 'Owner(Organisation)',
+        'price': 3.36,
+        'input': [
+          {
+            'name': 'Company Name',
+            'example': 'Acme Corporation',
             'isRequired': true
           }
         ]
@@ -296,9 +729,9 @@ const mockedData: Region[] = [
   }
 ];
 
-const mockedOrderItems = [
+/*const mockedOrderItems = [
   {
-    name: 'Title', price: '@ 2.18$', items: [
+    id: 1, name: 'Title', price: 2.18, items: [
       { name: '4/2297', isChosen: true },
       { name: '3/1784', isChosen: true },
       { name: '9/1399', isChosen: true },
@@ -333,31 +766,70 @@ const mockedOrderItems = [
       { name: '3/1799', isChosen: true }
     ]
   },
-  { name: 'Historical title', price: '@ 3.20$' },
-  { name: 'Sub folio', price: '@ 1.73$' },
-  { name: 'CT Enquiry', price: '@ 2.40$' },
-  { name: 'Lots created', price: '@ 1.95$' },
-  { name: 'Prior title', price: '@ 3.20$' },
-  { name: 'CAC', price: '@ 1.26$' },
-  { name: 'Proprietor', price: '@ 2.42$' },
-  { name: 'Cancelled title', price: '@ 2.20$' }
-];
+  { id: 2, name: 'Historical title', price: 3.20 },
+  { id: 3, name: 'Sub folio', price: 1.73 },
+  { id: 4, name: 'CT Enquiry', price: 2.40 },
+  { id: 5, name: 'Lots created', price: 1.95 },
+  { id: 6, name: 'Prior title', price: 3.20 },
+  { id: 7, name: 'CAC', price: 1.26 },
+  { id: 8, name: 'Proprietor', price: 2.42 },
+  { id: 9, name: 'Cancelled title', price: 2.20 }
+];*/
 
 const AddOrder = () => {
   const [selectedRegion, setSelectedRegion] = useState(0);
   const [selectedService, setSelectedService] = useState(0);
+  const [totalItemsAmount, setTotalItemsAmount] = useState(0);
+  const mockedProducts = useSelector(selectProducts);
+  const totalPrice = useSelector(selectTotalPrice);
 
   const dispatch = useDispatch<any>();
 
   useEffect(() => {
     dispatch(getOrderItemsAction());
+    dispatch(getOrderItemsAction());
   }, []);
 
-  useEffect(() => {
-    setSelectedService(0);
-  }, [selectedRegion]);
+  const selectItem = (productIndex: number, i: number) => {
+    const copiedState = JSON.parse(JSON.stringify(mockedProducts));
+    const isChosen = copiedState[productIndex].items[i].isChosen;
+    copiedState[productIndex].items[i].isChosen = !isChosen;
 
-  return (
+    const newPrice = isChosen
+      ? totalPrice - +copiedState[productIndex].price
+      : totalPrice + +copiedState[productIndex].price;
+
+    dispatch(userActions.setTotalPrice(newPrice))
+    dispatch(userActions.setProducts(copiedState));
+  };
+
+  const placeOrder = () => {
+    const filteredProducts = mockedProducts!.filter((product) => {
+      const filteredItems = product.items?.filter((item) => item.isChosen) || [];
+
+      if (filteredItems.length) return {
+        ...product,
+        items: filteredItems
+      }
+    });
+
+    const products = filteredProducts.map((product) => product.id);
+    let itemBody: { idNumber: string, body: string }[] = [];
+
+    filteredProducts.forEach((product) => {
+      itemBody = [...itemBody, ...product.items!.map((item) => ({ idNumber: item.name, body: 'smth' }))]
+    });
+
+    const order: PlaceOrder = {
+      region: mockedData[selectedRegion].region,
+      service: mockedData[selectedRegion].services[selectedService].name,
+      price: totalPrice.toFixed(2),
+      products,
+      itemBody
+    };
+  };
+
+  return mockedProducts ? (
     <AddOrderPage>
       <PageHeader>
         <StyledLink to="/">
@@ -394,7 +866,10 @@ const AddOrder = () => {
                   <Tip
                     key={el.region}
                     isSelected={selectedRegion === i}
-                    onClick={() => setSelectedRegion(i)}
+                    onClick={() => {
+                      setSelectedService(0)
+                      setSelectedRegion(i)
+                    }}
                   >
                     {el.region}
                   </Tip>
@@ -427,21 +902,26 @@ const AddOrder = () => {
               Expand a product and select the references you want to purchase within it.
             </Description>
             <ul>
-              {mockedOrderItems.map((item) => (
+              {mockedProducts.map((item, i) => (
                 <OrderItem
                   key={item.name}
                   name={item.name}
+                  index={i}
                   price={item.price}
-                  subItemsArray={item.items}
+                  subItems={item.items}
+                  setSubItems={selectItem}
                 />
               ))}
             </ul>
           </OrderItemsSection>
         </Content>
       </ContentWrapper>
-      <Footer/>
+      <Footer
+        totalItemsAmount={totalItemsAmount}
+        placeOrder={placeOrder}
+      />
     </AddOrderPage>
-  );
+  ) : '';
 };
 
 const AddOrderPage = styled.section`

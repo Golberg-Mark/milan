@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import Select from '@/components/AddOrder/Select';
 
 export interface Input {
   name?: string,
@@ -10,28 +11,42 @@ export interface Input {
 
 export interface Service {
   name: string,
-  input: Input[]
+  input: Input[],
+  price: number
 }
 
 interface Props {
   service: Service
 }
 
-const SearchInputs: React.FC<Props> = ({ service:  { name, input } }) => {
+const SearchInputs: React.FC<Props> = ({ service:  { name, input, price } }) => {
   const getContent = () => {
-    const mappedInput = input.map((el) => (
-      <Label key={el.name}>
-        <span>{el.name}</span>
-        <input
-          type="text"
-          placeholder={el.example}
-          required={el.isRequired}
-        />
-      </Label>
-    ));
+    const mappedInput = input.map((el) => {
+      if (el.items) {
+        return (
+          <Label key={el.name}>
+            <span>{el.name}</span>
+            <Select items={el.items} />
+          </Label>
+        );
+      }
+
+      return (
+        <Label key={el.name}>
+          <span>{el.name}</span>
+          <input
+            type="text"
+            placeholder={el.example}
+            required={el.isRequired}
+          />
+        </Label>
+      );
+    });
+
+    const priceStr = price ? `$${price.toFixed(2)}` : 'Free';
 
     switch (name) {
-      case 'Title Reference': {
+      case 'Title Reference': case 'Previous Title Reference': {
         return (
           <TitleReference>
             {mappedInput}
@@ -39,7 +54,7 @@ const SearchInputs: React.FC<Props> = ({ service:  { name, input } }) => {
               <Button style={{ borderTopLeftRadius: '0', borderBottomLeftRadius: '0' }}>
                 Verify
               </Button>
-              <Price>Free</Price>
+              <Price>{priceStr}</Price>
             </ButtonWrapper>
           </TitleReference>
         );
@@ -51,7 +66,7 @@ const SearchInputs: React.FC<Props> = ({ service:  { name, input } }) => {
               {mappedInput}
             </AddressInputs>
             <ButtonWrapper>
-              <Price>1.28$</Price>
+              <Price>{priceStr}</Price>
               <Button>Browse</Button>
             </ButtonWrapper>
           </Address>
@@ -63,18 +78,18 @@ const SearchInputs: React.FC<Props> = ({ service:  { name, input } }) => {
             {mappedInput}
             <ButtonWrapper align="flex-start">
               <Button>Browse</Button>
-              <Price>2.41$</Price>
+              <Price>{priceStr}</Price>
             </ButtonWrapper>
           </Owner>
         );
       }
-      case 'Owner(Organisation)': {
+      case 'Owner(Organisation)': case 'Volume/Folio': case 'Lot/Plan': {
         return (
           <Owner>
             {mappedInput}
             <ButtonWrapper align="flex-start">
               <Button>Browse</Button>
-              <Price>3.36$</Price>
+              <Price>{priceStr}</Price>
             </ButtonWrapper>
           </Owner>
         );

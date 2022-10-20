@@ -18,7 +18,7 @@ class HttpClient {
     this.instance.interceptors.response.use(this.responseSuccess, this.responseError);
   }
 
-  private responseSuccess = (response: AxiosResponse) => response.data;
+  private responseSuccess = (response: AxiosResponse) => response.data.data;
 
   private responseError = (error: any) => {
     const status = error.response.status;

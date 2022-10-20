@@ -1,5 +1,5 @@
 import HttpClient from '@/api/httpClient';
-import { Order, User } from '@/store/reducers/user';
+import { Order, Product, User } from '@/store/reducers/user';
 
 class MainApi extends HttpClient {
   private static instanceCached: MainApi;
@@ -18,7 +18,7 @@ class MainApi extends HttpClient {
 
   public getOrders = () => this.instance.get<Order[]>('/orders');
 
-  public getOrderItems = () => this.instance.get<any>('/mock/nsw/titles/search/adress');
+  public getOrderItems = () => this.instance.get<Product[]>('/mock');
 }
 
 export default MainApi;

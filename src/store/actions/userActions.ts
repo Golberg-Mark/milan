@@ -1,12 +1,14 @@
 import { createActionCreators } from 'immer-reducer';
 
-import { UserReducer } from '@/store/reducers/user';
+import { PlaceOrder, RefactoredProduct, UserReducer } from '@/store/reducers/user';
 import { AsyncAction } from '@/store/actions/common';
 
 export const userActions = createActionCreators(UserReducer);
 
 export type UserActions = ReturnType<typeof userActions.setIsLoggedIn>
   | ReturnType<typeof userActions.setOrders>
+  | ReturnType<typeof userActions.setProducts>
+  | ReturnType<typeof userActions.setTotalPrice>
   | ReturnType<typeof userActions.setUser>;
 
 export const getMeAction = (): AsyncAction => async (
@@ -38,6 +40,33 @@ export const getOrdersAction = (): AsyncAction => async (
 };
 
 export const getOrderItemsAction = (): AsyncAction => async (
+  dispatch,
+  getState,
+  { mainApi }
+) => {
+  try {
+    let items = await mainApi.getOrderItems();
+    let mappedItems: RefactoredProduct[] = [];
+    let totalPrice = getState().user.totalPrice;
+
+    // @ts-ignore
+    items.products.forEach((item) => {
+      const newItems = item.items.map((el) => ({ name: el, isChosen: true }));
+      totalPrice += item.price * newItems.length;
+      mappedItems = [...mappedItems, {
+        ...item,
+        items: newItems
+      }]
+    });
+
+    dispatch(userActions.setTotalPrice(totalPrice));
+    dispatch(userActions.setProducts(mappedItems));
+  } catch (error: any) {
+    console.log(error);
+  }
+};
+
+export const placeOrderAction = (order: PlaceOrder): AsyncAction => async (
   dispatch,
   _,
   { mainApi }

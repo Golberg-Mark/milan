@@ -1,30 +1,26 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import useToggle from '@/hooks/useToggle';
 import SuccessIcon from '@/assets/icons/SuccessIcon';
 
 interface Props {
   name: string,
-  price: string,
-  subItemsArray?: {
+  price: number,
+  index: number,
+  subItems?: {
     name: string,
     isChosen: boolean
-  }[]
+  }[],
+  setSubItems: Function
 }
 
-const OrderItem: React.FC<Props> = ({ name, price, subItemsArray }) => {
-  const [subItems, setSubItems] = useState(subItemsArray);
+const OrderItem: React.FC<Props> = ({ name, price, index, subItems, setSubItems }) => {
   const [isSelected, toggleIsSelected] = useToggle();
 
   const onSubItemClick = (evt: React.MouseEvent<HTMLLIElement>, i: number) => {
     evt.stopPropagation();
 
-    setSubItems(((prevState) => {
-      const updatedItems = JSON.parse(JSON.stringify(prevState));
-      updatedItems[i].isChosen = !updatedItems[i].isChosen;
-
-      return updatedItems;
-    }))
+    setSubItems(index, i);
   };
 
   return (
@@ -47,7 +43,7 @@ const OrderItem: React.FC<Props> = ({ name, price, subItemsArray }) => {
           </Arrow>
           <p>
             {name}
-            <span>{` (${price})`}</span>
+            <span>{` (@ $${price})`}</span>
           </p>
         </OrderItemName>
         <TotalPrice>

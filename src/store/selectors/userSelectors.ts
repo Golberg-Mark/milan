@@ -1,7 +1,7 @@
 import { createSelector, Selector } from 'reselect';
 
 import { State } from '@/store';
-import { User } from '@/store/reducers/user';
+import { RefactoredProduct, User } from '@/store/reducers/user';
 
 const userState = (state: State) => state.user;
 
@@ -18,4 +18,14 @@ export const selectIsLoggedIn: Selector<State, boolean> = createSelector(
 export const selectOrders: Selector<State, any[] | null> = createSelector(
   userState,
   ({ orders }) => orders
+);
+
+export const selectTotalPrice: Selector<State, number> = createSelector(
+  userState,
+  ({ totalPrice }) => totalPrice
+);
+
+export const selectProducts: Selector<State, RefactoredProduct[] | null> = createSelector(
+  userState,
+  ({ products }) => products
 );
