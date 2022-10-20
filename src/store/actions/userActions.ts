@@ -49,8 +49,7 @@ export const getOrderItemsAction = (): AsyncAction => async (
     let mappedItems: RefactoredProduct[] = [];
     let totalPrice = getState().user.totalPrice;
 
-    // @ts-ignore
-    items.products.forEach((item) => {
+    items.forEach((item) => {
       const newItems = item.items.map((el) => ({ name: el, isChosen: true }));
       totalPrice += item.price * newItems.length;
       mappedItems = [...mappedItems, {
