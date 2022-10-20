@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
+
 import { selectTotalItemsAmount, selectTotalPrice } from '@/store/selectors/userSelectors';
 
 interface Props {

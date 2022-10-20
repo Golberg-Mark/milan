@@ -69,12 +69,44 @@ export const getOrderItemsAction = (): AsyncAction => async (
   }
 };
 
-export const placeOrderAction = (order: PlaceOrder): AsyncAction => async (
+export const placeOrderAction = (region: string, service: string): AsyncAction => async (
   dispatch,
-  _,
+  getState,
   { mainApiProtected }
 ) => {
   try {
+    const { totalPrice, products: p } = getState().user;
+
+    let filteredProducts: RefactoredProduct[] = [];
+
+    p!.forEach((product) => {
+      const filteredItems = product.items?.filter((item) => item.isChosen);
+
+      if (filteredItems.length) filteredProducts = [...filteredProducts, {
+        ...product,
+        items: filteredItems
+      }]
+    });
+
+    const products = filteredProducts.map((product) => product.id);
+    let itemBody: { idNumber: string, body: string }[] = [];
+
+    filteredProducts.forEach((product) => {
+      itemBody = [
+        ...itemBody,
+        ...product.items!.map((item) => ({ idNumber: item.name, body: 'smth' }))
+      ]
+    });
+
+    const order: PlaceOrder = {
+      region,
+      service: service,
+      price: totalPrice.toFixed(2),
+      fulfilmentStatus: 'fulfiled',
+      products,
+      itemBody
+    };
+
     const items = await mainApiProtected.placeOrder(order);
   } catch (error: any) {
     console.log(error);

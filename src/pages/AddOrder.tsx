@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+
 import PageTitle from '@/components/PageTitle';
 import Input from '@/components/Input';
 import SearchInputs, { Service } from '@/components/AddOrder/SearchInputs';
 import OrderItem from '@/components/AddOrder/OrderItem';
-import { useDispatch, useSelector } from 'react-redux';
 import { getOrderItemsAction, placeOrderAction, userActions } from '@/store/actions/userActions';
 import Footer from '@/components/AddOrder/Footer';
-import { PlaceOrder, RefactoredProduct } from '@/store/reducers/user';
 import { selectProducts, selectTotalItemsAmount, selectTotalPrice } from '@/store/selectors/userSelectors';
 
 interface Region {
@@ -729,53 +729,6 @@ const mockedData: Region[] = [
   }
 ];
 
-/*const mockedOrderItems = [
-  {
-    id: 1, name: 'Title', price: 2.18, items: [
-      { name: '4/2297', isChosen: true },
-      { name: '3/1784', isChosen: true },
-      { name: '9/1399', isChosen: true },
-      { name: '11/2610', isChosen: true },
-      { name: '3/2517', isChosen: true },
-      { name: '10/2335', isChosen: true },
-      { name: '8/1219', isChosen: true },
-      { name: '3/898', isChosen: true },
-      { name: '8/1931', isChosen: true },
-      { name: '10/1474', isChosen: true },
-      { name: '3/665', isChosen: true },
-      { name: '12/417', isChosen: true },
-      { name: '6/1114', isChosen: true },
-      { name: '8/1293', isChosen: true },
-      { name: '11/872', isChosen: true },
-      { name: '3/422', isChosen: true },
-      { name: '6/2389', isChosen: true },
-      { name: '12/811', isChosen: true },
-      { name: '11/633', isChosen: true },
-      { name: '8/932', isChosen: true },
-      { name: '10/928', isChosen: true },
-      { name: '11/1841', isChosen: true },
-      { name: '9/746', isChosen: true },
-      { name: '7/1461', isChosen: true },
-      { name: '10/1740', isChosen: true },
-      { name: '9/673', isChosen: true },
-      { name: '4/1022', isChosen: true },
-      { name: '9/599', isChosen: true },
-      { name: '11/1971', isChosen: true },
-      { name: '6/2483', isChosen: true },
-      { name: '7/1429', isChosen: true },
-      { name: '3/1799', isChosen: true }
-    ]
-  },
-  { id: 2, name: 'Historical title', price: 3.20 },
-  { id: 3, name: 'Sub folio', price: 1.73 },
-  { id: 4, name: 'CT Enquiry', price: 2.40 },
-  { id: 5, name: 'Lots created', price: 1.95 },
-  { id: 6, name: 'Prior title', price: 3.20 },
-  { id: 7, name: 'CAC', price: 1.26 },
-  { id: 8, name: 'Proprietor', price: 2.42 },
-  { id: 9, name: 'Cancelled title', price: 2.20 }
-];*/
-
 const AddOrder = () => {
   const [selectedRegion, setSelectedRegion] = useState(0);
   const [selectedService, setSelectedService] = useState(0);
@@ -807,34 +760,10 @@ const AddOrder = () => {
   };
 
   const placeOrder = () => {
-    let filteredProducts: RefactoredProduct[] = [];
+    const region = mockedData[selectedRegion].region;
+    const service = mockedData[selectedRegion].services[selectedService].name;
 
-    mockedProducts!.forEach((product) => {
-      const filteredItems = product.items?.filter((item) => item.isChosen);
-
-      if (filteredItems.length) filteredProducts = [...filteredProducts, {
-        ...product,
-        items: filteredItems
-      }]
-    });
-
-    const products = filteredProducts.map((product) => product.id);
-    let itemBody: { idNumber: string, body: string }[] = [];
-
-    filteredProducts.forEach((product) => {
-      itemBody = [...itemBody, ...product.items!.map((item) => ({ idNumber: item.name, body: 'smth' }))]
-    });
-
-    const order: PlaceOrder = {
-      region: mockedData[selectedRegion].region,
-      service: mockedData[selectedRegion].services[selectedService].name,
-      price: totalPrice.toFixed(2),
-      fulfilmentStatus: 'fulfiled',
-      products,
-      itemBody
-    };
-
-    dispatch(placeOrderAction(order));
+    dispatch(placeOrderAction(region, service));
   };
 
   return mockedProducts ? (
