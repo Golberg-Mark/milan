@@ -14,5 +14,5 @@ export class MainApiProtected extends HttpClientProtected {
     return MainApiProtected.instanceCached;
   }
 
-  public placeOrder = (order: PlaceOrder) => this.instance.post<any>('/mock/nsw/titles/search/adress');
+  public placeOrder = (order: PlaceOrder) => this.instance.post<any>('/orders', order);
 }

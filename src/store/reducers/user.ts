@@ -13,6 +13,7 @@ export interface PlaceOrder {
   region: string,
   service: string,
   price: string,
+  fulfilmentStatus: string,
   products: number[],
   itemBody: {
     idNumber: string,
@@ -52,6 +53,7 @@ interface UserState {
   isLoggedIn: boolean,
   orders: Order[] | null,
   totalPrice: number,
+  totalItemsAmount: number,
   products: RefactoredProduct[] | null
 }
 
@@ -60,6 +62,7 @@ const InitialState: UserState = {
   isLoggedIn: true,
   orders: null,
   totalPrice: 0,
+  totalItemsAmount: 0,
   products: null
 };
 
@@ -78,6 +81,10 @@ export class UserReducer extends ImmerReducer<UserState> {
 
   public setTotalPrice(value: number) {
     this.draftState.totalPrice = value;
+  }
+
+  public setTotalItemsAmount(value: number) {
+    this.draftState.totalItemsAmount = value;
   }
 
   public setProducts(value: RefactoredProduct[] | null) {

@@ -6,10 +6,10 @@ import Input from '@/components/Input';
 import SearchInputs, { Service } from '@/components/AddOrder/SearchInputs';
 import OrderItem from '@/components/AddOrder/OrderItem';
 import { useDispatch, useSelector } from 'react-redux';
-import { getOrderItemsAction, userActions } from '@/store/actions/userActions';
+import { getOrderItemsAction, placeOrderAction, userActions } from '@/store/actions/userActions';
 import Footer from '@/components/AddOrder/Footer';
-import { PlaceOrder } from '@/store/reducers/user';
-import { selectProducts, selectTotalPrice } from '@/store/selectors/userSelectors';
+import { PlaceOrder, RefactoredProduct } from '@/store/reducers/user';
+import { selectProducts, selectTotalItemsAmount, selectTotalPrice } from '@/store/selectors/userSelectors';
 
 interface Region {
   region: string,
@@ -779,9 +779,9 @@ const mockedData: Region[] = [
 const AddOrder = () => {
   const [selectedRegion, setSelectedRegion] = useState(0);
   const [selectedService, setSelectedService] = useState(0);
-  const [totalItemsAmount, setTotalItemsAmount] = useState(0);
   const mockedProducts = useSelector(selectProducts);
   const totalPrice = useSelector(selectTotalPrice);
+  const totalItemsAmount = useSelector(selectTotalItemsAmount);
 
   const dispatch = useDispatch<any>();
 
@@ -799,18 +799,23 @@ const AddOrder = () => {
       ? totalPrice - +copiedState[productIndex].price
       : totalPrice + +copiedState[productIndex].price;
 
-    dispatch(userActions.setTotalPrice(newPrice))
+    const newTotalItemsAmount = isChosen ? totalItemsAmount - 1 : totalItemsAmount + 1;
+
+    dispatch(userActions.setTotalPrice(newPrice));
+    dispatch(userActions.setTotalItemsAmount(newTotalItemsAmount));
     dispatch(userActions.setProducts(copiedState));
   };
 
   const placeOrder = () => {
-    const filteredProducts = mockedProducts!.filter((product) => {
-      const filteredItems = product.items?.filter((item) => item.isChosen) || [];
+    let filteredProducts: RefactoredProduct[] = [];
 
-      if (filteredItems.length) return {
+    mockedProducts!.forEach((product) => {
+      const filteredItems = product.items?.filter((item) => item.isChosen);
+
+      if (filteredItems.length) filteredProducts = [...filteredProducts, {
         ...product,
         items: filteredItems
-      }
+      }]
     });
 
     const products = filteredProducts.map((product) => product.id);
@@ -824,9 +829,12 @@ const AddOrder = () => {
       region: mockedData[selectedRegion].region,
       service: mockedData[selectedRegion].services[selectedService].name,
       price: totalPrice.toFixed(2),
+      fulfilmentStatus: 'fulfiled',
       products,
       itemBody
     };
+
+    dispatch(placeOrderAction(order));
   };
 
   return mockedProducts ? (
@@ -917,7 +925,6 @@ const AddOrder = () => {
         </Content>
       </ContentWrapper>
       <Footer
-        totalItemsAmount={totalItemsAmount}
         placeOrder={placeOrder}
       />
     </AddOrderPage>

@@ -20,6 +20,11 @@ export const selectOrders: Selector<State, any[] | null> = createSelector(
   ({ orders }) => orders
 );
 
+export const selectTotalItemsAmount: Selector<State, number> = createSelector(
+  userState,
+  ({ totalItemsAmount }) => totalItemsAmount
+);
+
 export const selectTotalPrice: Selector<State, number> = createSelector(
   userState,
   ({ totalPrice }) => totalPrice
