@@ -69,7 +69,7 @@ const Button = styled.button`
     background-color: rgba(36, 99, 235, .4);
   }
   
-  :hover {
+  :not(:disabled):hover {
     background-color: rgba(36, 99, 235, .9);
   }
 `;
