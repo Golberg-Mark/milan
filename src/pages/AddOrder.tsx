@@ -30,6 +30,23 @@ const mockedData: Region[] = [
             'example': 'E.g 183/10001, 6/22052, 48/SP633903',
             'isRequired': true
           }
+        ],
+        "products": [
+          {
+            "productId": 1,
+            "name": "Title search",
+            "price": "0"
+          },
+          {
+            "productId": 2,
+            "name": "Titles",
+            "price": "2.70"
+          },
+          {
+            "productId": 3,
+            "name": "Sub Folio",
+            "price":"eg 4.50"
+          }
         ]
       },
       {

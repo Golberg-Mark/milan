@@ -10,10 +10,17 @@ export interface Input {
   isRequired?: boolean
 }
 
+interface Product {
+  productId: number,
+  name: string,
+  price: string
+}
+
 export interface Service {
   name: string,
   input: Input[],
-  price: number
+  price: number,
+  products?: Product[]
 }
 
 interface Props {
