@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 
-import { selectTotalItemsAmount, selectTotalPrice } from '@/store/selectors/userSelectors';
+import { selectProductsPrice, selectTotalItemsAmount, selectTotalPrice } from '@/store/selectors/userSelectors';
 
 interface Props {
   placeOrder: Function
@@ -10,12 +10,13 @@ interface Props {
 
 const Footer: React.FC<Props> = ({ placeOrder }) => {
   const totalPrice = useSelector(selectTotalPrice);
+  const productsPrice = useSelector(selectProductsPrice);
   const totalItemsAmount = useSelector(selectTotalItemsAmount);
 
   return (
     <StyledFooter>
       <Items>{totalItemsAmount ? `${totalItemsAmount} items` : 'No items'}</Items>
-      <Price>Total: ${totalPrice.toFixed(2)}</Price>
+      <Price>Total: ${(totalPrice + productsPrice).toFixed(2)}</Price>
       <Button
         disabled={totalPrice === 0 || totalItemsAmount === 0}
         onClick={() => placeOrder()}>

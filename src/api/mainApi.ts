@@ -18,7 +18,9 @@ class MainApi extends HttpClient {
 
   public getOrders = () => this.instance.get<Order[]>('/orders');
 
-  public getOrderItems = () => this.instance.get<Product[]>('/mock');
+  public getOrderItems = (region: string, service: string) => (
+    this.instance.get<{ products: Product[] }>(`/mock/${region}/${service}`)
+  )
 }
 
 export default MainApi;

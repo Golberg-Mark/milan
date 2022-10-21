@@ -25,6 +25,11 @@ export const selectTotalItemsAmount: Selector<State, number> = createSelector(
   ({ totalItemsAmount }) => totalItemsAmount
 );
 
+export const selectProductsPrice: Selector<State, number> = createSelector(
+  userState,
+  ({ productsPrice }) => productsPrice
+);
+
 export const selectTotalPrice: Selector<State, number> = createSelector(
   userState,
   ({ totalPrice }) => totalPrice

@@ -8,6 +8,7 @@ export const userActions = createActionCreators(UserReducer);
 export type UserActions = ReturnType<typeof userActions.setIsLoggedIn>
   | ReturnType<typeof userActions.setOrders>
   | ReturnType<typeof userActions.setProducts>
+  | ReturnType<typeof userActions.setProductsPrice>
   | ReturnType<typeof userActions.setTotalPrice>
   | ReturnType<typeof userActions.setTotalItemsAmount>
   | ReturnType<typeof userActions.setUser>;
@@ -40,28 +41,35 @@ export const getOrdersAction = (): AsyncAction => async (
   }
 };
 
-export const getOrderItemsAction = (): AsyncAction => async (
+export const getOrderItemsAction = (region: string, service: string, searchPrice: string): AsyncAction => async (
   dispatch,
   getState,
   { mainApi }
 ) => {
   try {
-    let items = await mainApi.getOrderItems();
+    dispatch(userActions.setProductsPrice(0));
+    dispatch(userActions.setTotalItemsAmount(0));
+
+    const changedRegion = region.toLowerCase();
+    const changedService = service.toLowerCase().replaceAll(' ', '-');
+    const { products } = await mainApi.getOrderItems(changedRegion, changedService);
     let mappedItems: RefactoredProduct[] = [];
-    let totalPrice = getState().user.totalPrice;
+    let { totalPrice, productsPrice } = getState().user;
     let totalItemsAmount = getState().user.totalItemsAmount;
 
-    items.forEach((item) => {
+    products.forEach((item) => {
       const newItems = item.items.map((el) => ({ name: el, isChosen: true }));
-      totalPrice += item.price * newItems.length;
+      productsPrice += item.price * newItems.length;
       totalItemsAmount += newItems.length;
       mappedItems = [...mappedItems, {
         ...item,
         items: newItems
-      }]
+      }];
+      console.log(mappedItems);
     });
 
-    dispatch(userActions.setTotalPrice(totalPrice));
+    dispatch(userActions.setProductsPrice(productsPrice));
+    dispatch(userActions.setTotalPrice(totalPrice + Number(searchPrice)));
     dispatch(userActions.setTotalItemsAmount(totalItemsAmount));
     dispatch(userActions.setProducts(mappedItems));
   } catch (error: any) {

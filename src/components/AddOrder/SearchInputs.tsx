@@ -24,10 +24,11 @@ export interface Service {
 }
 
 interface Props {
-  service: Service
+  service: Service,
+  search: React.MouseEventHandler
 }
 
-const SearchInputs: React.FC<Props> = ({ service:  { name, input, price } }) => {
+const SearchInputs: React.FC<Props> = ({ search, service:  { name, input, price } }) => {
   const getContent = () => {
     const mappedInput = input.map((el) => {
       if (el.items) {
@@ -59,10 +60,15 @@ const SearchInputs: React.FC<Props> = ({ service:  { name, input, price } }) => 
           <TitleReference>
             {mappedInput}
             <ButtonWrapper style={{ marginLeft: '-4px' }}>
-              <Button style={{ borderTopLeftRadius: '0', borderBottomLeftRadius: '0' }}>
+              <Button
+                style={{ borderTopLeftRadius: '0', borderBottomLeftRadius: '0' }}
+                onClick={search}
+              >
                 Verify
               </Button>
-              <Price>{priceStr}</Price>
+              <Price>
+                {priceStr}
+              </Price>
             </ButtonWrapper>
           </TitleReference>
         );
@@ -75,7 +81,9 @@ const SearchInputs: React.FC<Props> = ({ service:  { name, input, price } }) => 
             </AddressInputs>
             <ButtonWrapper>
               <Price>{priceStr}</Price>
-              <Button>Browse</Button>
+              <Button onClick={search}>
+                Browse
+              </Button>
             </ButtonWrapper>
           </Address>
         )

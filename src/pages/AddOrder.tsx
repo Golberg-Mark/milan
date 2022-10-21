@@ -9,8 +9,14 @@ import SearchInputs, { Service } from '@/components/AddOrder/SearchInputs';
 import OrderItem from '@/components/AddOrder/OrderItem';
 import { getOrderItemsAction, placeOrderAction, userActions } from '@/store/actions/userActions';
 import Footer from '@/components/AddOrder/Footer';
-import { selectProducts, selectTotalItemsAmount, selectTotalPrice } from '@/store/selectors/userSelectors';
+import {
+  selectProducts,
+  selectProductsPrice,
+  selectTotalItemsAmount
+} from '@/store/selectors/userSelectors';
 import useInput from '@/hooks/useInput';
+import useToggle from '@/hooks/useToggle';
+import Loader from '@/components/Loader';
 
 interface Region {
   region: string,
@@ -67,6 +73,23 @@ const mockedData: Region[] = [
             'name': 'Suburb',
             'example': 'E.g AVONDALE HEIGHTS',
             'isRequired': true
+          }
+        ],
+        "products": [
+          {
+            "productId": 1,
+            "name": "Address search",
+            "price": "1.28"
+          },
+          {
+            "productId": 2,
+            "name": "Titles",
+            "price": "2.70"
+          },
+          {
+            "productId": 3,
+            "name": "Sub Folio",
+            "price":"eg 4.50"
           }
         ]
       },
@@ -752,15 +775,27 @@ const AddOrder = () => {
   const [description, setDescription] = useInput();
   const [selectedRegion, setSelectedRegion] = useState(0);
   const [selectedService, setSelectedService] = useState(0);
+  const [isProductsLoading, toggleIsProductsLoading] = useToggle();
+
   const mockedProducts = useSelector(selectProducts);
-  const totalPrice = useSelector(selectTotalPrice);
+  const productsPrice = useSelector(selectProductsPrice);
   const totalItemsAmount = useSelector(selectTotalItemsAmount);
 
   const dispatch = useDispatch<any>();
 
   useEffect(() => {
-    dispatch(getOrderItemsAction());
-  }, []);
+    if (!mockedProducts) toggleIsProductsLoading(false);
+  }, [mockedProducts]);
+
+  const search = () => {
+    dispatch(userActions.setProducts(null));
+    toggleIsProductsLoading(true);
+    dispatch(getOrderItemsAction(
+      mockedData[selectedRegion].region,
+      mockedData[selectedRegion].services[selectedService].name,
+      mockedData[selectedRegion].services[selectedService].products![0].price
+    ));
+  };
 
   const selectItem = (productIndex: number, i: number) => {
     const copiedState = JSON.parse(JSON.stringify(mockedProducts));
@@ -768,12 +803,12 @@ const AddOrder = () => {
     copiedState[productIndex].items[i].isChosen = !isChosen;
 
     const newPrice = isChosen
-      ? totalPrice - +copiedState[productIndex].price
-      : totalPrice + +copiedState[productIndex].price;
+      ? productsPrice - +copiedState[productIndex].price
+      : productsPrice + +copiedState[productIndex].price;
 
     const newTotalItemsAmount = isChosen ? totalItemsAmount - 1 : totalItemsAmount + 1;
 
-    dispatch(userActions.setTotalPrice(newPrice));
+    dispatch(userActions.setProductsPrice(newPrice));
     dispatch(userActions.setTotalItemsAmount(newTotalItemsAmount));
     dispatch(userActions.setProducts(copiedState));
   };
@@ -785,7 +820,7 @@ const AddOrder = () => {
     dispatch(placeOrderAction(matter, description, region, service));
   };
 
-  return mockedProducts ? (
+  return (
     <AddOrderPage>
       <PageHeader>
         <StyledLink to="/">
@@ -849,7 +884,10 @@ const AddOrder = () => {
                 </Tip>
               ))}
             </Tips>
-            <SearchInputs service={mockedData[selectedRegion].services[selectedService]}/>
+            <SearchInputs
+              search={search}
+              service={mockedData[selectedRegion].services[selectedService]}
+            />
             <Titles>
               Titles that you add will appear here.
             </Titles>
@@ -859,18 +897,20 @@ const AddOrder = () => {
             <Description>
               Expand a product and select the references you want to purchase within it.
             </Description>
-            <ul>
-              {mockedProducts.map((item, i) => (
-                <OrderItem
-                  key={item.name}
-                  name={item.name}
-                  index={i}
-                  price={item.price}
-                  subItems={item.items}
-                  setSubItems={selectItem}
-                />
-              ))}
-            </ul>
+            {mockedProducts?.length ? (
+              <ul>
+                {mockedProducts.map((item, i) => (
+                  <OrderItem
+                    key={item.name}
+                    name={item.name}
+                    index={i}
+                    price={item.price}
+                    subItems={item.items}
+                    setSubItems={selectItem}
+                  />
+                ))}
+              </ul>
+            ) : isProductsLoading ? <Loader/> : ''}
           </OrderItemsSection>
         </Content>
       </ContentWrapper>
@@ -878,7 +918,7 @@ const AddOrder = () => {
         placeOrder={placeOrder}
       />
     </AddOrderPage>
-  ) : <></>;
+  );
 };
 
 const AddOrderPage = styled.section`

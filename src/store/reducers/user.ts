@@ -58,6 +58,7 @@ interface UserState {
   user: User | null,
   isLoggedIn: boolean,
   orders: Order[] | null,
+  productsPrice: number,
   totalPrice: number,
   totalItemsAmount: number,
   order: PlaceOrder | null,
@@ -68,6 +69,7 @@ const InitialState: UserState = {
   user: null,
   isLoggedIn: true,
   orders: null,
+  productsPrice: 0,
   totalPrice: 0,
   totalItemsAmount: 0,
   order: null,
@@ -85,6 +87,10 @@ export class UserReducer extends ImmerReducer<UserState> {
 
   public setOrders(value: Order[] | null) {
     this.draftState.orders = value;
+  }
+
+  public setProductsPrice(value: number) {
+    this.draftState.productsPrice = value;
   }
 
   public setTotalPrice(value: number) {
