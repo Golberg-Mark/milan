@@ -9,16 +9,22 @@ export interface Order {
   date: string
 }
 
+export interface PlaceOrderProduct {
+  productId: number,
+  name?: string,
+  idNumber?: string,
+  price: string,
+  body?: any
+}
+
 export interface PlaceOrder {
+  matter: string,
+  description: string,
   region: string,
   service: string,
-  price: string,
+  totalPrice: string,
   fulfilmentStatus: string,
-  products: number[],
-  itemBody: {
-    idNumber: string,
-    body: any
-  }[]
+  products: PlaceOrderProduct[]
 }
 
 export interface User {
@@ -54,6 +60,7 @@ interface UserState {
   orders: Order[] | null,
   totalPrice: number,
   totalItemsAmount: number,
+  order: PlaceOrder | null,
   products: RefactoredProduct[] | null
 }
 
@@ -63,6 +70,7 @@ const InitialState: UserState = {
   orders: null,
   totalPrice: 0,
   totalItemsAmount: 0,
+  order: null,
   products: null
 };
 

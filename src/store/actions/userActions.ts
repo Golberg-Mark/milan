@@ -1,6 +1,6 @@
 import { createActionCreators } from 'immer-reducer';
 
-import { PlaceOrder, RefactoredProduct, UserReducer } from '@/store/reducers/user';
+import { PlaceOrder, PlaceOrderProduct, RefactoredProduct, UserReducer } from '@/store/reducers/user';
 import { AsyncAction } from '@/store/actions/common';
 
 export const userActions = createActionCreators(UserReducer);
@@ -69,7 +69,44 @@ export const getOrderItemsAction = (): AsyncAction => async (
   }
 };
 
-export const placeOrderAction = (region: string, service: string): AsyncAction => async (
+const initializeOrderAction = (
+  matter: string,
+  description: string,
+  region: string,
+  service: string,
+  searchPrice: string
+): AsyncAction => async (
+  dispatch,
+  getState,
+  { mainApiProtected }
+) => {
+  try {
+    const order: PlaceOrder = {
+      matter,
+      description,
+      region,
+      service,
+      totalPrice: searchPrice,
+      fulfilmentStatus: 'fulfiled',
+      products: [{
+        productId: 1,
+        name: `${region}: ${service} search`,
+        price: searchPrice
+      }]
+    };
+
+    const items = await mainApiProtected.placeOrder(order);
+  } catch (error: any) {
+    console.log(error);
+  }
+};
+
+export const placeOrderAction = (
+  matter: string,
+  description: string,
+  region: string,
+  service: string
+): AsyncAction => async (
   dispatch,
   getState,
   { mainApiProtected }
@@ -88,23 +125,27 @@ export const placeOrderAction = (region: string, service: string): AsyncAction =
       }]
     });
 
-    const products = filteredProducts.map((product) => product.id);
-    let itemBody: { idNumber: string, body: string }[] = [];
+    let products: PlaceOrderProduct[] = [];
 
     filteredProducts.forEach((product) => {
-      itemBody = [
-        ...itemBody,
-        ...product.items!.map((item) => ({ idNumber: item.name, body: 'smth' }))
-      ]
+      product.items.forEach((item) => {
+        products.push({
+          productId: product.id,
+          price: product.price.toFixed(2),
+          idNumber: item.name,
+          body: 'something'
+        });
+      });
     });
 
     const order: PlaceOrder = {
+      matter,
+      description,
       region,
-      service: service,
-      price: totalPrice.toFixed(2),
+      service,
+      totalPrice: totalPrice.toFixed(2),
       fulfilmentStatus: 'fulfiled',
-      products,
-      itemBody
+      products
     };
 
     const items = await mainApiProtected.placeOrder(order);

@@ -10,6 +10,7 @@ import OrderItem from '@/components/AddOrder/OrderItem';
 import { getOrderItemsAction, placeOrderAction, userActions } from '@/store/actions/userActions';
 import Footer from '@/components/AddOrder/Footer';
 import { selectProducts, selectTotalItemsAmount, selectTotalPrice } from '@/store/selectors/userSelectors';
+import useInput from '@/hooks/useInput';
 
 interface Region {
   region: string,
@@ -730,6 +731,8 @@ const mockedData: Region[] = [
 ];
 
 const AddOrder = () => {
+  const [matter, setMatter] = useInput();
+  const [description, setDescription] = useInput();
   const [selectedRegion, setSelectedRegion] = useState(0);
   const [selectedService, setSelectedService] = useState(0);
   const mockedProducts = useSelector(selectProducts);
@@ -763,7 +766,7 @@ const AddOrder = () => {
     const region = mockedData[selectedRegion].region;
     const service = mockedData[selectedRegion].services[selectedService].name;
 
-    dispatch(placeOrderAction(region, service));
+    dispatch(placeOrderAction(matter, description, region, service));
   };
 
   return mockedProducts ? (
@@ -795,6 +798,8 @@ const AddOrder = () => {
             <Input
               label="Matter / File Reference"
               placeholder="Enter matter here"
+              value={matter}
+              onChange={setMatter}
             />
             <div>
               <SubTitle>Regions</SubTitle>
