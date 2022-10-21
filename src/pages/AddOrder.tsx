@@ -879,7 +879,7 @@ const AddOrder = () => {
         placeOrder={placeOrder}
       />
     </AddOrderPage>
-  ) : '';
+  ) : <></>;
 };
 
 const AddOrderPage = styled.section`
