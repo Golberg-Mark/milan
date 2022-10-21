@@ -5,7 +5,7 @@ class MainApi extends HttpClient {
   private static instanceCached: MainApi;
 
   constructor() {
-    super(process.env.URL_API);
+    super(process.env.URL_API ? process.env.URL_API : 'https://michael.lambda-team.website');
   }
 
   public static getInstance = () => {

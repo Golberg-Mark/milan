@@ -4,7 +4,7 @@ import HttpClient from '@/api/httpClient';
 
 export class HttpClientProtected extends HttpClient {
   constructor() {
-    super(process.env.URL_API);
+    super(process.env.URL_API ? process.env.URL_API : 'https://michael.lambda-team.website');
 
     this.initializeInterceptors();
   }
