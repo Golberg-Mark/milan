@@ -16,7 +16,7 @@ export class HttpClientProtected extends HttpClient {
   private requestInterceptor(config: AxiosRequestConfig) {
     const token = localStorage.getItem('token');
 
-    config.headers!.Authorization = `Bearer ${token}`;
+    config.headers!.Authorization = `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidHlwZSI6MCwicGFzc3dvcmQiOiI5ZTY2ODU4MTdhYzU1NWFmLjhhZDFjMjZmZjY4NGNlODEzMDBlOTg1MTQ1NzllYWMyZDM1NTliZTBkZjEzZWY0MmZkMjY1NzRkY2NlOTAwMTIxZGJjNWYyMDQ4ODkxMTI3MzJkMjU3ZjdjMGI0ZjgyYjcxOTM3NzBiNGJhNTQwYTE5OTlkYzc1ZDI2Njk3OTY5Iiwicm9sZSI6InN5c3RlbV9hZG1pbiIsImlhdCI6MTY2NjM2MzA2MCwiZXhwIjoxNjY2NDQ5NDYwfQ.ebKS5pdqQ-953P1x1p1Lq4Pth8DMjFt0M-lBPgbD-cU`;
 
     return config;
   }
