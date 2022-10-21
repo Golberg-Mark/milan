@@ -1,6 +1,6 @@
 import { createActionCreators } from 'immer-reducer';
 
-import { PlaceOrder, PlaceOrderProduct, RefactoredProduct, UserReducer } from '@/store/reducers/user';
+import user, { PlaceOrder, PlaceOrderProduct, RefactoredProduct, UserReducer } from '@/store/reducers/user';
 import { AsyncAction } from '@/store/actions/common';
 
 export const userActions = createActionCreators(UserReducer);
@@ -11,6 +11,7 @@ export type UserActions = ReturnType<typeof userActions.setIsLoggedIn>
   | ReturnType<typeof userActions.setProductsPrice>
   | ReturnType<typeof userActions.setTotalPrice>
   | ReturnType<typeof userActions.setTotalItemsAmount>
+  | ReturnType<typeof userActions.setOrderId>
   | ReturnType<typeof userActions.setUser>;
 
 export const getMeAction = (): AsyncAction => async (
@@ -59,7 +60,7 @@ export const getOrderItemsAction = (region: string, service: string, searchPrice
 
     products.forEach((item) => {
       const newItems = item.items.map((el) => ({ name: el, isChosen: true }));
-      productsPrice += item.price * newItems.length;
+      productsPrice += Number(item.price) * newItems.length;
       totalItemsAmount += newItems.length;
       mappedItems = [...mappedItems, {
         ...item,
@@ -77,7 +78,7 @@ export const getOrderItemsAction = (region: string, service: string, searchPrice
   }
 };
 
-const initializeOrderAction = (
+export const initializeOrderAction = (
   matter: string,
   description: string,
   region: string,
@@ -85,7 +86,7 @@ const initializeOrderAction = (
   searchPrice: string
 ): AsyncAction => async (
   dispatch,
-  getState,
+  _,
   { mainApiProtected }
 ) => {
   try {
@@ -103,13 +104,14 @@ const initializeOrderAction = (
       }]
     };
 
-    const items = await mainApiProtected.placeOrder(order);
+    const { id } = await mainApiProtected.placeOrder(order);
+    dispatch(userActions.setOrderId(id));
   } catch (error: any) {
     console.log(error);
   }
 };
 
-export const placeOrderAction = (
+export const editOrderAction = (
   matter: string,
   description: string,
   region: string,
@@ -120,7 +122,9 @@ export const placeOrderAction = (
   { mainApiProtected }
 ) => {
   try {
-    const { totalPrice, products: p } = getState().user;
+    const { totalPrice, orderId, products: p } = getState().user;
+
+    if (!orderId) return;
 
     let filteredProducts: RefactoredProduct[] = [];
 
@@ -139,7 +143,7 @@ export const placeOrderAction = (
       product.items.forEach((item) => {
         products.push({
           productId: product.id,
-          price: product.price.toFixed(2),
+          price: product.price,
           idNumber: item.name,
           body: 'something'
         });
@@ -156,7 +160,7 @@ export const placeOrderAction = (
       products
     };
 
-    const items = await mainApiProtected.placeOrder(order);
+    const { id } = await mainApiProtected.editOrder(orderId, order);
   } catch (error: any) {
     console.log(error);
   }

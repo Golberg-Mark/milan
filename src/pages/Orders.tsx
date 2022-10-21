@@ -5,10 +5,12 @@ import { Link } from 'react-router-dom';
 
 import PageTitle from '@/components/PageTitle';
 import { getOrdersAction } from '@/store/actions/userActions';
-import { selectOrders } from '@/store/selectors/userSelectors';
+import { selectOrders, selectUser } from '@/store/selectors/userSelectors';
 import Loader from '@/components/Loader';
+import convertTimestamp from '@/utils/convertTimestamp';
 
 const Orders = () => {
+  const user = useSelector(selectUser);
   const orders = useSelector(selectOrders);
 
   const dispatch = useDispatch<any>();
@@ -18,7 +20,7 @@ const Orders = () => {
   }, []);
 
   return orders ? (
-    <div>
+    <OrdersPage>
       <PageHeader>
         <div>
           <PageTitle fontSize={20}>
@@ -96,11 +98,11 @@ const Orders = () => {
                 </td>
                 <td style={{ textAlign: 'center' }}>
                   <User>
-                    {order.user}
+                    {order.user === user?.id ? user!.name.substring(0, 2).toUpperCase() : order.user}
                   </User>
                 </td>
                 <td style={{ textAlign: 'center' }}>
-                  {order.date}
+                  {convertTimestamp(order.date)}
                 </td>
                 <th style={{ padding: '16px 24px 16px 1px' }}>
                   <EyeWrapper>
@@ -129,9 +131,13 @@ const Orders = () => {
           </TBody>
         </Table>
       </TableWrapper>
-    </div>
+    </OrdersPage>
   ) : <Loader />;
 };
+
+const OrdersPage = styled.div`
+  padding-bottom: 2.5rem;
+`;
 
 const PageHeader = styled.div`
   display: flex;

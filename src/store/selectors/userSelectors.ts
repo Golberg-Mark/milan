@@ -39,3 +39,8 @@ export const selectProducts: Selector<State, RefactoredProduct[] | null> = creat
   userState,
   ({ products }) => products
 );
+
+export const selectOrderId: Selector<State, number | null> = createSelector(
+  userState,
+  ({ orderId }) => orderId
+);

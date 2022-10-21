@@ -14,5 +14,9 @@ export class MainApiProtected extends HttpClientProtected {
     return MainApiProtected.instanceCached;
   }
 
-  public placeOrder = (order: PlaceOrder) => this.instance.post<any>('/orders', order);
+  public placeOrder = (order: PlaceOrder) => this.instance.post<{ id: number }>('/orders', order);
+
+  public editOrder = (id: number, order: PlaceOrder) => (
+    this.instance.patch<any>(`/orders/${id}`, order)
+  );
 }

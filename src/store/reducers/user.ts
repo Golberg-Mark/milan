@@ -6,7 +6,7 @@ export interface Order {
   description: string,
   status: string,
   user: number,
-  date: string
+  create: string
 }
 
 export interface PlaceOrderProduct {
@@ -36,18 +36,16 @@ export interface User {
 
 export interface BaseProduct {
   id: number,
-  name: string,
-  price: number
+  name: string
 }
 
 export interface Product extends BaseProduct {
-  id: number,
-  name: string,
-  price: number,
+  price: string,
   items: string[]
 }
 
 export interface RefactoredProduct extends BaseProduct {
+  price: string,
   items: {
     name: string,
     isChosen: boolean
@@ -62,6 +60,7 @@ interface UserState {
   totalPrice: number,
   totalItemsAmount: number,
   order: PlaceOrder | null,
+  orderId: number | null,
   products: RefactoredProduct[] | null
 }
 
@@ -73,6 +72,7 @@ const InitialState: UserState = {
   totalPrice: 0,
   totalItemsAmount: 0,
   order: null,
+  orderId: null,
   products: null
 };
 
@@ -103,6 +103,10 @@ export class UserReducer extends ImmerReducer<UserState> {
 
   public setProducts(value: RefactoredProduct[] | null) {
     this.draftState.products = value;
+  }
+
+  public setOrderId(value: number | null) {
+    this.draftState.orderId = value;
   }
 }
 

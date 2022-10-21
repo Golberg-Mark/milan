@@ -7,9 +7,15 @@ import PageTitle from '@/components/PageTitle';
 import Input from '@/components/Input';
 import SearchInputs, { Service } from '@/components/AddOrder/SearchInputs';
 import OrderItem from '@/components/AddOrder/OrderItem';
-import { getOrderItemsAction, placeOrderAction, userActions } from '@/store/actions/userActions';
+import {
+  getOrderItemsAction,
+  initializeOrderAction,
+  editOrderAction,
+  userActions
+} from '@/store/actions/userActions';
 import Footer from '@/components/AddOrder/Footer';
 import {
+  selectOrderId,
   selectProducts,
   selectProductsPrice,
   selectTotalItemsAmount
@@ -780,21 +786,52 @@ const AddOrder = () => {
   const mockedProducts = useSelector(selectProducts);
   const productsPrice = useSelector(selectProductsPrice);
   const totalItemsAmount = useSelector(selectTotalItemsAmount);
+  const orderId = useSelector(selectOrderId);
 
   const dispatch = useDispatch<any>();
 
   useEffect(() => {
-    if (!mockedProducts) toggleIsProductsLoading(false);
-  }, [mockedProducts]);
+    dispatch(userActions.setOrderId(null));
+    dispatch(userActions.setProducts(null));
+    dispatch(userActions.setTotalItemsAmount(0));
+    dispatch(userActions.setTotalPrice(0));
+    dispatch(userActions.setProductsPrice(0));
+  }, [selectedService]);
 
-  const search = () => {
+  const search = async () => {
+    const region = mockedData[selectedRegion];
+    const service = mockedData[selectedRegion].services[selectedService];
+
     dispatch(userActions.setProducts(null));
     toggleIsProductsLoading(true);
-    dispatch(getOrderItemsAction(
-      mockedData[selectedRegion].region,
-      mockedData[selectedRegion].services[selectedService].name,
-      mockedData[selectedRegion].services[selectedService].products![0].price
-    ));
+
+    if (!orderId) {
+      dispatch(initializeOrderAction(
+        matter,
+        description,
+        region.region,
+        service.name,
+        service.products![0].price
+      ));
+    } else {
+      if (!isMatterError || !isDescriptionError) {
+        dispatch(editOrderAction(
+          matter,
+          description,
+          region.region,
+          service.name
+        ));
+      }
+    }
+
+    try {
+      await dispatch(getOrderItemsAction(
+        mockedData[selectedRegion].region,
+        mockedData[selectedRegion].services[selectedService].name,
+        mockedData[selectedRegion].services[selectedService].products![0].price
+      ));
+      toggleIsProductsLoading(false);
+    } catch (e) { console.error(e) }
   };
 
   const selectItem = (productIndex: number, i: number) => {
@@ -814,11 +851,16 @@ const AddOrder = () => {
   };
 
   const placeOrder = () => {
+    if (isMatterError || isDescriptionError) return;
+
     const region = mockedData[selectedRegion].region;
     const service = mockedData[selectedRegion].services[selectedService].name;
 
-    dispatch(placeOrderAction(matter, description, region, service));
+    dispatch(editOrderAction(matter, description, region, service));
   };
+
+  const isMatterError = !matter;
+  const isDescriptionError = !description;
 
   return (
     <AddOrderPage>
@@ -869,6 +911,12 @@ const AddOrder = () => {
                 ))}
               </Tips>
             </div>
+            <Input
+              label="Description"
+              placeholder="Enter description here"
+              value={description}
+              onChange={setDescription}
+            />
           </Matter>
           <TitleSection>
             <Title>Title Search</Title>

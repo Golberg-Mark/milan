@@ -6,7 +6,7 @@ import SuccessIcon from '@/assets/icons/SuccessIcon';
 
 interface Props {
   name: string,
-  price: number,
+  price: string,
   index: number,
   subItems?: {
     name: string,
