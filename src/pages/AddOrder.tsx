@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 import PageTitle from '@/components/PageTitle';
 import Input from '@/components/Input';
@@ -782,6 +783,8 @@ const AddOrder = () => {
   const [selectedRegion, setSelectedRegion] = useState(0);
   const [selectedService, setSelectedService] = useState(0);
   const [isProductsLoading, toggleIsProductsLoading] = useToggle();
+  const [isOrderLoading, toggleIsOrderLoading] = useToggle();
+  const navigate = useNavigate();
 
   const mockedProducts = useSelector(selectProducts);
   const productsPrice = useSelector(selectProductsPrice);
@@ -850,13 +853,16 @@ const AddOrder = () => {
     dispatch(userActions.setProducts(copiedState));
   };
 
-  const placeOrder = () => {
+  const placeOrder = async () => {
     if (isMatterError || isDescriptionError) return;
+    toggleIsOrderLoading(true);
 
     const region = mockedData[selectedRegion].region;
     const service = mockedData[selectedRegion].services[selectedService].name;
 
-    dispatch(editOrderAction(matter, description, region, service));
+    await dispatch(editOrderAction(matter, description, region, service));
+    toggleIsOrderLoading(false);
+    navigate('/');
   };
 
   const isMatterError = !matter;
@@ -963,6 +969,8 @@ const AddOrder = () => {
         </Content>
       </ContentWrapper>
       <Footer
+        isError={isMatterError || isDescriptionError}
+        isLoading={isOrderLoading}
         placeOrder={placeOrder}
       />
     </AddOrderPage>

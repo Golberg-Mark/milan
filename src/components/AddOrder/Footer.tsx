@@ -5,10 +5,12 @@ import { useSelector } from 'react-redux';
 import { selectProductsPrice, selectTotalItemsAmount, selectTotalPrice } from '@/store/selectors/userSelectors';
 
 interface Props {
-  placeOrder: Function
+  placeOrder: Function,
+  isLoading: boolean,
+  isError: boolean
 }
 
-const Footer: React.FC<Props> = ({ placeOrder }) => {
+const Footer: React.FC<Props> = ({ placeOrder, isLoading, isError }) => {
   const totalPrice = useSelector(selectTotalPrice);
   const productsPrice = useSelector(selectProductsPrice);
   const totalItemsAmount = useSelector(selectTotalItemsAmount);
@@ -18,9 +20,10 @@ const Footer: React.FC<Props> = ({ placeOrder }) => {
       <Items>{totalItemsAmount ? `${totalItemsAmount} items` : 'No items'}</Items>
       <Price>Total: ${(totalPrice + productsPrice).toFixed(2)}</Price>
       <Button
-        disabled={totalPrice === 0 || totalItemsAmount === 0}
-        onClick={() => placeOrder()}>
-        Place Order
+        disabled={(productsPrice === 0 && totalPrice === 0) || totalItemsAmount === 0 || isError}
+        onClick={() => placeOrder()}
+      >
+        {isLoading ? 'Loading...' : 'Place Order'}
       </Button>
     </StyledFooter>
   );

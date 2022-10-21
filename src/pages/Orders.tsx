@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import PageTitle from '@/components/PageTitle';
-import { getOrdersAction } from '@/store/actions/userActions';
+import { getOrdersAction, userActions } from '@/store/actions/userActions';
 import { selectOrders, selectUser } from '@/store/selectors/userSelectors';
 import Loader from '@/components/Loader';
 import convertTimestamp from '@/utils/convertTimestamp';
@@ -16,7 +16,12 @@ const Orders = () => {
   const dispatch = useDispatch<any>();
 
   useEffect(() => {
-    if (!orders) dispatch(getOrdersAction())
+    window.scrollTo(0, 0);
+    if (!orders) dispatch(getOrdersAction());
+
+    return () => {
+      dispatch(userActions.setOrders(null));
+    }
   }, []);
 
   return orders ? (
