@@ -760,7 +760,6 @@ const AddOrder = () => {
 
   useEffect(() => {
     dispatch(getOrderItemsAction());
-    dispatch(getOrderItemsAction());
   }, []);
 
   const selectItem = (productIndex: number, i: number) => {
