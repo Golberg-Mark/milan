@@ -61,6 +61,7 @@ interface UserState {
   totalItemsAmount: number,
   order: PlaceOrder | null,
   orderId: number | null,
+  orderProducts: PlaceOrderProduct[] | null,
   products: RefactoredProduct[] | null
 }
 
@@ -73,6 +74,7 @@ const InitialState: UserState = {
   totalItemsAmount: 0,
   order: null,
   orderId: null,
+  orderProducts: null,
   products: null
 };
 
@@ -107,6 +109,10 @@ export class UserReducer extends ImmerReducer<UserState> {
 
   public setOrderId(value: number | null) {
     this.draftState.orderId = value;
+  }
+
+  public setOrderProducts(value: PlaceOrderProduct[] | null) {
+    this.draftState.orderProducts = value;
   }
 }
 

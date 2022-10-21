@@ -796,7 +796,8 @@ const AddOrder = () => {
     dispatch(userActions.setTotalItemsAmount(0));
     dispatch(userActions.setTotalPrice(0));
     dispatch(userActions.setProductsPrice(0));
-  }, [selectedService]);
+    dispatch(userActions.setProductsPrice(0));
+  }, [selectedRegion]);
 
   const search = async () => {
     const region = mockedData[selectedRegion];
@@ -814,14 +815,13 @@ const AddOrder = () => {
         service.products![0].price
       ));
     } else {
-      if (!isMatterError || !isDescriptionError) {
-        dispatch(editOrderAction(
-          matter,
-          description,
-          region.region,
-          service.name
-        ));
-      }
+      dispatch(editOrderAction(
+        matter,
+        description,
+        region.region,
+        service.name,
+        service.products![0].price
+      ));
     }
 
     try {

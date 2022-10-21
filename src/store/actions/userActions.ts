@@ -12,6 +12,7 @@ export type UserActions = ReturnType<typeof userActions.setIsLoggedIn>
   | ReturnType<typeof userActions.setTotalPrice>
   | ReturnType<typeof userActions.setTotalItemsAmount>
   | ReturnType<typeof userActions.setOrderId>
+  | ReturnType<typeof userActions.setOrderProducts>
   | ReturnType<typeof userActions.setUser>;
 
 export const getMeAction = (): AsyncAction => async (
@@ -104,7 +105,8 @@ export const initializeOrderAction = (
       }]
     };
 
-    const { id } = await mainApiProtected.placeOrder(order);
+    const { id, products } = await mainApiProtected.placeOrder(order);
+    dispatch(userActions.setOrderProducts(products));
     dispatch(userActions.setOrderId(id));
   } catch (error: any) {
     console.log(error);
@@ -115,20 +117,22 @@ export const editOrderAction = (
   matter: string,
   description: string,
   region: string,
-  service: string
+  service: string,
+  searchPrice?: string
 ): AsyncAction => async (
   dispatch,
   getState,
   { mainApiProtected }
 ) => {
   try {
-    const { totalPrice, orderId, products: p } = getState().user;
+    const { totalPrice, orderId, orderProducts, products: p } = getState().user;
 
     if (!orderId) return;
 
-    let filteredProducts: RefactoredProduct[] = [];
+    let newTotalPrice = totalPrice;
+    let filteredProducts: any[] = [...orderProducts!];
 
-    p!.forEach((product) => {
+    if (p) p!.forEach((product) => {
       const filteredItems = product.items?.filter((item) => item.isChosen);
 
       if (filteredItems.length) filteredProducts = [...filteredProducts, {
@@ -137,17 +141,28 @@ export const editOrderAction = (
       }]
     });
 
+    if (searchPrice) {
+      filteredProducts.push({
+        productId: 2,
+        name: `${region}: ${service} search`,
+        price: searchPrice
+      });
+      newTotalPrice += Number(searchPrice);
+    }
+
     let products: PlaceOrderProduct[] = [];
 
     filteredProducts.forEach((product) => {
-      product.items.forEach((item) => {
-        products.push({
-          productId: product.id,
-          price: product.price,
-          idNumber: item.name,
-          body: 'something'
+      if (product.items) {
+        product.items.forEach((item: { isChosen: boolean, name: string }) => {
+          products.push({
+            productId: product.id,
+            price: product.price,
+            idNumber: item.name,
+            body: 'something'
+          });
         });
-      });
+      } else products.push(product);
     });
 
     const order: PlaceOrder = {
@@ -155,12 +170,14 @@ export const editOrderAction = (
       description,
       region,
       service,
-      totalPrice: totalPrice.toFixed(2),
+      totalPrice: newTotalPrice.toFixed(2),
       fulfilmentStatus: 'fulfiled',
       products
     };
 
-    const { id } = await mainApiProtected.editOrder(orderId, order);
+    const { id, products: existedProducts } = await mainApiProtected.editOrder(orderId, order);
+    dispatch(userActions.setOrderProducts(existedProducts));
+    dispatch(userActions.setOrderId(id));
   } catch (error: any) {
     console.log(error);
   }
