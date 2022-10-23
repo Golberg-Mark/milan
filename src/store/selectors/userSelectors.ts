@@ -1,7 +1,7 @@
 import { createSelector, Selector } from 'reselect';
 
 import { State } from '@/store';
-import { Matter, Order, User } from '@/store/reducers/user';
+import { Matters, Order, User } from '@/store/reducers/user';
 
 const userState = (state: State) => state.user;
 
@@ -20,7 +20,7 @@ export const selectOrders: Selector<State, Order[] | null> = createSelector(
   ({ orders }) => orders
 );
 
-export const selectMatters: Selector<State, Matter[] | null> = createSelector(
+export const selectMatters: Selector<State, Matters | null> = createSelector(
   userState,
   ({ matters }) => matters
 );
