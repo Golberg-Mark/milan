@@ -1,5 +1,5 @@
 import { HttpClientProtected } from '@/api/httpClientProtected';
-import { PlaceOrder, PlaceOrderProduct } from '@/store/reducers/user';
+import { PlaceOrder, PlaceOrderProduct } from '@/store/reducers/order';
 
 export class MainApiProtected extends HttpClientProtected {
   private static instanceCached: MainApiProtected;

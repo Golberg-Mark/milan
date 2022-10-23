@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 
-import { selectProductsPrice, selectTotalItemsAmount, selectTotalPrice } from '@/store/selectors/userSelectors';
+import { selectProductsPrice, selectTotalItemsAmount, selectTotalPrice } from '@/store/selectors/orderSelectors';
 
 interface Props {
   placeOrder: Function,

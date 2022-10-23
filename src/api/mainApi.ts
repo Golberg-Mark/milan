@@ -1,5 +1,6 @@
 import HttpClient from '@/api/httpClient';
-import { Order, Product, User } from '@/store/reducers/user';
+import { Order, User } from '@/store/reducers/user';
+import { Product } from '@/store/reducers/order';
 
 class MainApi extends HttpClient {
   private static instanceCached: MainApi;

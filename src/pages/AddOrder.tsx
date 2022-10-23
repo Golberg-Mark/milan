@@ -4,26 +4,28 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-import PageTitle from '@/components/PageTitle';
-import Input from '@/components/Input';
-import SearchInputs, { Service } from '@/components/AddOrder/SearchInputs';
-import OrderItem from '@/components/AddOrder/OrderItem';
 import {
   getOrderItemsAction,
   initializeOrderAction,
   editOrderAction,
-  userActions
-} from '@/store/actions/userActions';
-import Footer from '@/components/AddOrder/Footer';
+  orderActions, placeOrderAction
+} from '@/store/actions/orderActions';
 import {
   selectOrderId,
   selectProducts,
   selectProductsPrice,
   selectTotalItemsAmount
-} from '@/store/selectors/userSelectors';
+} from '@/store/selectors/orderSelectors';
+
+import PageTitle from '@/components/PageTitle';
+import Input from '@/components/Input';
+import SearchInputs, { Service } from '@/components/AddOrder/SearchInputs';
+import OrderItem from '@/components/AddOrder/OrderItem';
+import Loader from '@/components/Loader';
+import Footer from '@/components/AddOrder/Footer';
+
 import useInput from '@/hooks/useInput';
 import useToggle from '@/hooks/useToggle';
-import Loader from '@/components/Loader';
 
 interface Region {
   region: string,
@@ -794,19 +796,14 @@ const AddOrder = () => {
   const dispatch = useDispatch<any>();
 
   useEffect(() => {
-    dispatch(userActions.setOrderId(null));
-    dispatch(userActions.setProducts(null));
-    dispatch(userActions.setTotalItemsAmount(0));
-    dispatch(userActions.setTotalPrice(0));
-    dispatch(userActions.setProductsPrice(0));
-    dispatch(userActions.setProductsPrice(0));
+    dispatch(orderActions.cleanCurrentOrder());
   }, [selectedRegion]);
 
   const search = async () => {
     const region = mockedData[selectedRegion];
     const service = mockedData[selectedRegion].services[selectedService];
 
-    dispatch(userActions.setProducts(null));
+    dispatch(orderActions.setProducts(null));
     toggleIsProductsLoading(true);
 
     if (!orderId) {
@@ -848,9 +845,9 @@ const AddOrder = () => {
 
     const newTotalItemsAmount = isChosen ? totalItemsAmount - 1 : totalItemsAmount + 1;
 
-    dispatch(userActions.setProductsPrice(newPrice));
-    dispatch(userActions.setTotalItemsAmount(newTotalItemsAmount));
-    dispatch(userActions.setProducts(copiedState));
+    dispatch(orderActions.setProductsPrice(newPrice));
+    dispatch(orderActions.setTotalItemsAmount(newTotalItemsAmount));
+    dispatch(orderActions.setProducts(copiedState));
   };
 
   const placeOrder = async () => {
@@ -860,7 +857,7 @@ const AddOrder = () => {
     const region = mockedData[selectedRegion].region;
     const service = mockedData[selectedRegion].services[selectedService].name;
 
-    await dispatch(editOrderAction(matter, description, region, service));
+    await dispatch(placeOrderAction(matter, description, region, service));
     toggleIsOrderLoading(false);
     navigate('/');
   };

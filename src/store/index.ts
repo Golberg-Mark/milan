@@ -10,9 +10,12 @@ import UserReducer from '@/store/reducers/user';
 import MainApi from '@/api/mainApi';
 import { MainApiProtected } from '@/api/mainApiProtected';
 import { UserActions } from '@/store/actions/userActions';
+import OrderReducer from '@/store/reducers/order';
+import { OrderActions } from '@/store/actions/orderActions';
 
 const rootReducer = combineReducers({
-  user: UserReducer
+  user: UserReducer,
+  order: OrderReducer
 });
 
 export const api = {
@@ -30,6 +33,6 @@ const store = createStore(rootReducer, enhancer);
 
 export type State = ReturnType<typeof rootReducer>;
 
-export type Actions = UserActions;
+export type Actions = UserActions | OrderActions;
 
 export default store;
