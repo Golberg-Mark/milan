@@ -49,7 +49,7 @@ const appNavLinks = [
 const Menu = () => {
   const { pathname } = useLocation();
 
-  const dashboardRegexp = new RegExp(/(^\/$)|(^\/matters$)/);
+  const dashboardRegexp = new RegExp(/(^\/$)|(^\/matters.*$)/);
 
   return (
     <StyledMenu>

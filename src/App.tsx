@@ -22,7 +22,7 @@ const App = () => {
             <ContentContainer>
               <PageHeader />
               <Routes>
-                <Route path="/" element={<Orders />} />
+                <Route path="/*" element={<Orders />} />
                 <Route path="/orders/add" element={<AddOrder />} />
                 <Route path="/my-hq" element={<MyHQ />} />
               </Routes>

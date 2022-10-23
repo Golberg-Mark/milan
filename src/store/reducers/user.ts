@@ -13,19 +13,32 @@ export interface Order {
   description: string,
   status: string,
   user: number,
-  create: string
+  date: number
 }
+
+export interface Matter {
+  matter: string,
+  description: string,
+  lastOrdered: number,
+  ordersAmount: number,
+  pending: number,
+  orders: Order[]
+}
+
+export type Matters = { [key: string]: Matter };
 
 interface UserState {
   user: User | null,
   isLoggedIn: boolean,
-  orders: Order[] | null
+  orders: Order[] | null,
+  matters: Matters | null
 }
 
 const InitialState: UserState = {
   user: null,
   isLoggedIn: true,
-  orders: null
+  orders: null,
+  matters: null
 };
 
 export class UserReducer extends ImmerReducer<UserState> {
@@ -39,6 +52,10 @@ export class UserReducer extends ImmerReducer<UserState> {
 
   public setOrders(value: Order[] | null) {
     this.draftState.orders = value;
+  }
+
+  public setMatters(value: Matters | null) {
+    this.draftState.matters = value;
   }
 }
 
