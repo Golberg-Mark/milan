@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { NavLink } from 'react-router-dom';
+import { useLocation } from 'react-router';
 
 const appNavLinks = [
   {
@@ -46,6 +47,10 @@ const appNavLinks = [
 ];
 
 const Menu = () => {
+  const { pathname } = useLocation();
+
+  const dashboardRegexp = new RegExp(/(^\/$)|(^\/matters$)/);
+
   return (
     <StyledMenu>
       <Logo
@@ -55,7 +60,7 @@ const Menu = () => {
       />
       <Nav>
         {appNavLinks.map((navLink) => (
-          <NavItem to={navLink.url} end key={navLink.text}>
+          <NavItem to={navLink.url} end={!dashboardRegexp.test(pathname)} key={navLink.text}>
             {navLink.icon}
             {navLink.text}
           </NavItem>
