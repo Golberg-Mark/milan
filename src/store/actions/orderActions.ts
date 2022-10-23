@@ -133,9 +133,8 @@ export const editOrderAction = (
       products
     };
 
-    const { id, products: existedProducts } = await mainApiProtected.editOrder(orderId, order);
+    const { products: existedProducts } = await mainApiProtected.editOrder(orderId, order);
     dispatch(orderActions.setOrderProducts(existedProducts));
-    dispatch(orderActions.setOrderId(id));
   } catch (error: any) {
     console.log(error);
   }
@@ -152,21 +151,16 @@ export const placeOrderAction = (
   { mainApiProtected }
 ) => {
   try {
-    const { totalPrice, orderId, orderProducts, products: p } = getState().order;
+    const {
+      totalPrice,
+      productsPrice,
+      orderId,
+      orderProducts
+    } = getState().order;
 
     if (!orderId) return;
 
-    let newTotalPrice = totalPrice;
     let filteredProducts: any[] = [...orderProducts!];
-
-    if (p) p!.forEach((product) => {
-      const filteredItems = product.items?.filter((item) => item.isChosen);
-
-      if (filteredItems.length) filteredProducts = [...filteredProducts, {
-        ...product,
-        items: filteredItems
-      }]
-    });
 
     let products: PlaceOrderProduct[] = [];
 
@@ -188,14 +182,12 @@ export const placeOrderAction = (
       description,
       region,
       service,
-      totalPrice: newTotalPrice.toFixed(2),
+      totalPrice: (totalPrice + productsPrice).toFixed(2),
       fulfilmentStatus: 'fulfiled',
       products
     };
 
-    const { id, products: existedProducts } = await mainApiProtected.editOrder(orderId, order);
-    dispatch(orderActions.setOrderProducts(existedProducts));
-    dispatch(orderActions.setOrderId(id));
+    await mainApiProtected.editOrder(orderId, order);
   } catch (error: any) {
     console.log(error);
   }

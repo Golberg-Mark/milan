@@ -858,8 +858,10 @@ const AddOrder = () => {
     const service = mockedData[selectedRegion].services[selectedService].name;
 
     await dispatch(placeOrderAction(matter, description, region, service));
-    toggleIsOrderLoading(false);
-    navigate('/');
+    setTimeout(() => {
+      toggleIsOrderLoading(false);
+      navigate('/');
+    }, 300);
   };
 
   const isMatterError = !matter;

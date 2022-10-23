@@ -19,6 +19,6 @@ export class MainApiProtected extends HttpClientProtected {
   );
 
   public editOrder = (id: number, order: PlaceOrder) => (
-    this.instance.patch<{ id: number, products: PlaceOrderProduct[] }>(`/orders/${id}`, order)
+    this.instance.patch<{ products: PlaceOrderProduct[] }>(`/orders/${id}`, order)
   );
 }
