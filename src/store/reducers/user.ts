@@ -8,6 +8,7 @@ export interface User {
 }
 
 export interface Order {
+  id: number,
   matter: string,
   service: string,
   description: string,
@@ -27,18 +28,45 @@ export interface Matter {
 
 export type Matters = { [key: string]: Matter };
 
+export interface OrderItems {
+  id: number,
+  orderId: number,
+  region: string,
+  service: string,
+  itemBody: {
+    productId: number,
+    name?: string,
+    idNumber?: string,
+    price: string,
+    link?: string
+  }
+}
+
+export interface OrderDetails {
+  matter: string,
+  service: string,
+  description: string,
+  totalPrice: string,
+  createdAt: string,
+  updatedAt: string,
+  status: string,
+  orderItems: OrderItems[]
+}
+
 interface UserState {
   user: User | null,
   isLoggedIn: boolean,
   orders: Order[] | null,
-  matters: Matters | null
+  matters: Matters | null,
+  orderDetails: OrderDetails | null
 }
 
 const InitialState: UserState = {
   user: null,
   isLoggedIn: true,
   orders: null,
-  matters: null
+  matters: null,
+  orderDetails: null
 };
 
 export class UserReducer extends ImmerReducer<UserState> {
@@ -56,6 +84,10 @@ export class UserReducer extends ImmerReducer<UserState> {
 
   public setMatters(value: Matters | null) {
     this.draftState.matters = value;
+  }
+
+  public setOrderDetails(value: OrderDetails | null) {
+    this.draftState.orderDetails = value;
   }
 }
 

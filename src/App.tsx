@@ -9,6 +9,7 @@ import Menu from '@/components/Menu';
 import PageHeader from '@/components/PageHeader';
 import Auth from '@/pages/Auth';
 import AddOrder from '@/pages/AddOrder';
+import OrderDetails from '@/pages/OrderDetails';
 
 const App = () => {
   return (
@@ -23,7 +24,12 @@ const App = () => {
               <PageHeader />
               <Routes>
                 <Route path="/*" element={<Orders />} />
-                <Route path="/orders/add" element={<AddOrder />} />
+                <Route path="/orders/*" element={
+                  <Routes>
+                    <Route path="/add" element={<AddOrder />} />
+                    <Route path="/:id" element={<OrderDetails />} />
+                  </Routes>
+                }/>
                 <Route path="/my-hq" element={<MyHQ />} />
               </Routes>
             </ContentContainer>

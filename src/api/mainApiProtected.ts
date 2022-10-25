@@ -1,5 +1,6 @@
 import { HttpClientProtected } from '@/api/httpClientProtected';
 import { PlaceOrder, PlaceOrderProduct } from '@/store/reducers/order';
+import { OrderDetails } from '@/store/reducers/user';
 
 export class MainApiProtected extends HttpClientProtected {
   private static instanceCached: MainApiProtected;
@@ -20,5 +21,9 @@ export class MainApiProtected extends HttpClientProtected {
 
   public editOrder = (id: number, order: PlaceOrder) => (
     this.instance.patch<{ products: PlaceOrderProduct[] }>(`/orders/${id}`, order)
+  );
+
+  public getOrderDetails = (id: string) => (
+    this.instance.get<OrderDetails>(`/orders/${id}`)
   );
 }

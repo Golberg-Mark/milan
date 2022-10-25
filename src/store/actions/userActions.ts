@@ -8,6 +8,7 @@ export const userActions = createActionCreators(UserReducer);
 export type UserActions = ReturnType<typeof userActions.setIsLoggedIn>
   | ReturnType<typeof userActions.setOrders>
   | ReturnType<typeof userActions.setMatters>
+  | ReturnType<typeof userActions.setOrderDetails>
   | ReturnType<typeof userActions.setUser>;
 
 export const getMeAction = (): AsyncAction => async (
@@ -56,6 +57,20 @@ export const getOrdersAction = (): AsyncAction => async (
     });
 
     dispatch(userActions.setMatters(matters));
+  } catch (error: any) {
+    console.log(error);
+  }
+};
+
+export const getOrderDetailsAction = (id: string): AsyncAction => async (
+  dispatch,
+  _,
+  { mainApiProtected }
+) => {
+  try {
+    const orderDetails = await mainApiProtected.getOrderDetails(id);
+
+    dispatch(userActions.setOrderDetails(orderDetails));
   } catch (error: any) {
     console.log(error);
   }

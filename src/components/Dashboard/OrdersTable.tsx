@@ -5,7 +5,7 @@ import convertTimestamp from '@/utils/convertTimestamp';
 import { Order } from '@/store/reducers/user';
 import { useSelector } from 'react-redux';
 import { selectMatters, selectUser } from '@/store/selectors/userSelectors';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
 import Loader from '@/components/Loader';
 
@@ -29,6 +29,8 @@ export const Wrapper: React.FC = () => {
 
 const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
   const user = useSelector(selectUser);
+
+  const navigate = useNavigate();
 
   return (
     <TableWrapper>
@@ -63,7 +65,7 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
         </THead>
         <TBody>
           {orders.map((order, i) => (
-            <TRow key={i}>
+            <TRow key={i} onClick={() => navigate(`/orders/${order.id}`)}>
               <th style={{ padding: '1rem 0 1rem 1.5rem' }}>
                 <Checkbox type="checkbox" />
               </th>

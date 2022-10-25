@@ -1,0 +1,22 @@
+{
+  "matter": "test",
+  "service": "WA: Title search",
+  "description": "smth",
+  "totalPrice": "10.00",
+  "createdAt": "1666615294706",
+  "updatedAt": "1666619895737",
+  "status": "open",
+  "orderItems": [
+    {
+      "name": "WA: Title reference search",
+      "status": "Completed",
+      "price": "2.84"
+    },
+    {
+      "name": "10/324",
+      "status": "In process",
+      "link": "https://awss3.com/link1",
+      "price": "2.84"
+    }
+  ]
+}
