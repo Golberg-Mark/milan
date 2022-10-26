@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import useToggle from '@/hooks/useToggle';
+
 import useOnClickOutside from '@/hooks/useOnClickOutside';
 
 interface Props {
@@ -9,8 +9,7 @@ interface Props {
 
 const Select: React.FC<Props> = ({ items }) => {
   const [selectedItem, setSelectedItem] = useState(0);
-  const [isItemsVisible, toggleIsItemsVisible] = useToggle();
-  const ref = useOnClickOutside<HTMLUListElement>(() => toggleIsItemsVisible(false));
+  const [ref, isItemsVisible, toggleIsItemsVisible] = useOnClickOutside<HTMLUListElement>();
 
   return (
     <Wrapper>
