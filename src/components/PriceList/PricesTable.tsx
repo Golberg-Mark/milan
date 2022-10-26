@@ -11,8 +11,38 @@ const mockedPrice = [
     exGST: '4.30',
     GST: '0.43',
     inclGST: '4.73'
+  },
+  {
+    collection: 'QLD Property',
+    supplier: 'QLD Natural Resources, Mines and Energy',
+    searchType: 'CISP Parcel History Search',
+    description: '',
+    productCode: 'DNRCISP',
+    exGST: '4.30',
+    GST: '0.43',
+    inclGST: '4.73'
+  },
+  {
+    collection: 'NSW Property',
+    supplier: 'NSW Land and Property Information',
+    searchType: 'NSW LPI CAC Inquiry',
+    description: '',
+    productCode: 'LPICAC',
+    exGST: '4.30',
+    GST: '0.43',
+    inclGST: '4.73'
+  },
+  {
+    collection: 'NSW Property',
+    supplier: 'NSW Land and Property Information',
+    searchType: 'CWO Deed Index Detail',
+    description: '',
+    productCode: 'LPICWODET',
+    exGST: '4.30',
+    GST: '0.43',
+    inclGST: '4.73'
   }
-]
+];
 
 const PricesTable = () => {
   return (
