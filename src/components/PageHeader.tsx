@@ -1,22 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { RiArrowRightSLine } from 'react-icons/all';
+import { BsCurrencyDollar, RiArrowRightSLine } from 'react-icons/all';
 
 import { selectUser } from '@/store/selectors/userSelectors';
 import { getMeAction } from '@/store/actions/userActions';
 
 import useInput from '@/hooks/useInput';
 import getRegionsData from '@/utils/getRegionsData';
-import useToggle from '@/hooks/useToggle';
+import useOnClickOutside from '@/hooks/useOnClickOutside';
 
 const mockedData = getRegionsData();
 
 const PageHeader = () => {
   const [search, setSearch] = useInput();
   const [searchResults, setSearchResults] = useState<[string, string][]>([]);
-  const [isResultsVisible, toggleIsResultsVisible] = useToggle();
+  const [resultsRef, isResultsVisible, toggleIsResultsVisible] = useOnClickOutside<HTMLUListElement>();
+  const [settingsRef, isSettingsVisible, toggleIsSettingsVisible] = useOnClickOutside<HTMLDivElement>();
   const user = useSelector(selectUser);
 
   const dispatch = useDispatch<any>();
@@ -46,7 +47,6 @@ const PageHeader = () => {
         }
       });
 
-      console.log(results);
       setSearchResults(results);
       toggleIsResultsVisible(true);
     } else setSearchResults([]);
@@ -85,7 +85,6 @@ const PageHeader = () => {
           placeholder="Search"
           value={search}
           onChange={setSearch}
-          onFocus={() => toggleIsResultsVisible(true)}
         />
       </Search>
       <Settings>
@@ -103,12 +102,22 @@ const PageHeader = () => {
             d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"
           />
         </svg>
-        <PhotoWrapper>
+        <PhotoWrapper onClick={toggleIsSettingsVisible} ref={settingsRef}>
           {user ? <Photo src={user.photo} alt="Your profile photo" /> : ''}
+          {isSettingsVisible ? (
+            <SettingsModal>
+              <li>
+                <Link to="/price-list">
+                  <BsCurrencyDollar />
+                  Price List
+                </Link>
+              </li>
+            </SettingsModal>
+          ) : ''}
         </PhotoWrapper>
       </Settings>
       {searchResults.length && isResultsVisible ? (
-        <Results>
+        <Results ref={resultsRef}>
           <Li>Services:</Li>
           {searchResults.map((result) => (
             <Li
@@ -127,7 +136,7 @@ const PageHeader = () => {
         </Results>
       ) : ''}
     </StyledPageHeader>
-    {searchResults.length && isResultsVisible ? <Background onClick={toggleIsResultsVisible} /> : ''}
+    {searchResults.length && isResultsVisible ? <Background /> : ''}
   </>
   );
 };
@@ -169,6 +178,7 @@ const Input = styled.input`
 `;
 
 const Settings = styled.div`
+  position: relative;
   display: flex;
   align-items: center;
   grid-gap: 16px;
@@ -180,8 +190,9 @@ const Settings = styled.div`
 `;
 
 const PhotoWrapper = styled.div`
-  width: 32px;
-  height: 32px;
+  width: 2rem;
+  height: 2rem;
+  cursor: pointer;
 `;
 
 const Photo = styled.img`
@@ -257,6 +268,35 @@ const StyledRegion = styled.span`
   font-size: calc(1rem - 2px);
   font-weight: 600;
   background-color: rgba(0, 0, 0, .08);
+`;
+
+const SettingsModal = styled(Results)`
+  right: 0;
+  left: unset;
+  width: 200px;
+  
+  li {
+    padding: .5rem 1rem;
+    
+    :hover {
+      background-color: rgba(0, 0, 0, .05);
+    }
+    
+    a {
+      display: flex;
+      align-items: center;
+      grid-gap: .25rem;
+    }
+    
+    svg {
+      width: 1rem;
+      height: 1rem;
+      
+      * {
+        fill: rgba(0, 0, 0, .6);
+      }
+    }
+  }
 `;
 
 export default PageHeader;
