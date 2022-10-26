@@ -15,7 +15,8 @@ export interface PlaceOrder {
   service: string,
   totalPrice: string,
   fulfilmentStatus: string,
-  products: PlaceOrderProduct[]
+  products: PlaceOrderProduct[],
+  organisationId: number
 }
 
 export interface BaseProduct {

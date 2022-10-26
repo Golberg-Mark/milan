@@ -56,10 +56,12 @@ export const initializeOrderAction = (
   searchPrice: string
 ): AsyncAction => async (
   dispatch,
-  _,
+  getState,
   { mainApiProtected }
 ) => {
   try {
+    const { user } = getState().user;
+
     const order: PlaceOrder = {
       matter,
       description,
@@ -67,6 +69,7 @@ export const initializeOrderAction = (
       service,
       totalPrice: searchPrice,
       fulfilmentStatus: 'fulfiled',
+      organisationId: user!.organisationId,
       products: [{
         productId: 1,
         name: `${region}: ${service} search`,
@@ -95,6 +98,7 @@ export const editOrderAction = (
 ) => {
   try {
     const { totalPrice, orderId, orderProducts } = getState().order;
+    const { user } = getState().user;
 
     if (!orderId) return;
 
@@ -130,7 +134,8 @@ export const editOrderAction = (
       service,
       totalPrice: newTotalPrice.toFixed(2),
       fulfilmentStatus: 'fulfiled',
-      products
+      products,
+      organisationId: user!.organisationId
     };
 
     const { products: existedProducts } = await mainApiProtected.editOrder(orderId, order);
@@ -157,6 +162,7 @@ export const placeOrderAction = (
       orderId,
       orderProducts
     } = getState().order;
+    const { user } = getState().user;
 
     if (!orderId) return;
 
@@ -184,7 +190,8 @@ export const placeOrderAction = (
       service,
       totalPrice: (totalPrice + productsPrice).toFixed(2),
       fulfilmentStatus: 'fulfiled',
-      products
+      products,
+      organisationId: user!.organisationId
     };
 
     await mainApiProtected.editOrder(orderId, order);

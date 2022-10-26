@@ -1,6 +1,6 @@
 import { createActionCreators } from 'immer-reducer';
 
-import { Matter, UserReducer } from '@/store/reducers/user';
+import { UserReducer } from '@/store/reducers/user';
 import { AsyncAction } from '@/store/actions/common';
 
 export const userActions = createActionCreators(UserReducer);

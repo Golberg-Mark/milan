@@ -25,6 +25,9 @@ const OrderDetails = () => {
     if (id) dispatch(getOrderDetailsAction(id));
   }, [id]);
 
+  const region = order?.service.split(':')[0];
+  const service = order?.service.split(':')[1];
+
   return order ? (
     <StyledOrderDetails>
       <PageTitle marginBottom="2rem">
@@ -44,8 +47,12 @@ const OrderDetails = () => {
         {order.status}
       </Detail>
       <Detail>
+        <span>Region: </span>
+        {region}
+      </Detail>
+      <Detail>
         <span>Service: </span>
-        {order.service}
+        {service}
       </Detail>
       <Detail>
         <span>Created At: </span>
@@ -57,22 +64,22 @@ const OrderDetails = () => {
       </Detail>
       <Detail style={{ marginBottom: '2rem' }}>
         <span>Total Price: </span>
-        {order.totalPrice}
+        ${order.price || order.orderItems.reduce((previous, current) => previous + Number(current.price), 0).toFixed(2)}
       </Detail>
       <SubTitle>Your Products:</SubTitle>
       <ul>
-        {order.orderItems.map(({ itemBody }, i) => (
+        {order.orderItems.map((item, i) => (
           <Li key={i}>
-            <span>{itemBody.name || itemBody.idNumber}</span>
+            <span>{item.productName}</span>
             <DownloadSide>
-              ${Number(itemBody.price).toFixed(2)}
+              ${Number(item.price).toFixed(2)}
               <IconWrapper>
-                {itemBody.link ? (
+                {item.path ? (
                   <FileIcon />
                 ) : ''}
               </IconWrapper>
               <IconWrapper>
-                {itemBody.link ? (
+                {item.path ? (
                   <DownloadIcon />
                 ) : ''}
               </IconWrapper>

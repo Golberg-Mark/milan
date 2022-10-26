@@ -4,7 +4,8 @@ export interface User {
   id: number,
   name: string,
   email: string,
-  photo: string
+  photo: string,
+  organisationId: number
 }
 
 export interface Order {
@@ -33,20 +34,17 @@ export interface OrderItems {
   orderId: number,
   region: string,
   service: string,
-  itemBody: {
-    productId: number,
-    name?: string,
-    idNumber?: string,
-    price: string,
-    link?: string
-  }
+  path: string,
+  price: string,
+  productName: string,
+  productId: number,
 }
 
 export interface OrderDetails {
   matter: string,
   service: string,
   description: string,
-  totalPrice: string,
+  price: string,
   createdAt: string,
   updatedAt: string,
   status: string,
