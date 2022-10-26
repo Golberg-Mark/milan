@@ -32,7 +32,7 @@ import getRegionsData from '@/utils/getRegionsData';
 const mockedData = getRegionsData();
 
 const AddOrder = () => {
-  const { region, service } = useLocation().state;
+  const locationState = useLocation().state;
 
   const [matter, setMatter] = useInput();
   const [description, setDescription] = useInput();
@@ -50,12 +50,13 @@ const AddOrder = () => {
   const dispatch = useDispatch<any>();
 
   useEffect(() => {
-    if (region && service) {
+    if (locationState && locationState.region && locationState.service) {
+      const { region, service } = locationState;
       const regionIndex = mockedData.findIndex((el) => el.region === region);
       setSelectedRegion(regionIndex);
       setSelectedService(mockedData[regionIndex].services.findIndex((el) => el.name === service));
     }
-  }, [region, service]);
+  }, [locationState]);
 
   useEffect(() => {
     dispatch(orderActions.cleanCurrentOrder());
