@@ -160,27 +160,28 @@ export const placeOrderAction = (
       totalPrice,
       productsPrice,
       orderId,
-      orderProducts
+      orderProducts,
+      products
     } = getState().order;
     const { user } = getState().user;
 
     if (!orderId) return;
 
-    let filteredProducts: any[] = [...orderProducts!];
+    let filteredProducts: PlaceOrderProduct[] = [...orderProducts!];
 
-    let products: PlaceOrderProduct[] = [];
-
-    filteredProducts.forEach((product) => {
+    products!.forEach((product) => {
       if (product.items) {
         product.items.forEach((item: { isChosen: boolean, name: string }) => {
-          products.push({
-            productId: product.id,
-            price: product.price,
-            idNumber: item.name,
-            body: 'something'
-          });
+          if (item.isChosen) {
+            filteredProducts.push({
+              productId: product.id,
+              price: product.price,
+              idNumber: item.name,
+              body: 'something'
+            });
+          }
         });
-      } else products.push(product);
+      }
     });
 
     const order: PlaceOrder = {
@@ -190,7 +191,7 @@ export const placeOrderAction = (
       service,
       totalPrice: (totalPrice + productsPrice).toFixed(2),
       fulfilmentStatus: 'fulfiled',
-      products,
+      products: filteredProducts,
       organisationId: user!.organisationId
     };
 
