@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import useToggle, { HandleToggle } from '@/hooks/useToggle';
 
 export type Event = React.SyntheticEvent;
-export type Ref = HTMLDivElement | HTMLUListElement;
+export type Ref = HTMLDivElement | HTMLUListElement | HTMLButtonElement;
 type returnType<TYPE extends Ref> = [React.RefObject<TYPE>, boolean, HandleToggle];
 
 const useOnClickOutside = <T extends Ref>(initialVisible: boolean = false): returnType<T> => {

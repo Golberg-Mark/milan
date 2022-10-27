@@ -8,12 +8,24 @@ export interface User {
   organisationId: number
 }
 
+export enum OrderStatusEnum {
+  OPEN = 'open',
+  COMPLETE = 'complete',
+  ERROR = 'error',
+  IN_PROGRESS = 'in progress',
+  REFUNDED = 'refunded',
+  WAITING = 'waiting',
+  DRAFT = 'draft',
+  ARCHIVED = 'archived',
+  CANCELED = 'canceled',
+}
+
 export interface Order {
   id: number,
   matter: string,
   service: string,
   description: string,
-  status: string,
+  status: OrderStatusEnum,
   user: number,
   date: number
 }
@@ -51,8 +63,17 @@ export interface OrderDetails {
   orderItems: OrderItems[]
 }
 
+export interface OrganizationUser {
+  id: number,
+  name: string,
+  email: string,
+  isEmailVerified: boolean,
+  role: string
+}
+
 interface UserState {
   user: User | null,
+  orgUsers: OrganizationUser[] | null,
   isLoggedIn: boolean,
   orders: Order[] | null,
   matters: Matters | null,
@@ -61,6 +82,7 @@ interface UserState {
 
 const InitialState: UserState = {
   user: null,
+  orgUsers: null,
   isLoggedIn: true,
   orders: null,
   matters: null,
@@ -86,6 +108,10 @@ export class UserReducer extends ImmerReducer<UserState> {
 
   public setOrderDetails(value: OrderDetails | null) {
     this.draftState.orderDetails = value;
+  }
+
+  public setOrgUsers(value: OrganizationUser[] | null) {
+    this.draftState.orgUsers = value;
   }
 }
 

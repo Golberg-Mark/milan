@@ -9,7 +9,8 @@ export type UserActions = ReturnType<typeof userActions.setIsLoggedIn>
   | ReturnType<typeof userActions.setOrders>
   | ReturnType<typeof userActions.setMatters>
   | ReturnType<typeof userActions.setOrderDetails>
-  | ReturnType<typeof userActions.setUser>;
+  | ReturnType<typeof userActions.setUser>
+  | ReturnType<typeof userActions.setOrgUsers>;
 
 export const getMeAction = (): AsyncAction => async (
   dispatch,
@@ -71,6 +72,19 @@ export const getOrderDetailsAction = (id: string): AsyncAction => async (
     const orderDetails = await mainApiProtected.getOrderDetails(id);
 
     dispatch(userActions.setOrderDetails(orderDetails));
+  } catch (error: any) {
+    console.log(error);
+  }
+};
+
+export const getUsersByOrganizationAction = (id: number = 1): AsyncAction => async (
+  dispatch,
+  _,
+  { mainApiProtected }
+) => {
+  try {
+    const users = await mainApiProtected.getUsersByOrganization(id);
+    dispatch(userActions.setOrgUsers(users));
   } catch (error: any) {
     console.log(error);
   }

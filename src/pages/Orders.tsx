@@ -3,8 +3,8 @@ import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, Routes, Route, NavLink } from 'react-router-dom';
 
-import { getOrdersAction, userActions } from '@/store/actions/userActions';
-import { selectOrders } from '@/store/selectors/userSelectors';
+import { getOrdersAction, getUsersByOrganizationAction, userActions } from '@/store/actions/userActions';
+import { selectOrders, selectOrganizationUsers } from '@/store/selectors/userSelectors';
 
 import PageTitle from '@/components/PageTitle';
 import Loader from '@/components/Loader';
@@ -13,19 +13,22 @@ import Matters from '@/components/Dashboard/Matters';
 
 const Orders = () => {
   const orders = useSelector(selectOrders);
+  const orgUsers = useSelector(selectOrganizationUsers);
 
   const dispatch = useDispatch<any>();
 
   useEffect(() => {
     window.scrollTo(0, 0);
     if (!orders) dispatch(getOrdersAction());
+    if (!orgUsers) dispatch(getUsersByOrganizationAction());
 
     return () => {
       dispatch(userActions.setOrders(null));
+      dispatch(userActions.setOrgUsers(null));
     }
   }, []);
 
-  return orders ? (
+  return orders && orgUsers ? (
     <OrdersPage>
       <PageHeader>
         <div>
