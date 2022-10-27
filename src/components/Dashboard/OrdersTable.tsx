@@ -2,7 +2,7 @@ import React, { ForwardedRef, forwardRef, useEffect, useMemo, useState } from 'r
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import DatePicker from 'react-datepicker';
 
 import convertTimestamp from '@/utils/convertTimestamp';
@@ -200,7 +200,7 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
                   {order.description}
                 </td>
                 <td>
-                  <Status>
+                  <Status orderStatus={order.status}>
                     {order.status}
                   </Status>
                 </td>
@@ -421,13 +421,26 @@ const MatterLink = styled(Link)`
   }
 `;
 
-const Status = styled.span`
+const Status = styled.span<{ orderStatus: OrderStatusEnum }>`
   display: block;
   padding: 6px 12px;
   text-align: center;
   font-weight: 500;
   border-radius: 100px;
   background-color: rgb(229, 231, 235);
+  
+  ${({ orderStatus }) => {
+    if (orderStatus === OrderStatusEnum.ERROR) return css`
+      background-color: rgba(255, 51, 51, 0.3);
+      color: rgb(255, 51, 51);
+      font-weight: 600;
+    `;
+    if (orderStatus === OrderStatusEnum.COMPLETE) return css`
+      background-color: rgba(47, 255, 0, 0.3);
+      color: rgb(40, 154, 0);
+      font-weight: 600;
+    `;
+  }}
 `;
 
 const User = styled.span`
