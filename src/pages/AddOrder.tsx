@@ -49,6 +49,10 @@ const AddOrder = () => {
 
   const dispatch = useDispatch<any>();
 
+  useEffect(() => () => {
+    window.history.replaceState({}, '');
+  });
+
   useEffect(() => {
     if (locationState && locationState.region && locationState.service) {
       const { region, service } = locationState;
