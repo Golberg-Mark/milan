@@ -1,4 +1,4 @@
-import React, { ForwardedRef, forwardRef, InputHTMLAttributes, useEffect, useMemo, useState } from 'react';
+import React, { ForwardedRef, forwardRef, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
@@ -10,11 +10,10 @@ import { Order, OrderStatusEnum, OrganizationUser } from '@/store/reducers/user'
 import { selectMatters, selectOrganizationUsers } from '@/store/selectors/userSelectors';
 import Loader from '@/components/Loader';
 import useOnClickOutside from '@/hooks/useOnClickOutside';
+import useInput from '@/hooks/useInput';
+import Search from '@/components/Dashboard/Search';
 
 import 'react-datepicker/dist/react-datepicker.css';
-import useInput from '@/hooks/useInput';
-import { IoCloseOutline } from 'react-icons/all';
-import Search from '@/components/Dashboard/Search';
 
 interface Props {
   orders: Order[],

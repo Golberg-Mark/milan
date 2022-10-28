@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
-import { AiOutlineFolder, IoCloseOutline } from 'react-icons/all';
+import { AiOutlineFolder } from 'react-icons/all';
 
 import convertTimestamp from '@/utils/convertTimestamp';
 import { selectMatters } from '@/store/selectors/userSelectors';
