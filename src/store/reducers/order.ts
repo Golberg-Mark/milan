@@ -38,26 +38,40 @@ export interface RefactoredProduct extends BaseProduct {
 }
 
 interface OrderState {
+  matter: string,
+  description: string,
   productsPrice: number,
   totalPrice: number,
   totalItemsAmount: number,
   order: PlaceOrder | null,
   orderId: number | null,
   orderProducts: PlaceOrderProduct[] | null,
-  products: RefactoredProduct[] | null
+  products: RefactoredProduct[] | null,
+  isProductsLoading: boolean
 }
 
 const InitialState: OrderState = {
+  matter: '',
+  description: '',
   productsPrice: 0,
   totalPrice: 0,
   totalItemsAmount: 0,
   order: null,
   orderId: null,
   orderProducts: null,
-  products: null
+  products: null,
+  isProductsLoading: false
 };
 
 export class OrderReducer extends ImmerReducer<OrderState> {
+  public setMatter(value: string) {
+    this.draftState.matter = value;
+  }
+
+  public setDescription(value: string) {
+    this.draftState.description = value;
+  }
+
   public setProductsPrice(value: number) {
     this.draftState.productsPrice = value;
   }
@@ -80,6 +94,10 @@ export class OrderReducer extends ImmerReducer<OrderState> {
 
   public setOrderProducts(value: PlaceOrderProduct[] | null) {
     this.draftState.orderProducts = value;
+  }
+
+  public setIsProductsLoading(value: boolean) {
+    this.draftState.isProductsLoading = value;
   }
 
   public cleanCurrentOrder() {

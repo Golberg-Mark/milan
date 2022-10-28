@@ -7,11 +7,14 @@ export const orderActions = createActionCreators(OrderReducer);
 
 export type OrderActions = ReturnType<typeof orderActions.setProducts>
   | ReturnType<typeof orderActions.setProductsPrice>
+  | ReturnType<typeof orderActions.setMatter>
+  | ReturnType<typeof orderActions.setDescription>
   | ReturnType<typeof orderActions.setTotalPrice>
   | ReturnType<typeof orderActions.setTotalItemsAmount>
   | ReturnType<typeof orderActions.setOrderId>
   | ReturnType<typeof orderActions.setOrderProducts>
-  | ReturnType<typeof orderActions.cleanCurrentOrder>;
+  | ReturnType<typeof orderActions.cleanCurrentOrder>
+  | ReturnType<typeof orderActions.setIsProductsLoading>;
 
 export const getOrderItemsAction = (region: string, service: string, searchPrice: string): AsyncAction => async (
   dispatch,
@@ -49,8 +52,6 @@ export const getOrderItemsAction = (region: string, service: string, searchPrice
 };
 
 export const initializeOrderAction = (
-  matter: string,
-  description: string,
   region: string,
   service: string,
   searchPrice: string
@@ -61,6 +62,7 @@ export const initializeOrderAction = (
 ) => {
   try {
     const { user } = getState().user;
+    const { matter, description } = getState().order;
 
     const order: PlaceOrder = {
       matter,
@@ -146,8 +148,6 @@ export const editOrderAction = (
 };
 
 export const placeOrderAction = (
-  matter: string,
-  description: string,
   region: string,
   service: string
 ): AsyncAction => async (
@@ -157,6 +157,8 @@ export const placeOrderAction = (
 ) => {
   try {
     const {
+      matter,
+      description,
       totalPrice,
       productsPrice,
       orderId,

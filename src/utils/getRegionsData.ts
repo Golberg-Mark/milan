@@ -1,11 +1,123 @@
-import { Service } from '@/components/AddOrder/SearchInputs';
+import { Service } from '@/components/AddOrder/RegionsServices';
+
+export type existingRegions = 'ALL' | 'WA' | 'QLD' | 'NSW' | 'VIC' | 'SA' | 'ACT' | 'NT' | 'TAS';
+
+export const municipality = [
+  'Alpine',
+  'Ararat',
+  'Ballarat',
+  'Banyule',
+  'Bass',
+  'Coast',
+  'Baw',
+  'Baw',
+  'Bayside',
+  'Benalla',
+  'Boroondara',
+  'Brimbank',
+  'Buloke',
+  'Campaspe',
+  'Cardinia',
+  'Casey',
+  'Central',
+  'Goldfields',
+  'Colac',
+  'Otway',
+  'Corangamite',
+  'Darebin',
+  'Docklands',
+  'Authority',
+  'East',
+  'Gippsland',
+  'Frankston',
+  'French',
+  'Island',
+  'Gannawarra',
+  'Glen',
+  'Eira',
+  'Glenelg',
+  'Golden',
+  'Plains',
+  'Greater',
+  'Bendigo',
+  'Greater',
+  'Dandenong',
+  'Greater',
+  'Geelong',
+  'Greater',
+  'Shepparton',
+  'Hepburn',
+  'Hindmarsh',
+  'Hobsons',
+  'Bay',
+  'Horsham',
+  'Hume',
+  'Indigo',
+  'Kingston',
+  'Knox',
+  'Latrobe',
+  'Loddon',
+  'Macedon',
+  'Ranges',
+  'Manningham',
+  'Mansfield',
+  'Maribyrnong',
+  'Maroondah',
+  'Melbourne',
+  'Melton',
+  'Mildura',
+  'Mitchell',
+  'Moira',
+  'Monash',
+  'Moonee',
+  'Valley',
+  'Moorabool',
+  'Moreland',
+  'Mornington',
+  'Peninsula',
+  'Mount',
+  'Alexander',
+  'Moyne',
+  'Murrindindi',
+  'Nillumbik',
+  'Northern',
+  'Grampians',
+  'Port',
+  'Phillip',
+  'Pyrenees',
+  'Queenscliffe',
+  'South',
+  'Gippsland',
+  'Southern',
+  'Grampians',
+  'Stonnington',
+  'Strathbogie',
+  'Surf',
+  'Coast',
+  'Swan',
+  'Hill',
+  'Towong',
+  'Wangaratta',
+  'Warrnambool',
+  'Wellington',
+  'West',
+  'Wimmera',
+  'Whitehorse',
+  'Whittlesea',
+  'Wodonga',
+  'Wyndham',
+  'Yarra',
+  'Yarra',
+  'Ranges',
+  'Yarriambiack'
+];
 
 export interface Region {
-  region: string,
+  region: existingRegions,
   services: Service[]
 }
 
-export default (): Region[] => {
+const getRegionsData = (): Region[] => {
   return [
     {
       'region': 'WA',
@@ -331,7 +443,7 @@ export default (): Region[] => {
               'isRequired': true
             },
             {
-              'name': 'Lot/Plan Number\n',
+              'name': 'Lot/Plan Number',
               'example': '8RP601844',
               'isRequired': true
             }
@@ -1013,3 +1125,5 @@ export default (): Region[] => {
     }
   ];
 };
+
+export default getRegionsData;

@@ -6,13 +6,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import {
-  getOrderItemsAction,
-  initializeOrderAction,
-  editOrderAction,
   orderActions, placeOrderAction
 } from '@/store/actions/orderActions';
 import {
-  selectOrderId,
+  selectDescription, selectIsProductsLoading,
+  selectMatter,
   selectProducts,
   selectProductsPrice,
   selectTotalItemsAmount
@@ -20,12 +18,11 @@ import {
 
 import PageTitle from '@/components/PageTitle';
 import Input from '@/components/Input';
-import SearchInputs from '@/components/AddOrder/SearchInputs';
+import SearchInputs from '@/components/AddOrder/RegionsServices';
 import OrderItem from '@/components/AddOrder/OrderItem';
 import Loader from '@/components/Loader';
 import Footer from '@/components/AddOrder/Footer';
 
-import useInput from '@/hooks/useInput';
 import useToggle from '@/hooks/useToggle';
 import getRegionsData from '@/utils/getRegionsData';
 
@@ -34,18 +31,17 @@ const mockedData = getRegionsData();
 const AddOrder = () => {
   const locationState = useLocation().state;
 
-  const [matter, setMatter] = useInput();
-  const [description, setDescription] = useInput();
   const [selectedRegion, setSelectedRegion] = useState(0);
   const [selectedService, setSelectedService] = useState(0);
-  const [isProductsLoading, toggleIsProductsLoading] = useToggle();
   const [isOrderLoading, toggleIsOrderLoading] = useToggle();
   const navigate = useNavigate();
 
+  const matter = useSelector(selectMatter);
+  const description = useSelector(selectDescription);
   const mockedProducts = useSelector(selectProducts);
   const productsPrice = useSelector(selectProductsPrice);
   const totalItemsAmount = useSelector(selectTotalItemsAmount);
-  const orderId = useSelector(selectOrderId);
+  const isProductsLoading = useSelector(selectIsProductsLoading);
 
   const dispatch = useDispatch<any>();
 
@@ -66,40 +62,7 @@ const AddOrder = () => {
     dispatch(orderActions.cleanCurrentOrder());
   }, [selectedRegion]);
 
-  const search = async () => {
-    const region = mockedData[selectedRegion];
-    const service = mockedData[selectedRegion].services[selectedService];
 
-    dispatch(orderActions.setProducts(null));
-    toggleIsProductsLoading(true);
-
-    if (!orderId) {
-      dispatch(initializeOrderAction(
-        matter,
-        description,
-        region.region,
-        service.name,
-        service.products![0].price
-      ));
-    } else {
-      dispatch(editOrderAction(
-        matter,
-        description,
-        region.region,
-        service.name,
-        service.products![0].price
-      ));
-    }
-
-    try {
-      await dispatch(getOrderItemsAction(
-        mockedData[selectedRegion].region,
-        mockedData[selectedRegion].services[selectedService].name,
-        mockedData[selectedRegion].services[selectedService].products![0].price
-      ));
-      toggleIsProductsLoading(false);
-    } catch (e) { console.error(e) }
-  };
 
   const selectItem = (productIndex: number, i: number) => {
     const copiedState = JSON.parse(JSON.stringify(mockedProducts));
@@ -124,7 +87,7 @@ const AddOrder = () => {
     const region = mockedData[selectedRegion].region;
     const service = mockedData[selectedRegion].services[selectedService].name;
 
-    await dispatch(placeOrderAction(matter, description, region, service));
+    await dispatch(placeOrderAction(region, service));
     setTimeout(() => {
       toggleIsOrderLoading(false);
       navigate('/');
@@ -164,7 +127,7 @@ const AddOrder = () => {
               label="Matter / File Reference"
               placeholder="Enter matter here"
               value={matter}
-              onChange={setMatter}
+              onChange={(evt) => dispatch(orderActions.setMatter(evt.target.value))}
             />
             <div>
               <SubTitle>Regions</SubTitle>
@@ -187,7 +150,7 @@ const AddOrder = () => {
               label="Description"
               placeholder="Enter description here"
               value={description}
-              onChange={setDescription}
+              onChange={(evt) => dispatch(orderActions.setDescription(evt.target.value))}
             />
           </Matter>
           <TitleSection>
@@ -205,8 +168,8 @@ const AddOrder = () => {
               ))}
             </Tips>
             <SearchInputs
-              search={search}
-              service={mockedData[selectedRegion].services[selectedService]}
+              regionName={mockedData[selectedRegion].region}
+              selectedService={selectedService}
             />
             <Titles>
               Titles that you add will appear here.

@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 import useOnClickOutside from '@/hooks/useOnClickOutside';
 import { BsChevronDown } from 'react-icons/all';
 
 interface Props {
+  selectedItem: number,
+  setSelectedItem: (i: number) => void,
   items: string[]
 }
 
-const Select: React.FC<Props> = ({ items }) => {
-  const [selectedItem, setSelectedItem] = useState(0);
+const Select: React.FC<Props> = ({ selectedItem, setSelectedItem, items }) => {
   const [ref, isItemsVisible, toggleIsItemsVisible] = useOnClickOutside<HTMLDivElement>();
 
   return (
@@ -24,7 +25,9 @@ const Select: React.FC<Props> = ({ items }) => {
             <DropdownItem
               key={`${el}${i}`}
               isSelected={i === selectedItem}
-              onClick={() => setSelectedItem(i)}
+              onClick={() => {
+                setSelectedItem(i);
+              }}
             >
               {el}
             </DropdownItem>
