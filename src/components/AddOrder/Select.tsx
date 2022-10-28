@@ -56,6 +56,7 @@ const StyledSelect = styled.button`
   
   svg {
     margin-left: .5rem;
+    transition: .2s ease-in-out;
   }
 `;
 
