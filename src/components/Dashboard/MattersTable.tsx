@@ -3,14 +3,17 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
-import { AiOutlineFolder } from 'react-icons/all';
+import { AiOutlineFolder, IoCloseOutline } from 'react-icons/all';
 
 import convertTimestamp from '@/utils/convertTimestamp';
 import { selectMatters } from '@/store/selectors/userSelectors';
 import Loader from '@/components/Loader';
 import getNounByForm from '@/utils/getNounByForm';
+import useInput from '@/hooks/useInput';
+import Search from '@/components/Dashboard/Search';
 
 const MattersTable = () => {
+  const [search, setSearch] = useInput();
   const [startDay, setStartDay] = useState<Date | null>(null);
   const [endDay, setEndDay] = useState<Date | null>(null);
 
@@ -49,27 +52,40 @@ const MattersTable = () => {
 
       let orderDate = new Date(+el.lastOrdered);
       return orderDate >= startDay && orderDate <= endDay;
+    }).filter((matter) => {
+      if (!search) return true;
+
+      const regexp = new RegExp(`.*${search.toLowerCase()}.*`);
+      return regexp.test(matter.matter.toLowerCase());
     });
-  }, [matters, startDay, endDay]);
+  }, [search, matters, startDay, endDay]);
 
   const isFiltered = startDay || endDay;
 
   return matters ? (
     <div>
       <Filters>
-        {isFiltered ? (
-          <FilterButton onClick={clearFilters}>
-            Clear filters
-          </FilterButton>
-        ) : ''}
-        <DatePicker
-          startDate={startDay}
-          endDate={endDay}
-          onChange={onDateChange}
-          customInput={<CustomInput />}
-          tabIndex={0}
-          selectsRange
+        <Search
+          value={search}
+          onChange={setSearch}
+          placeholder="Search matters"
+          clearField={() => setSearch('')}
         />
+        <Buttons>
+          {isFiltered ? (
+            <FilterButton onClick={clearFilters}>
+              Clear filters
+            </FilterButton>
+          ) : ''}
+          <DatePicker
+            startDate={startDay}
+            endDate={endDay}
+            onChange={onDateChange}
+            customInput={<CustomInput />}
+            tabIndex={0}
+            selectsRange
+          />
+        </Buttons>
       </Filters>
       <TableWrapper>
         <Table>
@@ -152,18 +168,46 @@ const MattersTable = () => {
 
 const Filters = styled.div`
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  grid-gap: 1rem;
   align-items: center;
   margin-bottom: 1rem;
   padding: 0 16px;
-  
+
   .react-datepicker-wrapper {
     width: auto;
+  }
+
+  input {
+    padding: .5rem .75rem .5rem 2.25rem;
+    width: 100%;
+    max-width: 300px;
+    height: 34px;
+    border: 1px solid rgba(156, 163, 175, .6);
+    border-radius: 5px;
+    font-size: calc(1rem - 2px);
+    line-height: 1.5rem;
+    background-color: rgba(17, 24, 39, .05);
+    color: rgba(17, 24, 39, .6);
+
+    ::placeholder {
+      color: rgba(17, 24, 39, .35);
+    }
+
+    :focus {
+      outline: 2px solid var(--primary-blue-color);
+    }
   }
 
   @media (min-width: 768px) {
     padding: 0 32px;
   }
+`;
+
+const Buttons = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 `;
 
 const FilterButton = styled.button<{ isApplied?: boolean }>`

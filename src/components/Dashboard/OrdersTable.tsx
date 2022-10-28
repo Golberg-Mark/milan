@@ -1,4 +1,4 @@
-import React, { ForwardedRef, forwardRef, useEffect, useMemo, useState } from 'react';
+import React, { ForwardedRef, forwardRef, InputHTMLAttributes, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
@@ -12,6 +12,9 @@ import Loader from '@/components/Loader';
 import useOnClickOutside from '@/hooks/useOnClickOutside';
 
 import 'react-datepicker/dist/react-datepicker.css';
+import useInput from '@/hooks/useInput';
+import { IoCloseOutline } from 'react-icons/all';
+import Search from '@/components/Dashboard/Search';
 
 interface Props {
   orders: Order[],
@@ -35,6 +38,7 @@ export const Wrapper: React.FC = () => {
 };
 
 const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
+  const [search, setSearch] = useInput();
   const [startDay, setStartDay] = useState<Date | null>(null);
   const [endDay, setEndDay] = useState<Date | null>(null);
   const [status, setStatus] = useState< keyof typeof OrderStatusEnum | null>(null);
@@ -79,6 +83,11 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
   ));
 
   const filteredOrders = useMemo(() => orders.filter((order) => {
+    if (!search) return true;
+
+    const regexp = new RegExp(`.*${search.toLowerCase()}.*`);
+    return regexp.test(order.matter.toLowerCase()) || regexp.test(order.service.toLowerCase());
+  }).filter((order) => {
     if (!startDay || !endDay) return true;
 
     let orderDate = new Date(+order.date);
@@ -89,66 +98,74 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
   }).filter((order) => {
     if (!selectedUser) return true;
     return order.user === selectedUser.id
-  }), [startDay, endDay, status, selectedUser]);
+  }), [search, startDay, endDay, status, selectedUser]);
 
   const isFiltered = (startDay && endDay) || status || selectedUser;
 
   return orgUsers ? (
     <div>
       <Filters>
-        {isFiltered ? (
-          <FilterButton onClick={clearFilters}>
-            Clear filters
-          </FilterButton>
-        ) : ''}
-        <DatePicker
-          startDate={startDay}
-          endDate={endDay}
-          onChange={onDateChange}
-          customInput={<CustomInput />}
-          tabIndex={0}
-          selectsRange
+        <Search
+          value={search}
+          onChange={setSearch}
+          placeholder="Search matters & orders"
+          clearField={() => setSearch('')}
         />
-        <FilterButton
-          ref={statusRef}
-          isApplied={!!status}
-          onClick={toggleIsStatusVisible}
-        >
-          {status?.toLowerCase() || 'Status'}
-          {isStatusVisible ? (
-            <List>
-              {statuses.map((el) => (
-                <ListItem
-                  key={el}
-                  isSelected={el === status}
-                  onClick={() => selectStatus(el)}
-                >
-                  {el.toLowerCase().replaceAll('_', ' ')}
-                </ListItem>
-              ))}
-            </List>
+        <Buttons>
+          {isFiltered ? (
+            <FilterButton onClick={clearFilters}>
+              Clear filters
+            </FilterButton>
           ) : ''}
-        </FilterButton>
-        <FilterButton
-          ref={usersRef}
-          isApplied={!!selectedUser}
-          onClick={toggleIsUsersVisible}
-        >
-          {selectedUser?.name || 'User'}
-          {isUsersVisible ? (
-            <List>
-              {orgUsers.map((el) => (
-                <ListItem
-                  key={el.email}
-                  isSelected={el.id === selectedUser?.id}
-                  onClick={() => selectOrgUser(el)}
-                >
-                  {el.name}
-                </ListItem>
-              ))}
-            </List>
-          ) : ''}
-        </FilterButton>
+          <DatePicker
+            startDate={startDay}
+            endDate={endDay}
+            onChange={onDateChange}
+            customInput={<CustomInput />}
+            tabIndex={0}
+            selectsRange
+          />
+          <FilterButton
+            ref={statusRef}
+            isApplied={!!status}
+            onClick={toggleIsStatusVisible}
+          >
+            {status?.toLowerCase() || 'Status'}
+            {isStatusVisible ? (
+              <List>
+                {statuses.map((el) => (
+                  <ListItem
+                    key={el}
+                    isSelected={el === status}
+                    onClick={() => selectStatus(el)}
+                  >
+                    {el.toLowerCase().replaceAll('_', ' ')}
+                  </ListItem>
+                ))}
+              </List>
+            ) : ''}
+          </FilterButton>
+          <FilterButton
+            ref={usersRef}
+            isApplied={!!selectedUser}
+            onClick={toggleIsUsersVisible}
+          >
+            {selectedUser?.name || 'User'}
+            {isUsersVisible ? (
+              <List>
+                {orgUsers.map((el) => (
+                  <ListItem
+                    key={el.email}
+                    isSelected={el.id === selectedUser?.id}
+                    onClick={() => selectOrgUser(el)}
+                  >
+                    {el.name}
+                  </ListItem>
+                ))}
+              </List>
+            ) : ''}
+          </FilterButton>
+        </Buttons>
       </Filters>
       <TableWrapper>
         <Table>
@@ -244,8 +261,9 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
 };
 
 const Filters = styled.div`
-  display: flex;
-  justify-content: flex-end;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 1rem;
   align-items: center;
   margin-bottom: 1rem;
   padding: 0 16px;
@@ -253,10 +271,37 @@ const Filters = styled.div`
   .react-datepicker-wrapper {
     width: auto;
   }
+  
+  input {
+    padding: .5rem .75rem .5rem 2.25rem;
+    width: 100%;
+    max-width: 300px;
+    height: 34px;
+    border: 1px solid rgba(156, 163, 175, .6);
+    border-radius: 5px;
+    font-size: calc(1rem - 2px);
+    line-height: 1.5rem;
+    background-color: rgba(17, 24, 39, .05);
+    color: rgba(17, 24, 39, .6);
+
+    ::placeholder {
+      color: rgba(17, 24, 39, .35);
+    }
+
+    :focus {
+      outline: 2px solid var(--primary-blue-color);
+    }
+  }
 
   @media (min-width: 768px) {
     padding: 0 32px;
   }
+`;
+
+const Buttons = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 `;
 
 const FilterButton = styled.button<{ isApplied?: boolean }>`
