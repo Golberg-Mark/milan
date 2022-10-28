@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 
 import useOnClickOutside from '@/hooks/useOnClickOutside';
+import { BsChevronDown } from 'react-icons/all';
 
 interface Props {
   items: string[]
@@ -9,17 +10,19 @@ interface Props {
 
 const Select: React.FC<Props> = ({ items }) => {
   const [selectedItem, setSelectedItem] = useState(0);
-  const [ref, isItemsVisible, toggleIsItemsVisible] = useOnClickOutside<HTMLUListElement>();
+  const [ref, isItemsVisible, toggleIsItemsVisible] = useOnClickOutside<HTMLDivElement>();
 
   return (
-    <Wrapper>
+    <Wrapper ref={ref}>
       <StyledSelect onClick={toggleIsItemsVisible}>
         {items[selectedItem]}
+        <BsChevronDown style={{ transform: isItemsVisible ? 'rotate(180deg)' : '' }}/>
       </StyledSelect>
       {isItemsVisible ? (
-        <Dropdown ref={ref}>
+        <Dropdown>
           {items.map((el, i) => (
             <DropdownItem
+              key={`${el}${i}`}
               isSelected={i === selectedItem}
               onClick={() => setSelectedItem(i)}
             >
@@ -37,8 +40,12 @@ const Wrapper = styled.div`
 `;
 
 const StyledSelect = styled.button`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: .5rem .75rem;
   width: 100%;
+  min-width: 160px;
   height: 42px;
   border: 1px solid rgba(156, 163, 175, .6);
   border-radius: 5px;
@@ -46,6 +53,10 @@ const StyledSelect = styled.button`
   line-height: 1.5rem;
   background-color: rgba(17, 24, 39, .05);
   color: rgba(17, 24, 39, .6);
+  
+  svg {
+    margin-left: .5rem;
+  }
 `;
 
 const Dropdown = styled.ul`
@@ -54,9 +65,12 @@ const Dropdown = styled.ul`
   top: calc(100% + 4px);
   left: 0;
   padding: .5rem 0;
+  max-height: 200px;
   border: 1px solid rgba(156, 163, 175, .6);
   border-radius: 5px;
   background-color: #fff;
+  overflow-x: hidden;
+  overflow-y: auto;
   z-index: 100;
 `;
 

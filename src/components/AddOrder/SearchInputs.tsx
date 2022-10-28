@@ -28,12 +28,12 @@ interface Props {
   search: React.MouseEventHandler
 }
 
-const SearchInputs: React.FC<Props> = ({ search, service:  { name, input, price } }) => {
+const SearchInputs: React.FC<Props> = ({ search, service: { name, input, price } }) => {
   const getContent = () => {
     const mappedInput = input.map((el) => {
       if (el.items) {
         return (
-          <Label key={el.name}>
+          <Label key={JSON.stringify(el.items)}>
             <span>{el.name}</span>
             <Select items={el.items} />
           </Label>
@@ -99,7 +99,14 @@ const SearchInputs: React.FC<Props> = ({ search, service:  { name, input, price 
           </Owner>
         );
       }
-      case 'Owner(Organisation)': case 'Volume/Folio': case 'Lot/Plan': {
+      case 'Owner(Organisation)':
+      case 'Volume/Folio':
+      case 'Lot/Plan':
+      case 'Council Number':
+      case 'SPI':
+      case 'Application Index':
+      case 'Lot/Town':
+      {
         return (
           <Owner>
             {mappedInput}
@@ -109,6 +116,20 @@ const SearchInputs: React.FC<Props> = ({ search, service:  { name, input, price 
             </ButtonWrapper>
           </Owner>
         );
+      }
+      case 'Lot/Plan or List':
+      case 'Crown Description':
+      case 'Plan/Parcel':
+      case 'Parcel': {
+        return (
+          <LotPlanOrList>
+            {mappedInput}
+            <ButtonWrapper>
+              <Button>Browse</Button>
+              <Price>{priceStr}</Price>
+            </ButtonWrapper>
+          </LotPlanOrList>
+        )
       }
       default: return <></>;
     }
@@ -130,6 +151,7 @@ const Label = styled.label`
   
   span {
     color: #6B7280;
+    white-space: nowrap;
   }
   
   input {
@@ -197,6 +219,14 @@ const AddressInputs = styled.div`
 const Owner = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  grid-gap: .75rem;
+  margin-bottom: 1.25rem;
+`;
+
+const LotPlanOrList = styled.div`
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
   grid-gap: .75rem;
   margin-bottom: 1.25rem;
 `;

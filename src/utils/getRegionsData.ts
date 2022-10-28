@@ -326,8 +326,13 @@ export default (): Region[] => {
           'price': 4.83,
           'input': [
             {
-              'name': 'Company Name',
+              'name': 'Lot',
               'items': ['Lot/Plan', 'Lot List'],
+              'isRequired': true
+            },
+            {
+              'name': 'Lot/Plan Number\n',
+              'example': '8RP601844',
               'isRequired': true
             }
           ]
@@ -337,6 +342,11 @@ export default (): Region[] => {
           'name': 'Crown Description',
           'price': 1.56,
           'input': [
+            {
+              'name': 'Allotments',
+              'items': ['Free test', 'Structured'],
+              'isRequired': true
+            },
             {
               'name': 'Crown Description',
               'example': 'Allotments 12A Section B Parish of Hotham',
@@ -364,7 +374,28 @@ export default (): Region[] => {
             },
             {
               'name': 'Parish/Township',
-              'example': 'Albury-Wodonga',
+              'items': [
+                'Acheron',
+                'Addington',
+                'Adzar',
+                'Adjie',
+                'Aire',
+                'Albacutya',
+                'Alberton East',
+                'at Alberton Parish of Alberton East',
+                'Alberton West',
+                'Alexandra',
+                'Allambee',
+                'Allambee East',
+                'Amherst',
+                'Amphitheatre',
+                'Anakie',
+                'Angahook',
+                'Angora',
+                'Annuello',
+                'Annya',
+                'Arapiles'
+              ],
               'isRequired': true
             }
           ]
@@ -380,7 +411,115 @@ export default (): Region[] => {
             },
             {
               'name': 'Municipality',
-              'example': 'Your Municipality',
+              'items': [
+                'Alpine',
+                'Ararat',
+                'Ballarat',
+                'Banyule',
+                'Bass',
+                'Coast',
+                'Baw',
+                'Baw',
+                'Bayside',
+                'Benalla',
+                'Boroondara',
+                'Brimbank',
+                'Buloke',
+                'Campaspe',
+                'Cardinia',
+                'Casey',
+                'Central',
+                'Goldfields',
+                'Colac',
+                'Otway',
+                'Corangamite',
+                'Darebin',
+                'Docklands',
+                'Authority',
+                'East',
+                'Gippsland',
+                'Frankston',
+                'French',
+                'Island',
+                'Gannawarra',
+                'Glen',
+                'Eira',
+                'Glenelg',
+                'Golden',
+                'Plains',
+                'Greater',
+                'Bendigo',
+                'Greater',
+                'Dandenong',
+                'Greater',
+                'Geelong',
+                'Greater',
+                'Shepparton',
+                'Hepburn',
+                'Hindmarsh',
+                'Hobsons',
+                'Bay',
+                'Horsham',
+                'Hume',
+                'Indigo',
+                'Kingston',
+                'Knox',
+                'Latrobe',
+                'Loddon',
+                'Macedon',
+                'Ranges',
+                'Manningham',
+                'Mansfield',
+                'Maribyrnong',
+                'Maroondah',
+                'Melbourne',
+                'Melton',
+                'Mildura',
+                'Mitchell',
+                'Moira',
+                'Monash',
+                'Moonee',
+                'Valley',
+                'Moorabool',
+                'Moreland',
+                'Mornington',
+                'Peninsula',
+                'Mount',
+                'Alexander',
+                'Moyne',
+                'Murrindindi',
+                'Nillumbik',
+                'Northern',
+                'Grampians',
+                'Port',
+                'Phillip',
+                'Pyrenees',
+                'Queenscliffe',
+                'South',
+                'Gippsland',
+                'Southern',
+                'Grampians',
+                'Stonnington',
+                'Strathbogie',
+                'Surf',
+                'Coast',
+                'Swan',
+                'Hill',
+                'Towong',
+                'Wangaratta',
+                'Warrnambool',
+                'Wellington',
+                'West',
+                'Wimmera',
+                'Whitehorse',
+                'Whittlesea',
+                'Wodonga',
+                'Wyndham',
+                'Yarra',
+                'Yarra',
+                'Ranges',
+                'Yarriambiack'
+              ],
               'isRequired': true
             }
           ]
@@ -434,7 +573,7 @@ export default (): Region[] => {
           'input': [
             {
               'name': 'Level',
-              'example': ''
+              'example': 'E.g 1'
             },
             {
               'name': 'Lot',
@@ -442,20 +581,20 @@ export default (): Region[] => {
             },
             {
               'name': 'Unit Number',
-              'example': ''
+              'example': 'E.g 1'
             },
             {
               'name': 'Street Number',
-              'example': ''
+              'example': 'E.g 16'
             },
             {
               'name': 'Street Name',
-              'example': '',
+              'example': 'E.g Boredeaux street',
               'isRequired': true
             },
             {
               'name': 'Suburb/Locality',
-              'example': ''
+              'example': 'E.g AVONDALE HEIGHTS'
             }
           ]
         },
@@ -528,21 +667,21 @@ export default (): Region[] => {
           'input': [
             {
               'name': 'Unit Number',
-              'example': ''
+              'example': 'E.g 1'
             },
             {
               'name': 'Street Number',
-              'example': '',
+              'example': 'E.g 2',
               'isRequired': true
             },
             {
               'name': 'Street Name',
-              'example': '',
+              'example': 'E.g Boredeaux street',
               'isRequired': true
             },
             {
               'name': 'Suburb/Locality',
-              'example': '',
+              'example': 'E.g AVONDALE HEIGHTS',
               'isRequired': true
             }
           ]
@@ -553,7 +692,128 @@ export default (): Region[] => {
           'input': [
             {
               'name': 'Distinct',
-              'items': [''],
+              'items': [
+                'Acton',
+                'Ainslie',
+                'Amaroo',
+                'Aranda',
+                'Banks',
+                'Barton',
+                'Beard',
+                'Belconnen',
+                'Bonner',
+                'Bonython',
+                'Braddon',
+                'Bruce',
+                'Calwell',
+                'Campbell',
+                'Canberra Airport',
+                'Capital Hill',
+                'Casey',
+                'Chapman',
+                'Charnwood',
+                'Chifley',
+                'Chisholm',
+                'City',
+                'Conder',
+                'Cook',
+                'Coombs',
+                'Crace',
+                'Curtin',
+                'Deakin',
+                'Denman Prospect',
+                'Dickson',
+                'Downer',
+                'Duffy',
+                'Dunlop',
+                'Evatt',
+                'Fadden',
+                'Farrer',
+                'Fisher',
+                'Florey',
+                'Flynn',
+                'Forde',
+                'Forrest',
+                'Franklin',
+                'Fraser',
+                'Fyshwick',
+                'Garran',
+                'Gilmore',
+                'Giralang',
+                'Gordon',
+                'Gowrie',
+                'Greenway',
+                'Griffith',
+                'Gungahlin',
+                'Hackett',
+                'Hall',
+                'Harrison',
+                'Hawker',
+                'Higgins',
+                'Holder',
+                'Holt',
+                'Hughes',
+                'Hume',
+                'Isaacs',
+                'Isabella Plains',
+                'Jacka',
+                'Kaleen',
+                'Kambah',
+                'Kingston',
+                'Latham',
+                'Lawson',
+                'Lyneham',
+                'Lyons',
+                'Macarthur',
+                'Macgregor',
+                'Macnamara',
+                'Macquarie',
+                'Mawson',
+                'McKellar',
+                'Melba',
+                'Mitchell',
+                'Molonglo',
+                'Monash',
+                'Moncrieff',
+                'Narrabundah',
+                'Ngunnawal',
+                'Nicholls',
+                'Oaks Estate',
+                'OConnor',
+                'OMalley',
+                'Oxley',
+                'Page',
+                'Palmerston',
+                'Parkes',
+                'Pearce',
+                'Phillip',
+                'Pialligo',
+                'Red Hill',
+                'Reid',
+                'Richardson',
+                'Rivett',
+                'Russell',
+                'Scullin',
+                'Spence',
+                'Stirling',
+                'Strathnairn',
+                'Symonston',
+                'Taylor',
+                'Tharwa',
+                'Theodore',
+                'Throsby',
+                'Torrens',
+                'Turner',
+                'Uriarra Village',
+                'Wanniassa',
+                'Waramanga',
+                'Watson',
+                'Weetangera',
+                'Weston',
+                'Whitlam',
+                'Wright',
+                'Yarralumla'
+              ],
               'isRequired': true
             },
             {
@@ -621,20 +881,20 @@ export default (): Region[] => {
           'input': [
             {
               'name': 'Unit Number',
-              'example': ''
+              'example': 'E.g 1'
             },
             {
               'name': 'Street Number',
-              'example': ''
+              'example': 'E.g 2'
             },
             {
               'name': 'Street Name',
-              'example': '',
+              'example': 'E.g Boredeaux street',
               'isRequired': true
             },
             {
               'name': 'Suburb/Locality',
-              'example': '',
+              'example': 'E.g AVONDALE HEIGHTS',
               'isRequired': true
             }
           ]
@@ -704,20 +964,20 @@ export default (): Region[] => {
           'input': [
             {
               'name': 'Unit Number',
-              'example': ''
+              'example': 'E.g 1'
             },
             {
               'name': 'Street Number',
-              'example': ''
+              'example': 'E.g 16'
             },
             {
               'name': 'Street Name',
-              'example': '',
+              'example': 'E.g Boredeaux street',
               'isRequired': true
             },
             {
               'name': 'Suburb/Locality',
-              'example': '',
+              'example': 'E.g AVONDALE HEIGHTS',
               'isRequired': true
             }
           ]
