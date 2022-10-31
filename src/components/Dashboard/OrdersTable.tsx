@@ -218,7 +218,7 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
                   </td>
                   <td>
                     <Status orderStatus={order.status}>
-                      {order.status}
+                      {order.type === 'validation' ? 'list' : order.status}
                     </Status>
                   </td>
                   <td style={{ textAlign: 'center' }}>

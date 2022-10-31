@@ -26,6 +26,7 @@ export interface Order {
   service: string,
   description: string,
   status: OrderStatusEnum,
+  type: 'regular' | 'validation',
   user: number,
   date: number
 }
