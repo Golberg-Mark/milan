@@ -87,81 +87,83 @@ const MattersTable = () => {
           />
         </Buttons>
       </Filters>
-      <TableWrapper>
-        <Table>
-          <THead>
-            <tr>
-              <th style={{ padding: '1rem 0 1rem 1.5rem' }}>
-                <FolderIcon />
-              </th>
-              <th style={{ padding: '14px 12px 14px 24px' }}>
-                Matter ID
-              </th>
-              <th>
-                Description
-              </th>
-              <th>
-                Orders
-              </th>
-              <th style={{ padding: '14px 12px', textAlign: 'center' }}>
-                Pending
-              </th>
-              <th style={{ textAlign: 'center' }}>
-                Last Ordered
-              </th>
-              <th style={{ padding: '14px 24px 14px 12px' }} />
-            </tr>
-          </THead>
-          <TBody>
-            {filteredMatters.map((matter, i) => (
-              <TRow key={i} onClick={() => chooseMatter(matter.matter)}>
+      {filteredMatters.length ? (
+        <TableWrapper>
+          <Table>
+            <THead>
+              <tr>
                 <th style={{ padding: '1rem 0 1rem 1.5rem' }}>
                   <FolderIcon />
                 </th>
-                <th style={{ padding: '16px 12px 16px 24px' }}>
-                  {matter.matter}
+                <th style={{ padding: '14px 12px 14px 24px' }}>
+                  Matter ID
                 </th>
-                <td>
-                  {matter.description}
-                </td>
-                <td>
-                  {getNounByForm(matter.ordersAmount, 'order')}
-                </td>
-                <td>
-                  <Status>
-                    {matter.pending}
-                  </Status>
-                </td>
-                <td style={{ textAlign: 'center' }}>
-                  {convertTimestamp(matter.lastOrdered)}
-                </td>
-                <th style={{ padding: '16px 24px 16px 1px' }}>
-                  <EyeWrapper>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth="1.5"
-                      stroke="#000"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                    </svg>
-                  </EyeWrapper>
+                <th>
+                  Description
                 </th>
-              </TRow>
-            ))}
-          </TBody>
-        </Table>
-      </TableWrapper>
+                <th>
+                  Orders
+                </th>
+                <th style={{ padding: '14px 12px', textAlign: 'center' }}>
+                  Pending
+                </th>
+                <th style={{ textAlign: 'center' }}>
+                  Last Ordered
+                </th>
+                <th style={{ padding: '14px 24px 14px 12px' }} />
+              </tr>
+            </THead>
+            <TBody>
+              {filteredMatters.map((matter, i) => (
+                <TRow key={i} onClick={() => chooseMatter(matter.matter)}>
+                  <th style={{ padding: '1rem 0 1rem 1.5rem' }}>
+                    <FolderIcon />
+                  </th>
+                  <th style={{ padding: '16px 12px 16px 24px' }}>
+                    {matter.matter}
+                  </th>
+                  <td>
+                    {matter.description}
+                  </td>
+                  <td>
+                    {getNounByForm(matter.ordersAmount, 'order')}
+                  </td>
+                  <td>
+                    <Status>
+                      {matter.pending}
+                    </Status>
+                  </td>
+                  <td style={{ textAlign: 'center' }}>
+                    {convertTimestamp(matter.lastOrdered)}
+                  </td>
+                  <th style={{ padding: '16px 24px 16px 1px' }}>
+                    <EyeWrapper>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="#000"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                      </svg>
+                    </EyeWrapper>
+                  </th>
+                </TRow>
+              ))}
+            </TBody>
+          </Table>
+        </TableWrapper>
+      ) : ''}
     </div>
   ) : <Loader />;
 };

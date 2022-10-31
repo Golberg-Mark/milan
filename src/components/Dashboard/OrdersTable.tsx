@@ -166,95 +166,97 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
           </FilterButton>
         </Buttons>
       </Filters>
-      <TableWrapper>
-        <Table>
-          <THead>
-            <tr>
-              <th style={{ padding: '1rem 0 1rem 1.5rem' }}>
-                <Checkbox type="checkbox" />
-              </th>
-              {!isFromMatter ? (
-                <th style={{ padding: '14px 12px 14px 24px' }}>
-                  Matter
-                </th>
-              ) : ''}
-              <th>
-                Service
-              </th>
-              <th>
-                Description
-              </th>
-              <th>
-                Status
-              </th>
-              <th style={{ padding: '14px 12px', textAlign: 'center' }}>
-                User
-              </th>
-              <th style={{ textAlign: 'center' }}>
-                Date
-              </th>
-              <th style={{ padding: '14px 24px 14px 12px' }} />
-            </tr>
-          </THead>
-          <TBody>
-            {filteredOrders.map((order, i) => (
-              <TRow key={i} onClick={() => navigate(`/orders/${order.id}`)}>
+      {filteredOrders.length ? (
+        <TableWrapper>
+          <Table>
+            <THead>
+              <tr>
                 <th style={{ padding: '1rem 0 1rem 1.5rem' }}>
                   <Checkbox type="checkbox" />
                 </th>
                 {!isFromMatter ? (
-                  <th style={{ padding: '16px 12px 16px 24px' }}>
-                    <MatterLink to={`/matters/${order.matter}`}>
-                      {order.matter}
-                    </MatterLink>
+                  <th style={{ padding: '14px 12px 14px 24px' }}>
+                    Matter
                   </th>
                 ) : ''}
-                <td>
-                  {order.service}
-                </td>
-                <td>
-                  {order.description}
-                </td>
-                <td>
-                  <Status orderStatus={order.status}>
-                    {order.status}
-                  </Status>
-                </td>
-                <td style={{ textAlign: 'center' }}>
-                  <User>
-                    {orgUsers!.find((el) => el.id === order.user)?.name.substring(0, 2).toUpperCase() || "UN"}
-                  </User>
-                </td>
-                <td style={{ textAlign: 'center' }}>
-                  {convertTimestamp(order.date)}
-                </td>
-                <th style={{ padding: '16px 24px 16px 1px' }}>
-                  <EyeWrapper>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth="1.5"
-                      stroke="#000"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                    </svg>
-                  </EyeWrapper>
+                <th>
+                  Service
                 </th>
-              </TRow>
-            ))}
-          </TBody>
-        </Table>
-      </TableWrapper>
+                <th>
+                  Description
+                </th>
+                <th>
+                  Status
+                </th>
+                <th style={{ padding: '14px 12px', textAlign: 'center' }}>
+                  User
+                </th>
+                <th style={{ textAlign: 'center' }}>
+                  Date
+                </th>
+                <th style={{ padding: '14px 24px 14px 12px' }} />
+              </tr>
+            </THead>
+            <TBody>
+              {filteredOrders.map((order, i) => (
+                <TRow key={i} onClick={() => navigate(`/orders/${order.id}`)}>
+                  <th style={{ padding: '1rem 0 1rem 1.5rem' }}>
+                    <Checkbox type="checkbox" />
+                  </th>
+                  {!isFromMatter ? (
+                    <th style={{ padding: '16px 12px 16px 24px' }}>
+                      <MatterLink to={`/matters/${order.matter}`}>
+                        {order.matter}
+                      </MatterLink>
+                    </th>
+                  ) : ''}
+                  <td>
+                    {order.service}
+                  </td>
+                  <td>
+                    {order.description}
+                  </td>
+                  <td>
+                    <Status orderStatus={order.status}>
+                      {order.status}
+                    </Status>
+                  </td>
+                  <td style={{ textAlign: 'center' }}>
+                    <User>
+                      {orgUsers!.find((el) => el.id === order.user)?.name.substring(0, 2).toUpperCase() || "UN"}
+                    </User>
+                  </td>
+                  <td style={{ textAlign: 'center' }}>
+                    {convertTimestamp(order.date)}
+                  </td>
+                  <th style={{ padding: '16px 24px 16px 1px' }}>
+                    <EyeWrapper>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="#000"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                      </svg>
+                    </EyeWrapper>
+                  </th>
+                </TRow>
+              ))}
+            </TBody>
+          </Table>
+        </TableWrapper>
+      ) : ''}
     </div>
   ) : <></>;
 };
