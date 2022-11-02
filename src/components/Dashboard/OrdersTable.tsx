@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
 import styled, { css } from 'styled-components';
 import DatePicker from 'react-datepicker';
+import { BsChevronLeft, BsChevronRight } from 'react-icons/all';
 
 import convertTimestamp from '@/utils/convertTimestamp';
 import { Order, OrderStatusEnum, OrganizationUser } from '@/store/reducers/user';
@@ -44,10 +45,14 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
   const [statusRef, isStatusVisible, toggleIsStatusVisible] = useOnClickOutside<HTMLButtonElement>();
   const [selectedUser, setSelectedUser] = useState<OrganizationUser | null>(null);
   const [usersRef, isUsersVisible, toggleIsUsersVisible] = useOnClickOutside<HTMLButtonElement>();
+  const [limit, setLimit] = useState(10);
+  const [offset, setOffset] = useState(0);
 
   const orgUsers = useSelector(selectOrganizationUsers);
 
   const navigate = useNavigate();
+
+  const maxPages = Math.ceil(orders.length / limit);
 
   const onDateChange = (dates: any) => {
     const [start, end] = dates;
@@ -74,6 +79,14 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
     setSelectedUser(null);
   };
 
+  const previousPage = () => {
+    setOffset(prevState => prevState ? prevState - 1 : 0);
+  };
+
+  const nextPage = () => {
+    setOffset(prevState => prevState + 2 > maxPages ? prevState : prevState + 1);
+  };
+
   // @ts-ignore
   const CustomInput = forwardRef(({ value, onClick }, ref: ForwardedRef<HTMLButtonElement>) => (
     <FilterButton onClick={onClick} ref={ref} isApplied={!!startDay}>
@@ -81,7 +94,7 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
     </FilterButton>
   ));
 
-  const filteredOrders = useMemo(() => orders.filter((order) => {
+  const ordersWithAppliedFilters = useMemo(() => orders.filter((order) => {
     if (!search) return true;
 
     const regexp = new RegExp(`.*${search.toLowerCase()}.*`);
@@ -98,6 +111,15 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
     if (!selectedUser) return true;
     return order.user === selectedUser.id
   }), [search, startDay, endDay, status, selectedUser]);
+  const filteredOrders = [];
+
+  if (maxPages > 1) {
+    for (let i = offset * limit; i <= offset * limit + limit; i++) {
+      if (ordersWithAppliedFilters[i]) {
+        filteredOrders.push(ordersWithAppliedFilters[i]);
+      }
+    }
+  }
 
   const isFiltered = (startDay && endDay) || status || selectedUser;
 
@@ -167,95 +189,113 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
         </Buttons>
       </Filters>
       {filteredOrders.length ? (
-        <TableWrapper>
-          <Table>
-            <THead>
-              <tr>
-                <th style={{ padding: '1rem 0 1rem 1.5rem' }}>
-                  <Checkbox type="checkbox" />
-                </th>
-                {!isFromMatter ? (
-                  <th style={{ padding: '14px 12px 14px 24px' }}>
-                    Matter
-                  </th>
-                ) : ''}
-                <th>
-                  Service
-                </th>
-                <th>
-                  Description
-                </th>
-                <th>
-                  Status
-                </th>
-                <th style={{ padding: '14px 12px', textAlign: 'center' }}>
-                  User
-                </th>
-                <th style={{ textAlign: 'center' }}>
-                  Date
-                </th>
-                <th style={{ padding: '14px 24px 14px 12px' }} />
-              </tr>
-            </THead>
-            <TBody>
-              {filteredOrders.map((order, i) => (
-                <TRow key={i} onClick={() => navigate(`/orders/${order.id}`)}>
+        <>
+          <TableWrapper>
+            <Table>
+              <THead>
+                <tr>
                   <th style={{ padding: '1rem 0 1rem 1.5rem' }}>
                     <Checkbox type="checkbox" />
                   </th>
                   {!isFromMatter ? (
-                    <th style={{ padding: '16px 12px 16px 24px' }}>
-                      <MatterLink to={`/matters/${order.matter}`}>
-                        {order.matter}
-                      </MatterLink>
+                    <th style={{ padding: '14px 12px 14px 24px' }}>
+                      Matter
                     </th>
                   ) : ''}
-                  <td>
-                    {order.service}
-                  </td>
-                  <td>
-                    {order.description}
-                  </td>
-                  <td>
-                    <Status orderStatus={order.status}>
-                      {order.type === 'validation' ? 'list' : order.status}
-                    </Status>
-                  </td>
-                  <td style={{ textAlign: 'center' }}>
-                    <User>
-                      {orgUsers!.find((el) => el.id === order.user)?.name.substring(0, 2).toUpperCase() || "UN"}
-                    </User>
-                  </td>
-                  <td style={{ textAlign: 'center' }}>
-                    {convertTimestamp(order.date)}
-                  </td>
-                  <th style={{ padding: '16px 24px 16px 1px' }}>
-                    <EyeWrapper>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth="1.5"
-                        stroke="#000"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                      </svg>
-                    </EyeWrapper>
+                  <th>
+                    Service
                   </th>
-                </TRow>
-              ))}
-            </TBody>
-          </Table>
-        </TableWrapper>
+                  <th>
+                    Description
+                  </th>
+                  <th>
+                    Status
+                  </th>
+                  <th style={{ padding: '14px 12px', textAlign: 'center' }}>
+                    User
+                  </th>
+                  <th style={{ textAlign: 'center' }}>
+                    Date
+                  </th>
+                  <th style={{ padding: '14px 24px 14px 12px' }} />
+                </tr>
+              </THead>
+              <TBody>
+                {filteredOrders.map((order, i) => (
+                  <TRow key={i} onClick={() => navigate(`/orders/${order.id}`)}>
+                    <th style={{ padding: '1rem 0 1rem 1.5rem' }}>
+                      <Checkbox type="checkbox" />
+                    </th>
+                    {!isFromMatter ? (
+                      <th style={{ padding: '16px 12px 16px 24px' }}>
+                        <MatterLink to={`/matters/${order.matter}`}>
+                          {order.matter}
+                        </MatterLink>
+                      </th>
+                    ) : ''}
+                    <td>
+                      {order.service}
+                    </td>
+                    <td>
+                      {order.description}
+                    </td>
+                    <td>
+                      <Status orderStatus={order.status}>
+                        {order.type === 'validation' ? 'list' : order.status}
+                      </Status>
+                    </td>
+                    <td style={{ textAlign: 'center' }}>
+                      <User>
+                        {orgUsers!.find((el) => el.id === order.user)?.name.substring(0, 2).toUpperCase() || "UN"}
+                      </User>
+                    </td>
+                    <td style={{ textAlign: 'center' }}>
+                      {convertTimestamp(order.date)}
+                    </td>
+                    <th style={{ padding: '16px 24px 16px 1px' }}>
+                      <EyeWrapper>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth="1.5"
+                          stroke="#000"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                        </svg>
+                      </EyeWrapper>
+                    </th>
+                  </TRow>
+                ))}
+              </TBody>
+            </Table>
+          </TableWrapper>
+          {maxPages > 1 ? (
+            <Pagination>
+              <PageWrapper>
+                <Arrow isDisabled={!offset}>
+                  <BsChevronLeft onClick={previousPage} />
+                </Arrow>
+                <Page>
+                  Page
+                  <span>{offset + 1}</span>
+                </Page>
+                <Arrow isDisabled={offset + 1 === maxPages}>
+                  <BsChevronRight onClick={nextPage} />
+                </Arrow>
+              </PageWrapper>
+            </Pagination>
+          ) : ''}
+        </>
       ) : ''}
     </div>
   ) : <></>;
@@ -345,6 +385,7 @@ const ListItem = styled.li<{ isSelected: boolean }>`
 `;
 
 const TableWrapper = styled.div`
+  margin-bottom: 1rem;
   padding: 0 16px;
   overflow-x: auto;
   
@@ -512,6 +553,51 @@ const EyeWrapper = styled.div`
   
   :hover {
     background-color: rgba(229, 231, 235, .8);
+  }
+`;
+
+const Pagination = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  grid-gap: 2rem;
+`;
+
+const PageWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  grid-gap: .5rem;
+`;
+
+const Arrow = styled.div<{ isDisabled: boolean }>`
+  width: 1rem;
+  height: 1rem;
+  
+  svg {
+    cursor: ${({ isDisabled }) => isDisabled ? 'default' : 'pointer'};
+
+    ${({ isDisabled }) => !isDisabled ? css`
+      :hover {
+        fill: var(--primary-blue-color);
+      }
+    ` : css`
+      fill: rgba(0, 0, 0, .2);
+    `}
+  }
+`;
+
+const Page = styled.p`
+  display: flex;
+  align-items: center;
+  grid-gap: .5rem;
+  
+  span {
+    display: block;
+    padding: .25rem 1rem;
+    border-radius: 3px;
+    background-color: #fff;
+    background-color: rgba(17, 24, 39, .05);
   }
 `;
 

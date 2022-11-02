@@ -1,26 +1,34 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 import useOnClickOutside from '@/hooks/useOnClickOutside';
 import { BsChevronDown } from 'react-icons/all';
 
 interface Props {
+  prefix?: string,
   selectedItem: number,
-  setSelectedItem: (i: number) => void,
-  items: string[]
+  setSelectedItem: Function,
+  items: string[] | number[],
+  openToTop?: boolean
 }
 
-const Select: React.FC<Props> = ({ selectedItem, setSelectedItem, items }) => {
+const Select: React.FC<Props> = ({
+  prefix = '',
+  selectedItem,
+  setSelectedItem,
+  items,
+  openToTop = false
+}) => {
   const [ref, isItemsVisible, toggleIsItemsVisible] = useOnClickOutside<HTMLDivElement>();
 
   return (
     <Wrapper ref={ref}>
       <StyledSelect onClick={toggleIsItemsVisible}>
-        {items[selectedItem]}
+        {`${prefix} ${items[selectedItem]}`}
         <BsChevronDown style={{ transform: isItemsVisible ? 'rotate(180deg)' : '' }}/>
       </StyledSelect>
       {isItemsVisible ? (
-        <Dropdown>
+        <Dropdown openToTop={openToTop}>
           {items.map((el, i) => (
             <DropdownItem
               key={`${el}${i}`}
@@ -29,7 +37,7 @@ const Select: React.FC<Props> = ({ selectedItem, setSelectedItem, items }) => {
                 setSelectedItem(i);
               }}
             >
-              {el}
+              {`${prefix} ${el}`}
             </DropdownItem>
           ))}
         </Dropdown>
@@ -56,17 +64,16 @@ const StyledSelect = styled.button`
   line-height: 1.5rem;
   background-color: rgba(17, 24, 39, .05);
   color: rgba(17, 24, 39, .6);
-  
+
   svg {
     margin-left: .5rem;
     transition: .2s ease-in-out;
   }
 `;
 
-const Dropdown = styled.ul`
+const Dropdown = styled.ul<{ openToTop: boolean }>`
   position: absolute;
   right: 0;
-  top: calc(100% + 4px);
   left: 0;
   padding: .5rem 0;
   max-height: 200px;
@@ -76,6 +83,12 @@ const Dropdown = styled.ul`
   overflow-x: hidden;
   overflow-y: auto;
   z-index: 100;
+  
+  ${({ openToTop }) => openToTop ? css`
+    bottom: calc(100% + 4px);
+  ` : css`
+    top: calc(100% + 4px);
+  `}
 `;
 
 const DropdownItem = styled.li<{ isSelected: boolean }>`

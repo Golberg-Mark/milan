@@ -1,9 +1,9 @@
 import React, { ForwardedRef, forwardRef, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
-import { AiOutlineFolder } from 'react-icons/all';
+import { AiOutlineFolder, BsChevronLeft, BsChevronRight } from 'react-icons/all';
 
 import convertTimestamp from '@/utils/convertTimestamp';
 import { selectMatters } from '@/store/selectors/userSelectors';
@@ -16,9 +16,13 @@ const MattersTable = () => {
   const [search, setSearch] = useInput();
   const [startDay, setStartDay] = useState<Date | null>(null);
   const [endDay, setEndDay] = useState<Date | null>(null);
+  const [limit, setLimit] = useState(10);
+  const [offset, setOffset] = useState(0);
 
-  const matters = useSelector(selectMatters);
+  const matters = Object.values(useSelector(selectMatters) || {});
   const navigate = useNavigate();
+
+  const maxPages = Math.ceil(matters.length / limit);
 
   const onDateChange = (dates: any) => {
     const [start, end] = dates;
@@ -37,6 +41,14 @@ const MattersTable = () => {
     navigate(`/matters/${matter}`);
   };
 
+  const previousPage = () => {
+    setOffset(prevState => prevState ? prevState - 1 : 0);
+  };
+
+  const nextPage = () => {
+    setOffset(prevState => prevState + 2 > maxPages ? prevState : prevState + 1);
+  };
+
   // @ts-ignore
   const CustomInput = forwardRef(({ value, onClick }, ref: ForwardedRef<HTMLButtonElement>) => (
     <FilterButton onClick={onClick} ref={ref} isApplied={!!startDay}>
@@ -44,10 +56,10 @@ const MattersTable = () => {
     </FilterButton>
   ));
 
-  let filteredMatters = useMemo(() => {
+  let mattersWithAppliedFilters = useMemo(() => {
     if (!matters) return [];
 
-    return Object.values(matters).filter((el) => {
+    return matters.filter((el) => {
       if (!startDay || !endDay) return true;
 
       let orderDate = new Date(+el.lastOrdered);
@@ -59,6 +71,15 @@ const MattersTable = () => {
       return regexp.test(matter.matter.toLowerCase());
     });
   }, [search, matters, startDay, endDay]);
+  const filteredMatters = [];
+
+  if (maxPages > 1) {
+    for (let i = offset * limit; i <= offset * limit + limit; i++) {
+      if (mattersWithAppliedFilters[i]) {
+        filteredMatters.push(mattersWithAppliedFilters[i]);
+      }
+    }
+  }
 
   const isFiltered = startDay || endDay;
 
@@ -88,81 +109,99 @@ const MattersTable = () => {
         </Buttons>
       </Filters>
       {filteredMatters.length ? (
-        <TableWrapper>
-          <Table>
-            <THead>
-              <tr>
-                <th style={{ padding: '1rem 0 1rem 1.5rem' }}>
-                  <FolderIcon />
-                </th>
-                <th style={{ padding: '14px 12px 14px 24px' }}>
-                  Matter ID
-                </th>
-                <th>
-                  Description
-                </th>
-                <th>
-                  Orders
-                </th>
-                <th style={{ padding: '14px 12px', textAlign: 'center' }}>
-                  Pending
-                </th>
-                <th style={{ textAlign: 'center' }}>
-                  Last Ordered
-                </th>
-                <th style={{ padding: '14px 24px 14px 12px' }} />
-              </tr>
-            </THead>
-            <TBody>
-              {filteredMatters.map((matter, i) => (
-                <TRow key={i} onClick={() => chooseMatter(matter.matter)}>
+        <>
+          <TableWrapper>
+            <Table>
+              <THead>
+                <tr>
                   <th style={{ padding: '1rem 0 1rem 1.5rem' }}>
                     <FolderIcon />
                   </th>
-                  <th style={{ padding: '16px 12px 16px 24px' }}>
-                    {matter.matter}
+                  <th style={{ padding: '14px 12px 14px 24px' }}>
+                    Matter ID
                   </th>
-                  <td>
-                    {matter.description}
-                  </td>
-                  <td>
-                    {getNounByForm(matter.ordersAmount, 'order')}
-                  </td>
-                  <td>
-                    <Status>
-                      {matter.pending}
-                    </Status>
-                  </td>
-                  <td style={{ textAlign: 'center' }}>
-                    {convertTimestamp(matter.lastOrdered)}
-                  </td>
-                  <th style={{ padding: '16px 24px 16px 1px' }}>
-                    <EyeWrapper>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth="1.5"
-                        stroke="#000"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                      </svg>
-                    </EyeWrapper>
+                  <th>
+                    Description
                   </th>
-                </TRow>
-              ))}
-            </TBody>
-          </Table>
-        </TableWrapper>
+                  <th>
+                    Orders
+                  </th>
+                  <th style={{ padding: '14px 12px', textAlign: 'center' }}>
+                    Pending
+                  </th>
+                  <th style={{ textAlign: 'center' }}>
+                    Last Ordered
+                  </th>
+                  <th style={{ padding: '14px 24px 14px 12px' }} />
+                </tr>
+              </THead>
+              <TBody>
+                {filteredMatters.map((matter, i) => (
+                  <TRow key={i} onClick={() => chooseMatter(matter.matter)}>
+                    <th style={{ padding: '1rem 0 1rem 1.5rem' }}>
+                      <FolderIcon />
+                    </th>
+                    <th style={{ padding: '16px 12px 16px 24px' }}>
+                      {matter.matter}
+                    </th>
+                    <td>
+                      {matter.description}
+                    </td>
+                    <td>
+                      {getNounByForm(matter.ordersAmount, 'order')}
+                    </td>
+                    <td>
+                      <Status>
+                        {matter.pending}
+                      </Status>
+                    </td>
+                    <td style={{ textAlign: 'center' }}>
+                      {convertTimestamp(matter.lastOrdered)}
+                    </td>
+                    <th style={{ padding: '16px 24px 16px 1px' }}>
+                      <EyeWrapper>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth="1.5"
+                          stroke="#000"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                        </svg>
+                      </EyeWrapper>
+                    </th>
+                  </TRow>
+                ))}
+              </TBody>
+            </Table>
+          </TableWrapper>
+          {maxPages > 1 ? (
+            <Pagination>
+              <PageWrapper>
+                <Arrow isDisabled={!offset}>
+                  <BsChevronLeft onClick={previousPage} />
+                </Arrow>
+                <Page>
+                  Page
+                  <span>{offset + 1}</span>
+                </Page>
+                <Arrow isDisabled={offset + 1 === maxPages}>
+                  <BsChevronRight onClick={nextPage} />
+                </Arrow>
+              </PageWrapper>
+            </Pagination>
+          ) : ''}
+        </>
       ) : ''}
     </div>
   ) : <Loader />;
@@ -228,6 +267,7 @@ const FilterButton = styled.button<{ isApplied?: boolean }>`
 `;
 
 const TableWrapper = styled.div`
+  margin-bottom: 1rem;
   padding: 0 16px;
   overflow-x: auto;
   
@@ -357,6 +397,51 @@ const EyeWrapper = styled.div`
   svg {
     width: 0.875rem;
     height: 0.875rem;
+  }
+`;
+
+const Pagination = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  grid-gap: 2rem;
+`;
+
+const PageWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  grid-gap: .5rem;
+`;
+
+const Arrow = styled.div<{ isDisabled: boolean }>`
+  width: 1rem;
+  height: 1rem;
+  
+  svg {
+    cursor: ${({ isDisabled }) => isDisabled ? 'default' : 'pointer'};
+
+    ${({ isDisabled }) => !isDisabled ? css`
+      :hover {
+        fill: var(--primary-blue-color);
+      }
+    ` : css`
+      fill: rgba(0, 0, 0, .2);
+    `}
+  }
+`;
+
+const Page = styled.p`
+  display: flex;
+  align-items: center;
+  grid-gap: .5rem;
+  
+  span {
+    display: block;
+    padding: .25rem 1rem;
+    border-radius: 3px;
+    background-color: #fff;
+    background-color: rgba(17, 24, 39, .05);
   }
 `;
 
