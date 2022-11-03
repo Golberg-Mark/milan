@@ -30,4 +30,8 @@ export class MainApiProtected extends HttpClientProtected {
   public getUsersByOrganization = (id: number) => (
     this.instance.get<OrganizationUser[]>(`/organisations/users/${id}`)
   );
+
+  public getOrganisationsByUser = (id: number) => (
+    this.instance.get<OrganizationUser[]>(`/users/organisations/${id}`)
+  );
 }
