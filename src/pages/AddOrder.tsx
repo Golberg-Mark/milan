@@ -62,7 +62,11 @@ const AddOrder = () => {
     dispatch(orderActions.cleanCurrentOrder());
   }, [selectedRegion]);
 
-
+  useEffect(() => () => {
+    dispatch(orderActions.setMatter(''));
+    dispatch(orderActions.setDescription(''));
+    dispatch(orderActions.cleanCurrentOrder());
+  }, []);
 
   const selectItem = (productIndex: number, i: number) => {
     const copiedState = JSON.parse(JSON.stringify(mockedProducts));
