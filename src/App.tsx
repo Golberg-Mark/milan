@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
+import { useLocation } from 'react-router';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 
 import GlobalStyle from '@/utils/getNormalizedCSS';
-import MyHQ from '@/pages/MyHQ';
 import Orders from '@/pages/Orders';
 import Menu from '@/components/Menu';
 import PageHeader from '@/components/PageHeader';
@@ -11,7 +11,6 @@ import Auth from '@/pages/Auth';
 import AddOrder from '@/pages/AddOrder';
 import OrderDetails from '@/pages/OrderDetails';
 import PriceList from '@/pages/PriceList';
-import { useLocation } from 'react-router';
 
 const App = () => {
   const { pathname } = useLocation();
