@@ -17,6 +17,7 @@ import Search from '@/components/Dashboard/Search';
 import 'react-datepicker/dist/react-datepicker.css';
 import useToggle from '@/hooks/useToggle';
 import getNounByForm from '@/utils/getNounByForm';
+import getUserAvatar from '@/utils/getUserAvatar';
 
 interface Props {
   orders: Order[],
@@ -281,7 +282,7 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
                       </td>
                       <td style={{ textAlign: 'center' }}>
                         <User>
-                          {orgUsers!.find((el) => el.id === order.user)?.name.substring(0, 2).toUpperCase() || "UN"}
+                          {getUserAvatar(String(orgUsers!.find((el) => el.id === order.user)?.name))}
                         </User>
                       </td>
                       <td style={{ textAlign: 'center' }}>

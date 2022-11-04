@@ -10,6 +10,7 @@ import { getMeAction } from '@/store/actions/userActions';
 import useInput from '@/hooks/useInput';
 import getRegionsData from '@/utils/getRegionsData';
 import useOnClickOutside from '@/hooks/useOnClickOutside';
+import getUserAvatar from '@/utils/getUserAvatar';
 
 const mockedData = getRegionsData();
 
@@ -103,7 +104,7 @@ const PageHeader = () => {
           />
         </svg>
         <PhotoWrapper onClick={toggleIsSettingsVisible} ref={settingsRef}>
-          {user ? <Photo src={user.photo} alt="Your profile photo" /> : ''}
+          {user ? <User>{getUserAvatar(user.name)}</User> : ''}
           {isSettingsVisible ? (
             <SettingsModal>
               <li>
@@ -195,8 +196,17 @@ const PhotoWrapper = styled.div`
   cursor: pointer;
 `;
 
-const Photo = styled.img`
+const User = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  width: 2rem;
+  height: 2rem;
   border-radius: 50%;
+  font-size: 12px;
+  font-weight: 600;
+  background-color: #F4F4F4;
 `;
 
 const Background = styled.div`
