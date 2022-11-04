@@ -21,12 +21,12 @@ export enum OrderStatusEnum {
 }
 
 export interface Order {
-  id: number,
+  id: string,
   matter: string,
   service: string,
   description: string,
   status: OrderStatusEnum,
-  type: 'regular' | 'validation',
+  type: 'regular' | 'list',
   user: number,
   date: number
 }
@@ -44,7 +44,7 @@ export type Matters = { [key: string]: Matter };
 
 export interface OrderItems {
   id: number,
-  orderId: number,
+  orderId: string,
   region: string,
   service: string,
   path: string,

@@ -38,7 +38,7 @@ const MattersTable = () => {
   };
 
   const chooseMatter = (matter: string) => {
-    navigate(`/matters/${matter}`);
+    navigate(`/dashboard/matters/${matter}`);
   };
 
   const previousPage = () => {
@@ -73,7 +73,7 @@ const MattersTable = () => {
   }, [search, matters, startDay, endDay]);
   const filteredMatters = [];
 
-  if (maxPages > 1) {
+  if (maxPages >= 1) {
     for (let i = offset * limit; i <= offset * limit + limit; i++) {
       if (mattersWithAppliedFilters[i]) {
         filteredMatters.push(mattersWithAppliedFilters[i]);

@@ -33,7 +33,7 @@ const StyledFooter = styled.div`
   position: fixed;
   right: 0;
   bottom: 0;
-  left: 255px;
+  left: 256px;
   display: flex;
   justify-content: flex-end;
   align-items: center;

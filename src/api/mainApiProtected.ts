@@ -16,11 +16,7 @@ export class MainApiProtected extends HttpClientProtected {
   }
 
   public placeOrder = (order: PlaceOrder) => (
-    this.instance.post<{ id: number, products: PlaceOrderProduct[] }>('/orders', order)
-  );
-
-  public editOrder = (id: number, order: PlaceOrder) => (
-    this.instance.patch<{ products: PlaceOrderProduct[] }>(`/orders/${id}`, order)
+    this.instance.post<{ orderId: string, products: PlaceOrderProduct[] }>('/orders', order)
   );
 
   public getOrderDetails = (id: string) => (

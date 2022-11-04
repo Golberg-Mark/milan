@@ -16,7 +16,8 @@ export interface PlaceOrder {
   totalPrice: string,
   fulfilmentStatus: string,
   products: PlaceOrderProduct[],
-  organisationId: number
+  organisationId: number,
+  orderType: 'list' | 'regular'
 }
 
 export interface BaseProduct {
@@ -44,7 +45,7 @@ interface OrderState {
   totalPrice: number,
   totalItemsAmount: number,
   order: PlaceOrder | null,
-  orderId: number | null,
+  orderId: string | null,
   orderProducts: PlaceOrderProduct[] | null,
   products: RefactoredProduct[] | null,
   isProductsLoading: boolean
@@ -88,7 +89,7 @@ export class OrderReducer extends ImmerReducer<OrderState> {
     this.draftState.products = value;
   }
 
-  public setOrderId(value: number | null) {
+  public setOrderId(value: string | null) {
     this.draftState.orderId = value;
   }
 

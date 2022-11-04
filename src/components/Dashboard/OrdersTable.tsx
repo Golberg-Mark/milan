@@ -39,6 +39,8 @@ export const Wrapper: React.FC = () => {
     : <Loader />;
 };
 
+const limit = 10;
+
 const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
   const [search, setSearch] = useInput();
   const [startDay, setStartDay] = useState<Date | null>(null);
@@ -48,8 +50,7 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
   const [selectedUser, setSelectedUser] = useState<OrganizationUser | null>(null);
   const [usersRef, isUsersVisible, toggleIsUsersVisible] = useOnClickOutside<HTMLButtonElement>();
   const [isAllCheckboxChecked, toggleIsAllCheckboxChecked] = useToggle();
-  const [selectedOrders, setSelectedOrders] = useState<number[]>([]);
-  const [limit, setLimit] = useState(10);
+  const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
   const [offset, setOffset] = useState(0);
 
   const orgUsers = useSelector(selectOrganizationUsers);
@@ -83,7 +84,7 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
     setSelectedUser(null);
   };
 
-  const onCheckboxClick = (isChecked: boolean, id: number) => {
+  const onCheckboxClick = (isChecked: boolean, id: string) => {
     setSelectedOrders(prevState => {
       if (!isChecked) return prevState.filter(el => el !== id);
       return [...prevState, id];
@@ -135,7 +136,7 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
   }), [search, startDay, endDay, status, selectedUser]);
   const filteredOrders: Order[] = [];
 
-  if (maxPages > 1) {
+  if (maxPages >= 1) {
     for (let i = offset * limit; i <= offset * limit + limit; i++) {
       if (ordersWithAppliedFilters[i]) {
         filteredOrders.push(ordersWithAppliedFilters[i]);
@@ -254,6 +255,7 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
                       <th style={{ padding: '1rem 0 1rem 1.5rem' }}>
                         <Checkbox
                           type="checkbox"
+                          disabled={order.status !== 'complete'}
                           checked={!!selectedOrders.find(el => el === order.id)}
                           onClick={(evt) => evt.stopPropagation()}
                           onChange={({ target }) => onCheckboxClick(target.checked, order.id)}
@@ -274,7 +276,7 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
                       </td>
                       <td>
                         <Status orderStatus={order.status}>
-                          {order.type === 'validation' ? 'list' : order.status}
+                          {order.type === 'list' ? 'list' : order.status}
                         </Status>
                       </td>
                       <td style={{ textAlign: 'center' }}>
@@ -369,7 +371,7 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
             </li>
             <CloseIcon
               width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-              onClick={(evt) => selectAllCheckboxes(false)}
+              onClick={() => selectAllCheckboxes(false)}
             >
               <path d="M5.00098 5L19 18.9991" stroke="#292D32" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               <path d="M4.99996 18.9991L18.999 5" stroke="#292D32" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -512,6 +514,11 @@ const Checkbox = styled.input`
   width: 1rem;
   height: 1rem;
   border: 1px solid #6b7280;
+  cursor: pointer;
+  
+  :disabled {
+    cursor: default;
+  }
   
   &:checked {
     border: 1px solid rgb(36, 99, 235);
@@ -684,7 +691,7 @@ const Page = styled.p`
 const PopUp = styled.div`
   position: fixed;
   bottom: 100px;
-  left: calc(50% + 255px / 2);
+  left: calc(50% + 256px / 2);
   display: flex;
   align-items: center;
   justify-content: space-between;

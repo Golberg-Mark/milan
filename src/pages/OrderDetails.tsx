@@ -10,6 +10,7 @@ import { selectOrderDetails } from '@/store/selectors/userSelectors';
 import Loader from '@/components/Loader';
 import PageTitle from '@/components/PageTitle';
 import convertTimestamp from '@/utils/convertTimestamp';
+import { orderActions } from '@/store/actions/orderActions';
 
 const OrderDetails = () => {
   const order = useSelector(selectOrderDetails);
@@ -17,8 +18,12 @@ const OrderDetails = () => {
   const { id } = useParams();
   const dispatch = useDispatch<any>();
 
-  useEffect(() => () => {
-    dispatch(userActions.setOrderDetails(null));
+  useEffect(() => {
+    dispatch(orderActions.setOrderId(null));
+
+    return () => {
+      dispatch(userActions.setOrderDetails(null));
+    };
   }, []);
 
   useEffect(() => {

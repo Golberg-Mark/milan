@@ -10,7 +10,7 @@ import {
 } from '@/store/actions/orderActions';
 import {
   selectDescription, selectIsProductsLoading,
-  selectMatter,
+  selectMatter, selectOrderId,
   selectProducts,
   selectProductsPrice,
   selectTotalItemsAmount
@@ -42,12 +42,17 @@ const AddOrder = () => {
   const productsPrice = useSelector(selectProductsPrice);
   const totalItemsAmount = useSelector(selectTotalItemsAmount);
   const isProductsLoading = useSelector(selectIsProductsLoading);
+  const orderId = useSelector(selectOrderId);
 
   const dispatch = useDispatch<any>();
 
   useEffect(() => () => {
     window.history.replaceState({}, '');
   });
+
+  useEffect(() => {
+    if (orderId) navigate(`/orders/${orderId}`);
+  }, [orderId]);
 
   useEffect(() => {
     if (locationState && locationState.region && locationState.service) {
@@ -94,7 +99,6 @@ const AddOrder = () => {
     await dispatch(placeOrderAction(region, service));
     setTimeout(() => {
       toggleIsOrderLoading(false);
-      navigate('/');
     }, 300);
   };
 

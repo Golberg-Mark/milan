@@ -39,7 +39,7 @@ const Orders = () => {
             A list of all the orders you've requested for in the past.
           </Description>
         </div>
-        <Link to="/orders/add">
+        <Link to="/new-order">
           <StyledButton>
             <svg
               fill="none"
@@ -59,8 +59,8 @@ const Orders = () => {
       </PageHeader>
       <NavWrapper>
         <Nav>
-          <StyledNavLink to="/" end>All orders</StyledNavLink>
-          <StyledNavLink to="/matters">All matters</StyledNavLink>
+          <StyledNavLink to="/dashboard/" end>All orders</StyledNavLink>
+          <StyledNavLink to="/dashboard/matters">All matters</StyledNavLink>
         </Nav>
       </NavWrapper>
       <Routes>

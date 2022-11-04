@@ -145,7 +145,7 @@ const StyledPageHeader = styled.div`
   position: fixed;
   top: 0;
   right: 0;
-  left: 255px;
+  left: 256px;
   display: flex;
   justify-content: space-between;
   grid-gap: 24px;

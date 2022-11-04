@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 
 import GlobalStyle from '@/utils/getNormalizedCSS';
 import MyHQ from '@/pages/MyHQ';
@@ -11,8 +11,16 @@ import Auth from '@/pages/Auth';
 import AddOrder from '@/pages/AddOrder';
 import OrderDetails from '@/pages/OrderDetails';
 import PriceList from '@/pages/PriceList';
+import { useLocation } from 'react-router';
 
 const App = () => {
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (pathname === '/') navigate('/dashboard', { replace: true });
+  }, [pathname]);
+
   return (
     <GlobalContainer>
       <GlobalStyle />
@@ -24,14 +32,9 @@ const App = () => {
             <ContentContainer>
               <PageHeader />
               <Routes>
-                <Route path="/*" element={<Orders />} />
-                <Route path="/orders/*" element={
-                  <Routes>
-                    <Route path="/add" element={<AddOrder />} />
-                    <Route path="/:id" element={<OrderDetails />} />
-                  </Routes>
-                }/>
-                <Route path="/my-hq" element={<MyHQ />} />
+                <Route path="/dashboard/*" element={<Orders />}/>
+                <Route path="orders/:id" element={<OrderDetails />} />
+                <Route path="/new-order" element={<AddOrder />} />
                 <Route path="/price-list" element={<PriceList />} />
               </Routes>
             </ContentContainer>
@@ -55,7 +58,7 @@ const ContentContainer = styled.div`
   position: relative;
   min-height: inherit;
   padding-top: 64px;
-  padding-left: 255px;
+  padding-left: 256px;
 `;
 
 export default App;
