@@ -56,8 +56,8 @@ const GlobalContainer = styled.section`
 const ContentContainer = styled.div`
   position: relative;
   min-height: inherit;
-  padding-top: 64px;
-  padding-left: 256px;
+  padding-top: var(--search-height);
+  padding-left: var(--sidebar-width);
 `;
 
 export default App;

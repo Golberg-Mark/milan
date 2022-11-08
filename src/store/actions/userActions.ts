@@ -15,10 +15,10 @@ export type UserActions = ReturnType<typeof userActions.setIsLoggedIn>
 export const getMeAction = (): AsyncAction => async (
   dispatch,
   _,
-  { mainApi }
+  { mainApiProtected }
 ) => {
   try {
-    const user = await mainApi.getMe();
+    const user = await mainApiProtected.getMe();
 
     dispatch(userActions.setUser(user));
   } catch (error: any) {

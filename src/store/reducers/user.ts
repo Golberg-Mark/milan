@@ -4,7 +4,13 @@ export interface User {
   id: number,
   name: string,
   email: string,
-  organisationId: number
+  organisations: {
+    roleWithinOrganisation: string,
+    id: number,
+    name: string,
+    isActive: boolean,
+    creditLimit: number
+  }[]
 }
 
 export enum OrderStatusEnum {

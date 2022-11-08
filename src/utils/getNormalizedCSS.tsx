@@ -5,6 +5,8 @@ const GlobalStyle = createGlobalStyle`
   ${normalize};
   
   * {
+    --sidebar-width: 256px;
+    --search-height: 82px;
     --primary-dark-color: rgb(17, 24, 39);
     --primary-grey-color: #374151;
     --primary-blue-color: rgb(36, 99, 235);

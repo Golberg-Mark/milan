@@ -1,6 +1,6 @@
 import { HttpClientProtected } from '@/api/httpClientProtected';
 import { PlaceOrder, PlaceOrderProduct } from '@/store/reducers/order';
-import { OrderDetails, OrganizationUser } from '@/store/reducers/user';
+import { OrderDetails, OrganizationUser, User } from '@/store/reducers/user';
 
 export class MainApiProtected extends HttpClientProtected {
   private static instanceCached: MainApiProtected;
@@ -14,6 +14,8 @@ export class MainApiProtected extends HttpClientProtected {
 
     return MainApiProtected.instanceCached;
   }
+
+  public getMe = () => this.instance.get<User>('/users/profile');
 
   public placeOrder = (order: PlaceOrder) => (
     this.instance.post<{ orderId: string, products: PlaceOrderProduct[] }>('/orders', order)
