@@ -10,7 +10,8 @@ export type UserActions = ReturnType<typeof userActions.setIsLoggedIn>
   | ReturnType<typeof userActions.setMatters>
   | ReturnType<typeof userActions.setOrderDetails>
   | ReturnType<typeof userActions.setUser>
-  | ReturnType<typeof userActions.setOrgUsers>;
+  | ReturnType<typeof userActions.setOrgUsers>
+  | ReturnType<typeof userActions.logout>;
 
 export const getMeAction = (): AsyncAction => async (
   dispatch,
@@ -85,6 +86,20 @@ export const getUsersByOrganizationAction = (id: number = 1): AsyncAction => asy
   try {
     const users = await mainApiProtected.getUsersByOrganization(id);
     dispatch(userActions.setOrgUsers(users));
+  } catch (error: any) {
+    console.log(error);
+  }
+};
+
+export const logoutAction = (): AsyncAction => async (
+  dispatch,
+  _,
+  { }
+) => {
+  try {
+    localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
+    dispatch(userActions.logout());
   } catch (error: any) {
     console.log(error);
   }

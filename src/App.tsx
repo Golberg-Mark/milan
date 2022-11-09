@@ -1,7 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { useLocation } from 'react-router';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 
 import GlobalStyle from '@/utils/getNormalizedCSS';
 import Orders from '@/pages/Orders';
@@ -11,22 +10,18 @@ import Auth from '@/pages/Auth';
 import AddOrder from '@/pages/AddOrder';
 import OrderDetails from '@/pages/OrderDetails';
 import PriceList from '@/pages/PriceList';
+import ProtectedRouter from '@/components/ProtectedRouter';
+import { Navigate } from 'react-router';
 
 const App = () => {
-  const { pathname } = useLocation();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (pathname === '/') navigate('/dashboard', { replace: true });
-  }, [pathname]);
-
   return (
     <GlobalContainer>
       <GlobalStyle />
       <Routes>
+        <Route path="/" element={<ProtectedRouter><Navigate to="/dashboard" /></ProtectedRouter>} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/*" element={(
-          <>
+          <ProtectedRouter>
             <Menu />
             <ContentContainer>
               <PageHeader />
@@ -37,7 +32,7 @@ const App = () => {
                 <Route path="/price-list" element={<PriceList />} />
               </Routes>
             </ContentContainer>
-          </>
+          </ProtectedRouter>
         )} />
       </Routes>
     </GlobalContainer>

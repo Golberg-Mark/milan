@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RiArrowRightSLine } from 'react-icons/all';
 
 import { selectUser } from '@/store/selectors/userSelectors';
-import { getMeAction } from '@/store/actions/userActions';
+import { getMeAction, logoutAction } from '@/store/actions/userActions';
 
 import useInput from '@/hooks/useInput';
 import getRegionsData from '@/utils/getRegionsData';
@@ -118,7 +118,16 @@ const PageHeader = () => {
                 </Link>
               </li>
               <Divider />
-              {/*TODO: add logout button*/}
+              <li>
+                <Link to="/auth" onClick={() => dispatch(logoutAction())}>
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M13.08 10.965L15 9.045L13.08 7.125" stroke="#DC2D2D" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M7.31995 9.04498H14.9474" stroke="#DC2D2D" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M8.81995 15C5.50495 15 2.81995 12.75 2.81995 9C2.81995 5.25 5.50495 3 8.81995 3" stroke="#DC2D2D" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  Logout
+                </Link>
+              </li>
             </SettingsModal>
           ) : ''}
         </PhotoWrapper>
@@ -344,6 +353,10 @@ const SettingsModal = styled(Results)`
     svg {
       width: 18px;
       height: 18px;
+    }
+    
+    :last-child a {
+      color: #DC2D2D;
     }
   }
 `;

@@ -89,7 +89,7 @@ interface UserState {
 const InitialState: UserState = {
   user: null,
   orgUsers: null,
-  isLoggedIn: true,
+  isLoggedIn: !!localStorage.getItem('token'),
   orders: null,
   matters: null,
   orderDetails: null
@@ -118,6 +118,11 @@ export class UserReducer extends ImmerReducer<UserState> {
 
   public setOrgUsers(value: OrganizationUser[] | null) {
     this.draftState.orgUsers = value;
+  }
+
+  public logout() {
+    this.draftState.user = null;
+    this.draftState.isLoggedIn = false;
   }
 }
 
