@@ -3,12 +3,12 @@ import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 
 import useInput from '@/hooks/useInput';
-import Input from '@/components/AddOrder/Input';
 import {
   getOrderItemsAction,
   initializeOrderAction,
   orderActions
 } from '@/store/actions/orderActions';
+import Input from '@/components/Input';
 
 const TitleInputs: React.FC = () => {
   const [referenceNumber, setReferenceNumber] = useInput();
@@ -38,10 +38,10 @@ const TitleInputs: React.FC = () => {
   return (
     <TitleReference>
       <Input
-        name="Title Reference"
         value={referenceNumber}
         onChange={setReferenceNumber}
-        placeholder="E.g LR121/33577A"
+        placeholder="Title Reference, e.g LR121/33577A"
+        style={{ marginBottom: 0 }}
         required
       />
       <ButtonWrapper style={{ marginLeft: '-4px' }}>
@@ -74,26 +74,29 @@ const ButtonWrapper = styled.div<{ align?: string }>`
 `;
 
 const Button = styled.button`
-  padding: .625rem 2.25rem;
-  height: 42px;
+  padding: 8px 12px;
+  min-width: 73px;
+  height: 38px;
   border: none;
-  border-radius: 5px;
-  font-size: 14px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
   color: #fff;
-  background-color: var(--primary-blue-color);
+  background-color: var(--primary-green-color);
   
   :hover {
-    background-color: rgba(36, 99, 235, .9);
+    background-color: var(--primary-green-hover-color);
   }
 `;
 
 const Price = styled.span`
   padding: .4rem .65rem;
-  border: 1px solid rgba(30, 58, 138, .1);
+  border: 1px solid rgba(39, 163, 118, 0.2);
   border-radius: 4px;
   font-size: 14px;
-  color: #1E3E8A;
-  background-color: #DBEAFE;
+  font-weight: 500;
+  color: var(--primary-green-color);
+  background-color: var(--primary-green-background-color);
 `;
 
 export default TitleInputs;

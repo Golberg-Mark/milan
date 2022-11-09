@@ -159,7 +159,7 @@ const AddOrder = () => {
         <TitleSection>
           <SubTitle fontSize={18}>Title Search</SubTitle>
           <SubTitle style={{ color: 'rgba(26, 28, 30, 0.5)' }}>Search by:</SubTitle>
-          <Tips style={{ marginBottom: '1.25rem' }}>
+          <Tips style={{ marginBottom: '24px' }}>
             {mockedData[selectedRegion].services.map((el, i) => (
               <Tip
                 key={el.name}
@@ -297,7 +297,7 @@ const Tip = styled.span<{ isSelected: boolean, width?: number }>`
   color: ${({ isSelected }) => isSelected ? 'var(--primary-green-color)' : 'rgba(0, 0, 0, .5)'};
   border: 1px solid ${({ isSelected }) => isSelected ? 'var(--primary-green-color)' : 'rgba(35, 35, 35, 0.16)'};
   border-radius: 4px;
-  background-color: ${({ isSelected }) => isSelected ? 'rgba(39, 163, 118, 0.1)' : 'unset'};
+  background-color: ${({ isSelected }) => isSelected ? 'var(--primary-green-background-color)' : 'unset'};
   cursor: pointer;
 `;
 
