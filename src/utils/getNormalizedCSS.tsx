@@ -29,7 +29,7 @@ const GlobalStyle = createGlobalStyle`
     max-height: 100vh;
     height: 100%;
     font-size: 16px;
-    background-color: rgb(243, 244, 246);
+    background-color: #F1EFE9;
   }
   
   img {
