@@ -10,6 +10,7 @@ const GlobalStyle = createGlobalStyle`
     --primary-dark-color: rgb(17, 24, 39);
     --primary-grey-color: #374151;
     --primary-blue-color: rgb(36, 99, 235);
+    --primary-green-color: #27A376;
     
     box-sizing: border-box;
     font-family: sans-serif;

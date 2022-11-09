@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import useToggle from '@/hooks/useToggle';
 import SuccessIcon from '@/assets/icons/SuccessIcon';
+import Input from '@/components/AddOrder/Input';
 
 interface Props {
   name: string,
@@ -12,16 +13,20 @@ interface Props {
     name: string,
     isChosen: boolean
   }[],
-  setSubItems: Function
+  setSubItems?: Function,
+  inputs: {
+    label: string,
+    placeholder: string
+  }[] | []
 }
 
-const OrderItem: React.FC<Props> = ({ name, price, index, subItems, setSubItems }) => {
+const OrderItem: React.FC<Props> = ({ name, price, index, subItems, setSubItems, inputs }) => {
   const [isSelected, toggleIsSelected] = useToggle();
 
   const onSubItemClick = (evt: React.MouseEvent<HTMLLIElement>, i: number) => {
     evt.stopPropagation();
 
-    setSubItems(index, i);
+    //setSubItems(index, i);
   };
 
   return (
@@ -64,6 +69,12 @@ const OrderItem: React.FC<Props> = ({ name, price, index, subItems, setSubItems 
           ))}
         </SubItems>
       ) : ''}
+      {isSelected && inputs.length ? (
+        <Inputs>
+          {inputs.map((el) => <Input name={el.label} placeholder={el.placeholder} />)}
+
+        </Inputs>
+      ) : ''}
     </Li>
   );
 };
@@ -72,7 +83,7 @@ const Li = styled.li`
   &:not(:last-child) {
     border-bottom: 1px solid rgb(229, 231, 235);
   }
-  
+
   :hover {
     svg {
       stroke: rgba(0, 0, 0, .9);
@@ -92,7 +103,7 @@ const Item = styled.div`
 const OrderItemName = styled.div`
   display: flex;
   align-items: center;
-  
+
   span {
     color: #00000080;
     font-weight: 700;
@@ -128,11 +139,17 @@ const SubItem = styled.li`
   border: 1px solid rgb(229, 231, 235);
   border-radius: 100px;
   cursor: pointer;
-  
+
   svg {
     width: 14px;
     height: 14px;
   }
+`;
+
+const Inputs = styled.div`
+  display: flex;
+  align-items: center;
+  grid-gap: 24px;
 `;
 
 export default OrderItem;

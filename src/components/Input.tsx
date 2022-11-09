@@ -2,17 +2,26 @@ import React, { InputHTMLAttributes } from 'react';
 import styled from 'styled-components';
 
 interface Props extends InputHTMLAttributes<HTMLInputElement> {
-  label: string,
+  label?: string,
+  labelMarginBottom?: number,
   labelFontSize?: string,
   isError?: boolean
 }
 
-const Input: React.FC<Props> = ({ label, labelFontSize = '1.125rem', isError, ...props }) => {
+const Input: React.FC<Props> = ({
+  label,
+  labelMarginBottom = 16,
+  labelFontSize = '16px',
+  isError,
+  ...props
+}) => {
   return (
     <Label>
-      <LabelText fontSize={labelFontSize}>
-        {label}
-      </LabelText>
+      {label ? (
+        <LabelText fontSize={labelFontSize} marginBottom={labelMarginBottom}>
+          {label}
+        </LabelText>
+      ) : ''}
       <StyledInput isError={isError} {...props} />
     </Label>
   );
@@ -21,23 +30,25 @@ const Input: React.FC<Props> = ({ label, labelFontSize = '1.125rem', isError, ..
 const Label = styled.label`
   display: flex;
   flex-direction: column;
-  grid-gap: 2px;
   color: var(--primary-grey-color);
   font-weight: 600;
 `;
 
-const LabelText = styled.span<{ fontSize: string }>`
+const LabelText = styled.span<{ fontSize: string, marginBottom: number }>`
+  margin-bottom: ${({ marginBottom }) => marginBottom}px;
   font-size: ${({ fontSize }) => fontSize};
+  font-weight: 500;
 `;
 
 const StyledInput = styled.input<{ isError?: boolean }>`
   margin-bottom: 1.25rem;
-  padding: .5rem .75rem;
-  border: 1px solid ${({ isError }) => isError ? '#ff3333' : 'rgba(156, 163, 175, .6)'};
-  border-radius: 5px;
-  line-height: 1.5rem;
-  background-color: rgba(249, 250, 251, .8);
-  
+  padding: 13px 16px;
+  height: 38px;
+  border: 1px solid ${({ isError }) => isError ? '#ff3333' : 'rgba(35, 35, 35, 0.16)'};
+  border-radius: 4px;
+  font-size: 12px;
+  background-color: #fff;
+
   :focus {
     outline: 2px solid var(--primary-blue-color);
   }

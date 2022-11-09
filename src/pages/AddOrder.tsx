@@ -20,11 +20,11 @@ import PageTitle from '@/components/PageTitle';
 import Input from '@/components/Input';
 import SearchInputs from '@/components/AddOrder/RegionsServices';
 import OrderItem from '@/components/AddOrder/OrderItem';
-import Loader from '@/components/Loader';
 import Footer from '@/components/AddOrder/Footer';
 
 import useToggle from '@/hooks/useToggle';
 import getRegionsData from '@/utils/getRegionsData';
+import parseCSV from '@/utils/parseCSV';
 
 const mockedData = getRegionsData();
 
@@ -109,102 +109,107 @@ const AddOrder = () => {
     <AddOrderPage>
       <PageHeader>
         <StyledLink to="/">
-          <BackIcon
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth="2.5"
-            stroke="var(--primary-dark-color)"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M15.75 19.5L8.25 12l7.5-7.5"
-            />
-          </BackIcon>
-          Back to orders
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g opacity="0.7">
+              <path d="M9.57 5.92999L3.5 12L9.57 18.07" stroke="#111827" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M20.5 12H3.67" stroke="#111827" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+            </g>
+          </svg>
+          <PageTitle>
+            Property Information
+          </PageTitle>
         </StyledLink>
-        <PageTitle>
-          New Order
-        </PageTitle>
-      </PageHeader>
-      <ContentWrapper>
-        <Content>
-          <Matter>
+        <Matter>
+          <MatterInputs>
             <Input
               label="Matter / File Reference"
+              labelMarginBottom={25}
               placeholder="Enter matter here"
               value={matter}
               onChange={(evt) => dispatch(orderActions.setMatter(evt.target.value))}
             />
-            <div>
-              <SubTitle>Regions</SubTitle>
-              <Tips>
-                {mockedData.map((el, i) => (
-                  <Tip
-                    key={el.region}
-                    isSelected={selectedRegion === i}
-                    onClick={() => {
-                      setSelectedService(0)
-                      setSelectedRegion(i)
-                    }}
-                  >
-                    {el.region}
-                  </Tip>
-                ))}
-              </Tips>
-            </div>
             <Input
               label="Description"
+              labelMarginBottom={25}
               placeholder="Enter description here"
               value={description}
               onChange={(evt) => dispatch(orderActions.setDescription(evt.target.value))}
             />
-          </Matter>
-          <TitleSection>
-            <Title>Title Search</Title>
-            <SubTitle>Search by</SubTitle>
-            <Tips style={{ marginBottom: '1.25rem' }}>
-              {mockedData[selectedRegion].services.map((el, i) => (
+          </MatterInputs>
+          <div>
+            <SubTitle>Regions</SubTitle>
+            <Tips>
+              {mockedData.map((el, i) => (
                 <Tip
-                  key={el.name}
-                  isSelected={selectedService === i}
-                  onClick={() => setSelectedService(i)}
+                  key={el.region}
+                  isSelected={selectedRegion === i}
+                  onClick={() => {
+                    setSelectedService(0)
+                    setSelectedRegion(i)
+                  }}
                 >
-                  {el.name}
+                  {el.region}
                 </Tip>
               ))}
             </Tips>
-            <SearchInputs
-              regionName={mockedData[selectedRegion].region}
-              selectedService={selectedService}
-            />
-            <Titles>
-              Titles that you add will appear here.
-            </Titles>
-          </TitleSection>
-          <OrderItemsSection>
-            <Title>Order items</Title>
-            <Description>
-              Expand a product and select the references you want to purchase within it.
-            </Description>
-            {mockedProducts?.length ? (
-              <ul>
-                {mockedProducts.map((item, i) => (
-                  <OrderItem
-                    key={item.name}
-                    name={item.name}
-                    index={i}
-                    price={item.price}
-                    subItems={item.items}
-                    setSubItems={selectItem}
-                  />
-                ))}
-              </ul>
-            ) : isProductsLoading ? <Loader/> : ''}
-          </OrderItemsSection>
-        </Content>
-      </ContentWrapper>
+          </div>
+        </Matter>
+      </PageHeader>
+      <Content>
+        <TitleSection>
+          <SubTitle fontSize={18}>Title Search</SubTitle>
+          <SubTitle style={{ color: 'rgba(26, 28, 30, 0.5)' }}>Search by:</SubTitle>
+          <Tips style={{ marginBottom: '1.25rem' }}>
+            {mockedData[selectedRegion].services.map((el, i) => (
+              <Tip
+                key={el.name}
+                isSelected={selectedService === i}
+                onClick={() => setSelectedService(i)}
+              >
+                {el.name}
+              </Tip>
+            ))}
+          </Tips>
+          <SearchInputs
+            regionName={mockedData[selectedRegion].region}
+            selectedService={selectedService}
+          />
+          <Titles>
+            Titles that you add will appear here.
+          </Titles>
+        </TitleSection>
+        <OrderItemsSection>
+          <Title>Order items</Title>
+          <Description>
+            Expand a product and select the references you want to purchase within it.
+          </Description>
+          {/*mockedProducts?.length ? (
+            <ul>
+              {mockedProducts.map((item, i) => (
+                <OrderItem
+                  key={item.name}
+                  name={item.name}
+                  index={i}
+                  price={item.price}
+                  subItems={item.items}
+                  setSubItems={selectItem}
+                />
+              ))}
+            </ul>
+          ) : isProductsLoading ? <Loader/> : ''*/}
+          <ul>
+            {parseCSV('NSW').map((el, i) => (
+              <OrderItem
+                key={el['Search Type']}
+                name={el['Search Type']}
+                index={i}
+                price={'0.00'}
+                inputs={el['Label'] ? [{ label: el['Label'], placeholder: el['Placeholder'] }] : []}
+              />
+            ))}
+          </ul>
+        </OrderItemsSection>
+      </Content>
       <Footer
         isError={isMatterError || isDescriptionError}
         isLoading={isOrderLoading}
@@ -215,53 +220,51 @@ const AddOrder = () => {
 };
 
 const AddOrderPage = styled.section`
+  padding: 32px 32px 134px;
   position: relative;
 `;
 
 const PageHeader = styled.div`
-  padding: 1rem 2rem;
-  background-color: rgba(17, 24, 39, .05);
+  margin-bottom: 32px;
+  padding: 32px 0;
+  border-radius: 12px;
+  background-color: #fff;
 
   h1 {
     margin-bottom: 0;
   }
 `;
 
-const BackIcon = styled.svg`
-  width: 16px;
-  height: 16px;
-`;
-
 const StyledLink = styled(Link)`
   display: flex;
   align-items: center;
-  grid-gap: 4px;
-  margin-bottom: 14px;
-  font-size: .9rem;
-`;
-
-const ContentWrapper = styled.div`
-  padding: 2.5rem 2rem 8rem;
-`;
-
-const Content = styled.div`
-  padding: 2rem 0 2rem;
-  border: 1px solid rgb(229, 231, 235);
-  border-radius: 8px;
-  background-color: #fff;
-  overflow-x: hidden;
+  grid-gap: 24px;
+  padding: 0 32px 32px;
+  border-bottom: 1px solid rgba(35, 35, 35, 0.16);
 `;
 
 const Matter = styled.div`
   display: grid;
-  grid-template-columns: 4fr 8fr;
-  grid-gap: 1.5rem;
-  padding: 0 2.5rem 1.25rem;
-  border-bottom: 1px solid rgb(229, 231, 235);
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 32px;
+  padding: 32px 120px 32px 32px;
 
   input {
     margin: 0;
   }
+`;
+
+const MatterInputs = styled.div`
+  display: flex;
+  flex-direction: column;
+  grid-gap: 16px;
+`;
+
+const Content = styled.div`
+  padding: 32px;
+  border-radius: 12px;
+  background-color: #fff;
+  overflow-x: hidden;
 `;
 
 const Title = styled.h2`
@@ -269,8 +272,9 @@ const Title = styled.h2`
   font-size: 1.125rem;
 `;
 
-const SubTitle = styled.p`
-  margin-bottom: .5rem;
+const SubTitle = styled.p<{ fontSize?: number }>`
+  margin-bottom: 25px;
+  font-size: ${({ fontSize = 16 }) => fontSize}px;
   color: #4B5563;
   font-weight: 500;
 `;
@@ -278,21 +282,26 @@ const SubTitle = styled.p`
 const Tips = styled.div`
   display: flex;
   flex-wrap: wrap;
-  grid-gap: 6px;
+  grid-gap: 16px;
 `;
 
-const Tip = styled.span<{ isSelected: boolean }>`
-  padding: .5rem 1rem;
-  font-size: 14px;
-  border: 1px solid ${({ isSelected }) => isSelected ? 'var(--primary-blue-color)' : 'rgba(156, 163, 175, .8)'};
-  border-radius: 100px;
-  color: ${({ isSelected }) => isSelected ? 'var(--primary-blue-color)' : '#6B7280'};
-  background-color: ${({ isSelected }) => isSelected ? 'rgb(239, 246, 255)' : 'unset'};
+const Tip = styled.span<{ isSelected: boolean, width?: number }>`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px 16px;
+  width: ${({ width }) => width ? `${width}px}` : 'auto'};
+  height: 38px;
+  font-size: 12px;
+  font-weight: 600;
+  color: ${({ isSelected }) => isSelected ? 'var(--primary-green-color)' : 'rgba(0, 0, 0, .5)'};
+  border: 1px solid ${({ isSelected }) => isSelected ? 'var(--primary-green-color)' : 'rgba(35, 35, 35, 0.16)'};
+  border-radius: 4px;
+  background-color: ${({ isSelected }) => isSelected ? 'rgba(39, 163, 118, 0.1)' : 'unset'};
   cursor: pointer;
 `;
 
 const TitleSection = styled.div`
-  padding: 1.5rem 2.5rem;
   border-bottom: 1px solid rgb(229, 231, 235);
 `;
 
@@ -305,7 +314,6 @@ const Titles = styled.div`
 `;
 
 const OrderItemsSection = styled.div`
-  padding: 1.5rem 2.5rem 0;
 `;
 
 const Description = styled.p`
