@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RiArrowRightSLine } from 'react-icons/all';
 
 import { selectUser } from '@/store/selectors/userSelectors';
-import { getMeAction, logoutAction } from '@/store/actions/userActions';
+import { logoutAction } from '@/store/actions/userActions';
 
 import useInput from '@/hooks/useInput';
 import getRegionsData from '@/utils/getRegionsData';
@@ -23,10 +23,6 @@ const PageHeader = () => {
 
   const dispatch = useDispatch<any>();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!user) dispatch(getMeAction());
-  }, []);
 
   useEffect(() => {
     if (search) {
