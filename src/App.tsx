@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { Routes, Route } from 'react-router-dom';
 
@@ -12,8 +12,14 @@ import OrderDetails from '@/pages/OrderDetails';
 import PriceList from '@/pages/PriceList';
 import ProtectedRouter from '@/components/ProtectedRouter';
 import { Navigate } from 'react-router';
+import { useDispatch } from 'react-redux';
+import { getOrderItemsAction } from '@/store/actions/orderActions';
 
 const App = () => {
+  const dispatch = useDispatch<any>();
+  useEffect(() => {
+    dispatch(getOrderItemsAction('wa', 'title-reference'));
+  }, []);
   return (
     <GlobalContainer>
       <GlobalStyle />

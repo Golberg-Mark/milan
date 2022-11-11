@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import useInput from '@/hooks/useInput';
 import {
@@ -9,9 +9,12 @@ import {
   orderActions
 } from '@/store/actions/orderActions';
 import Input from '@/components/Input';
+import { selectPriceList } from '@/store/selectors/userSelectors';
 
 const TitleInputs: React.FC = () => {
   const [referenceNumber, setReferenceNumber] = useInput();
+
+  const priceList = useSelector(selectPriceList);
 
   const dispatch = useDispatch<any>();
 
@@ -19,20 +22,22 @@ const TitleInputs: React.FC = () => {
     dispatch(orderActions.setProducts(null));
     dispatch(orderActions.setIsProductsLoading(true));
 
-    dispatch(initializeOrderAction(
+    /*dispatch(initializeOrderAction(
       'WA',
       'Title Reference',
       '0.00'
-    ));
+    ));*/
 
-    try {
-      await dispatch(getOrderItemsAction(
-        'WA',
-        'Title Reference',
-        '0.00'
+    if (priceList) {
+      try {
+        await dispatch(getOrderItemsAction(
+          'WA',
+          'Title Reference',
+          priceList.find((el) => el.searchType === 'WA Check Search')!.priceInclGST
       ));
-      dispatch(orderActions.setIsProductsLoading(false));
-    } catch (e) { console.error(e) }
+        dispatch(orderActions.setIsProductsLoading(false));
+      } catch (e) { console.error(e) }
+    }
   };
 
   return (

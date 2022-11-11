@@ -1,50 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const mockedPrice = [
-  {
-    collection: 'QLD Property',
-    supplier: 'QLD Natural Resources, Mines and Energy',
-    searchType: 'BUP/GTP Search Statement',
-    description: '',
-    productCode: 'DNRBUGTP',
-    exGST: '4.30',
-    GST: '0.43',
-    inclGST: '4.73'
-  },
-  {
-    collection: 'QLD Property',
-    supplier: 'QLD Natural Resources, Mines and Energy',
-    searchType: 'CISP Parcel History Search',
-    description: '',
-    productCode: 'DNRCISP',
-    exGST: '4.30',
-    GST: '0.43',
-    inclGST: '4.73'
-  },
-  {
-    collection: 'NSW Property',
-    supplier: 'NSW Land and Property Information',
-    searchType: 'NSW LPI CAC Inquiry',
-    description: '',
-    productCode: 'LPICAC',
-    exGST: '4.30',
-    GST: '0.43',
-    inclGST: '4.73'
-  },
-  {
-    collection: 'NSW Property',
-    supplier: 'NSW Land and Property Information',
-    searchType: 'CWO Deed Index Detail',
-    description: '',
-    productCode: 'LPICWODET',
-    exGST: '4.30',
-    GST: '0.43',
-    inclGST: '4.73'
-  }
-];
+import { Product } from '@/store/reducers/user';
 
-const PricesTable = () => {
+interface Props {
+  priceList: Product[]
+}
+
+const PricesTable: React.FC<Props> = ({ priceList }) => {
   return (
     <TableWrapper>
       <Table>
@@ -77,31 +40,31 @@ const PricesTable = () => {
           </tr>
         </THead>
         <TBody>
-          {mockedPrice.map((item, i) => (
-            <TRow key={item.productCode}>
+          {priceList.map((item) => (
+            <TRow key={item['productCode']}>
               <th>
-                {item.collection}
+                {item['collection']}
               </th>
               <th>
-                {item.supplier}
+                {item['supplier']}
               </th>
               <td>
-                {item.searchType}
+                {item['searchType']}
               </td>
               <td>
-                {item.description}
+                {item['description']}
               </td>
               <td>
-                {item.productCode}
+                {item['productCode']}
               </td>
               <th>
-                ${item.exGST}
+                ${item['priceExGST']}
               </th>
               <th>
-                ${item.GST}
+                ${item['GST']}
               </th>
               <th>
-                ${item.inclGST}
+                ${item['priceInclGST']}
               </th>
             </TRow>
           ))}

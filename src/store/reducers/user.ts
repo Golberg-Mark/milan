@@ -47,6 +47,17 @@ export interface Matter {
 
 export type Matters = { [key: string]: Matter };
 
+export interface Product {
+  'collection': string
+  'productCode': string,
+  'supplier': string,
+  'description': string,
+  'searchType': string,
+  'priceExGST': string,
+  'GST': string,
+  'priceInclGST': string
+}
+
 export interface OrderItems {
   id: number,
   orderId: string,
@@ -83,7 +94,8 @@ interface UserState {
   isLoggedIn: boolean,
   orders: Order[] | null,
   matters: Matters | null,
-  orderDetails: OrderDetails | null
+  orderDetails: OrderDetails | null,
+  priceList: Product[] | null
 }
 
 const InitialState: UserState = {
@@ -92,12 +104,17 @@ const InitialState: UserState = {
   isLoggedIn: !!localStorage.getItem('token'),
   orders: null,
   matters: null,
-  orderDetails: null
+  orderDetails: null,
+  priceList: null
 };
 
 export class UserReducer extends ImmerReducer<UserState> {
   public setUser(value: User | null) {
     this.draftState.user = value;
+  }
+
+  public setPriceList(value: Product[] | null) {
+    this.draftState.priceList = value;
   }
 
   public setIsLoggedIn(value: boolean) {

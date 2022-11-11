@@ -20,22 +20,20 @@ export interface PlaceOrder {
   orderType: 'list' | 'regular'
 }
 
-export interface BaseProduct {
-  id: number,
-  name: string
+export interface Product {
+  "productId": string,
+  "searchType": string,
+  "input1": string,
+  "placeholder": string,
+  "input2": string | null,
+  "placeholder2": string | null
 }
 
-export interface Product extends BaseProduct {
-  price: string,
-  items: string[]
-}
-
-export interface RefactoredProduct extends BaseProduct {
-  price: string,
-  items: {
-    name: string,
-    isChosen: boolean
-  }[]
+export interface ProductWithMatchedPriceList  extends Product {
+  'priceExGST': string,
+  'GST': string,
+  'priceInclGST': string,
+  'collection': string
 }
 
 interface OrderState {
@@ -47,7 +45,7 @@ interface OrderState {
   order: PlaceOrder | null,
   orderId: string | null,
   orderProducts: PlaceOrderProduct[] | null,
-  products: RefactoredProduct[] | null,
+  products: ProductWithMatchedPriceList[] | null,
   isProductsLoading: boolean
 }
 
@@ -85,7 +83,7 @@ export class OrderReducer extends ImmerReducer<OrderState> {
     this.draftState.totalItemsAmount = value;
   }
 
-  public setProducts(value: RefactoredProduct[] | null) {
+  public setProducts(value: ProductWithMatchedPriceList[] | null) {
     this.draftState.products = value;
   }
 
@@ -104,7 +102,6 @@ export class OrderReducer extends ImmerReducer<OrderState> {
   public cleanCurrentOrder() {
     this.draftState.orderId = null;
     this.draftState.order = null;
-    this.draftState.products = null;
     this.draftState.orderProducts = null;
     this.draftState.totalItemsAmount = 0;
     this.draftState.totalPrice = 0;

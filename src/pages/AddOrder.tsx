@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import {
+  getOrganisationProductsAction,
   orderActions, placeOrderAction
 } from '@/store/actions/orderActions';
 import {
@@ -38,7 +39,7 @@ const AddOrder = () => {
 
   const matter = useSelector(selectMatter);
   const description = useSelector(selectDescription);
-  const mockedProducts = useSelector(selectProducts);
+  const products = useSelector(selectProducts);
   const productsPrice = useSelector(selectProductsPrice);
   const totalItemsAmount = useSelector(selectTotalItemsAmount);
   const isProductsLoading = useSelector(selectIsProductsLoading);
@@ -46,9 +47,13 @@ const AddOrder = () => {
 
   const dispatch = useDispatch<any>();
 
-  useEffect(() => () => {
-    window.history.replaceState({}, '');
-  });
+  useEffect(() => {
+    dispatch(getOrganisationProductsAction());
+
+    return () => {
+      window.history.replaceState({}, '');
+    };
+  }, []);
 
   useEffect(() => {
     if (orderId) navigate(`/orders/${orderId}`);
@@ -74,7 +79,7 @@ const AddOrder = () => {
   }, []);
 
   const selectItem = (productIndex: number, i: number) => {
-    const copiedState = JSON.parse(JSON.stringify(mockedProducts));
+    const copiedState = JSON.parse(JSON.stringify(products));
     const isChosen = copiedState[productIndex].items[i].isChosen;
     copiedState[productIndex].items[i].isChosen = !isChosen;
 
@@ -101,6 +106,18 @@ const AddOrder = () => {
       toggleIsOrderLoading(false);
     }, 300);
   };
+
+  const regionProducts = useMemo(() => {
+    return products?.filter((el) => new RegExp(`${mockedData[selectedRegion].region}`).test(el.collection)).map((el, i) => (
+      <OrderItem
+        key={el.searchType}
+        name={el.searchType}
+        index={i}
+        price={el.priceInclGST}
+        inputs={el['Label'] ? [{ label: el['Label'], placeholder: el['Placeholder'] }] : []}
+      />
+    ))
+  }, [products, selectedRegion]);
 
   const isMatterError = !matter;
   const isDescriptionError = !description;
@@ -198,15 +215,7 @@ const AddOrder = () => {
             </ul>
           ) : isProductsLoading ? <Loader/> : ''*/}
           <ul>
-            {parseCSV('NSW').map((el, i) => (
-              <OrderItem
-                key={el['Search Type']}
-                name={el['Search Type']}
-                index={i}
-                price={'0.00'}
-                inputs={el['Label'] ? [{ label: el['Label'], placeholder: el['Placeholder'] }] : []}
-              />
-            ))}
+            {regionProducts}
           </ul>
         </OrderItemsSection>
       </Content>

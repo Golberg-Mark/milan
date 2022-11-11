@@ -49,7 +49,7 @@ const OrderItem: React.FC<Props> = ({ name, price, index, subItems, setSubItems,
           </Arrow>
           <p>
             {name}
-            <span>{` (@ $${price})`}</span>
+            <span>{` (@ $${Number(price).toFixed(2)})`}</span>
           </p>
         </OrderItemName>
         <TotalPrice>

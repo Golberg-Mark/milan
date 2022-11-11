@@ -18,7 +18,11 @@ class MainApi extends HttpClient {
   public getOrders = () => this.instance.get<Order[]>('/orders');
 
   public getOrderItems = (region: string, service: string) => (
-    this.instance.get<{ products: Product[] }>(`/mock/${region}/${service}`)
+    //this.instance.get<Product[]>(`/mock/${region}/${service}`)
+    this.instance.post(`/mock/wa/title-reference`, {
+      matterReference: 'Test',
+      titleReference: '2100/341'
+    })
   )
 }
 

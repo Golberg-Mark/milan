@@ -1,7 +1,7 @@
 import { createSelector, Selector } from 'reselect';
 
 import { State } from '@/store';
-import { Matters, Order, OrderDetails, OrganizationUser, User } from '@/store/reducers/user';
+import { Matters, Order, OrderDetails, OrganizationUser, Product, User } from '@/store/reducers/user';
 
 const userState = (state: State) => state.user;
 
@@ -13,6 +13,11 @@ export const selectUser: Selector<State, User | null> = createSelector(
 export const selectIsLoggedIn: Selector<State, boolean> = createSelector(
   userState,
   ({ isLoggedIn }) => isLoggedIn
+);
+
+export const selectPriceList: Selector<State, Product[] | null> = createSelector(
+  userState,
+  ({ priceList }) => priceList
 );
 
 export const selectOrders: Selector<State, Order[] | null> = createSelector(

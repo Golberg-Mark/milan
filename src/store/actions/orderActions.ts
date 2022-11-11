@@ -1,7 +1,8 @@
 import { createActionCreators } from 'immer-reducer';
 
-import { OrderReducer, PlaceOrder, PlaceOrderProduct, RefactoredProduct } from '@/store/reducers/order';
+import { OrderReducer, PlaceOrder, PlaceOrderProduct, ProductWithMatchedPriceList } from '@/store/reducers/order';
 import { AsyncAction } from '@/store/actions/common';
+import { userActions } from '@/store/actions/userActions';
 
 export const orderActions = createActionCreators(OrderReducer);
 
@@ -16,7 +17,40 @@ export type OrderActions = ReturnType<typeof orderActions.setProducts>
   | ReturnType<typeof orderActions.cleanCurrentOrder>
   | ReturnType<typeof orderActions.setIsProductsLoading>;
 
-export const getOrderItemsAction = (region: string, service: string, searchPrice: string): AsyncAction => async (
+export const getOrganisationProductsAction = (): AsyncAction => async (
+  dispatch,
+  getState,
+  { mainApiProtected }
+) => {
+  try {
+    const { id } = getState().user.user!.organisations[0];
+    let products = await mainApiProtected.getOrganisationProducts(id);
+    let priceList = await mainApiProtected.getPriceList(id);
+    const results: ProductWithMatchedPriceList[] = [];
+
+    if (priceList) {
+      priceList.forEach((el, i) => {
+        const isExist = products.find((product) => product.productId === el.productCode);
+        if (isExist) {
+          results.push({
+            ...isExist,
+            'priceExGST': priceList[i]['priceExGST'],
+            'GST': priceList[i]['GST'],
+            'priceInclGST': priceList[i]['priceInclGST'],
+            'collection': priceList[i]['collection']
+          } as ProductWithMatchedPriceList);
+        }
+      });
+    }
+
+    dispatch(orderActions.setProducts(results));
+    dispatch(userActions.setPriceList(priceList));
+  } catch (error: any) {
+    console.log(error);
+  }
+};
+
+export const getOrderItemsAction = (region: string, service: string, searchPrice?: string): AsyncAction => async (
   dispatch,
   getState,
   { mainApi }
@@ -27,24 +61,14 @@ export const getOrderItemsAction = (region: string, service: string, searchPrice
 
     const changedRegion = region.toLowerCase();
     const changedService = service.toLowerCase().replaceAll(' ', '-');
-    const { products } = await mainApi.getOrderItems(changedRegion, changedService);
-    let mappedItems: RefactoredProduct[] = [];
-    let { totalPrice, totalItemsAmount, productsPrice } = getState().order;
+    const products = await mainApi.getOrderItems(changedRegion, changedService);
 
-    products.forEach((item) => {
-      const newItems = item.items.map((el: string) => ({ name: el, isChosen: true }));
-      productsPrice += Number(item.price) * newItems.length;
-      totalItemsAmount += newItems.length;
-      mappedItems = [...mappedItems, {
-        ...item,
-        items: newItems
-      }];
-    });
+    let { totalPrice, totalItemsAmount, productsPrice } = getState().order;
 
     dispatch(orderActions.setProductsPrice(productsPrice));
     dispatch(orderActions.setTotalPrice(totalPrice + Number(searchPrice)));
     dispatch(orderActions.setTotalItemsAmount(totalItemsAmount));
-    dispatch(orderActions.setProducts(mappedItems));
+    dispatch(orderActions.setProducts(products));
   } catch (error: any) {
     console.log(error);
   }
@@ -72,7 +96,7 @@ export const initializeOrderAction = (
       service,
       totalPrice: searchPrice,
       fulfilmentStatus: 'fulfiled',
-      organisationId: user!.organisationId,
+      organisationId: user!.organisations[0].id, /*TODO: change it after adding select organisation logic*/
       orderType: 'list',
       products: [{
         productId: 1,
@@ -110,18 +134,16 @@ export const placeOrderAction = (
     let filteredProducts: PlaceOrderProduct[] = [...orderProducts!];
 
     products!.forEach((product) => {
-      if (product.items) {
-        product.items.forEach((item: { isChosen: boolean, name: string }) => {
-          if (item.isChosen) {
-            filteredProducts.push({
-              productId: product.id,
-              price: product.price,
-              idNumber: item.name,
-              body: 'something'
-            });
-          }
-        });
-      }
+      product.forEach((item: { isChosen: boolean, name: string }) => {
+        if (item.isChosen) {
+          filteredProducts.push({
+            productId: product.id,
+            price: product.price,
+            idNumber: item.name,
+            body: 'something'
+          });
+        }
+      });
     });
 
     const order: PlaceOrder = {
@@ -132,7 +154,7 @@ export const placeOrderAction = (
       totalPrice: (totalPrice + productsPrice).toFixed(2),
       fulfilmentStatus: 'fulfiled',
       products: filteredProducts,
-      organisationId: user!.organisationId,
+      organisationId: user!.organisations[0].id, /*TODO: change it after adding select organisation logic*/
       orderType: 'regular'
     };
 

@@ -1,7 +1,7 @@
 import { createSelector, Selector } from 'reselect';
 
 import { State } from '@/store';
-import { RefactoredProduct } from '@/store/reducers/order';
+import { Product, ProductWithMatchedPriceList } from '@/store/reducers/order';
 
 const orderState = (state: State) => state.order;
 
@@ -30,7 +30,7 @@ export const selectTotalPrice: Selector<State, number> = createSelector(
   ({ totalPrice }) => totalPrice
 );
 
-export const selectProducts: Selector<State, RefactoredProduct[] | null> = createSelector(
+export const selectProducts: Selector<State, ProductWithMatchedPriceList[] | null> = createSelector(
   orderState,
   ({ products }) => products
 );

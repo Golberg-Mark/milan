@@ -10,6 +10,7 @@ export type UserActions = ReturnType<typeof userActions.setIsLoggedIn>
   | ReturnType<typeof userActions.setMatters>
   | ReturnType<typeof userActions.setOrderDetails>
   | ReturnType<typeof userActions.setUser>
+  | ReturnType<typeof userActions.setPriceList>
   | ReturnType<typeof userActions.setOrgUsers>
   | ReturnType<typeof userActions.logout>;
 
@@ -22,6 +23,22 @@ export const getMeAction = (): AsyncAction => async (
     const user = await mainApiProtected.getMe();
 
     dispatch(userActions.setUser(user));
+    dispatch(userActions.setIsLoggedIn(true));
+  } catch (error: any) {
+    console.log(error);
+  }
+};
+
+export const getPriceListAction = (): AsyncAction => async (
+  dispatch,
+  getState,
+  { mainApiProtected }
+) => {
+  try {
+    const orgId = getState().user.user!.id;
+    const priceList = await mainApiProtected.getPriceList(orgId);
+
+    dispatch(userActions.setPriceList(priceList));
   } catch (error: any) {
     console.log(error);
   }
