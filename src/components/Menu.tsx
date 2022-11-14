@@ -110,6 +110,7 @@ const Heading = styled.h3`
   margin-bottom: 32px;
   font-size: 12px;
   font-weight: 500;
+  letter-spacing: 0.05em;
   color: rgba(255, 255, 255, .5);
 `;
 
@@ -124,12 +125,16 @@ const NavItem = styled(NavLink)`
   display: flex;
   align-items: center;
   grid-gap: 16px;
-  margin-bottom: 4px;
-  padding: 8px;
+  padding: 0 8px 32px 0;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
+  letter-spacing: -0.01em;
   color: rgba(255, 255, 255, .5);
   cursor: pointer;
+  
+  :last-child {
+    padding: 0 8px 0 0;
+  }
   
   svg * {
     stroke: rgba(255, 255, 255, .5);
