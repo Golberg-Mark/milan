@@ -100,14 +100,15 @@ const Logo = styled.img`
 `;
 
 const MenuSection = styled.div`
-  margin-bottom: 48px;
+  margin-bottom: 32px;
   padding: 0 20px;
 `;
 
 const Heading = styled.h3`
   display: flex;
   grid-gap: 8px;
-  margin-bottom: 32px;
+  margin-bottom: 16px;
+  padding-left: 20px;
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.05em;
@@ -125,26 +126,22 @@ const NavItem = styled(NavLink)`
   display: flex;
   align-items: center;
   grid-gap: 16px;
-  padding: 0 8px 32px 0;
+  padding: 16px 8px 16px 20px;
   font-size: 14px;
   font-weight: 600;
   letter-spacing: -0.01em;
   color: rgba(255, 255, 255, .5);
   cursor: pointer;
-  
-  :last-child {
-    padding: 0 8px 0 0;
-  }
-  
+
   svg * {
     stroke: rgba(255, 255, 255, .5);
   }
-  
+
   &.active {
     color: #fff;
-    background-color: #ffffff4d;
-    border-radius: 6px;
-    
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+
     svg * {
       stroke: #fff;
     }
