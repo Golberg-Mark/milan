@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 
 import { selectProductsPrice, selectTotalItemsAmount, selectTotalPrice } from '@/store/selectors/orderSelectors';
+import Button from '@/components/Button';
 
 interface Props {
   placeOrder: Function,
@@ -37,41 +38,29 @@ const StyledFooter = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  grid-gap: .75rem;
-  padding: 12px 30px 12px 20px;
+  grid-gap: 32px;
+  padding: 32px 48px;
   background-color: #fff;
-  box-shadow: 0 0 4px 0 rgba(0, 0, 0, .25);
+  border-top: 1px solid rgba(35, 35, 35, 0.16);
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   z-index: 100;
 `;
 
 const Items = styled.span`
-  padding: 4px 8px;
-  border: 1px solid rgba(156, 163, 175, .8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 15px;
+  height: 38px;
+  border: 1px solid #23232329;
   border-radius: 100px;
-  font-size: 13px;
-`;
-
-const Price = styled.p`
-  font-size: 18px;
+  font-size: 12px;
   font-weight: 600;
 `;
 
-const Button = styled.button`
-  padding: .5rem 1.5rem;
-  height: 42px;
-  border: none;
-  border-radius: 5px;
-  font-size: 14px;
-  color: #fff;
-  background-color: var(--primary-blue-color);
-  
-  :disabled {
-    background-color: rgba(36, 99, 235, .4);
-  }
-  
-  :not(:disabled):hover {
-    background-color: rgba(36, 99, 235, .9);
-  }
+const Price = styled.p`
+  font-size: 16px;
+  font-weight: 500;
 `;
 
 export default Footer;

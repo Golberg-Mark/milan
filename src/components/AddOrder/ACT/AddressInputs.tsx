@@ -3,12 +3,13 @@ import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 
 import useInput from '@/hooks/useInput';
-import Input from '@/components/AddOrder/Input';
 import {
   getOrderItemsAction,
   initializeOrderAction,
   orderActions
 } from '@/store/actions/orderActions';
+import Input from '@/components/Input';
+import ServiceButton from '@/components/AddOrder/ServiceButton';
 
 const AddressInputs: React.FC = () => {
   const [unitNumber, setUnitNumber] = useInput();
@@ -42,43 +43,34 @@ const AddressInputs: React.FC = () => {
     <Address>
       <StyledAddressInputs>
         <Input
-          name="Unit number"
-          type="text"
           value={unitNumber}
           onChange={setUnitNumber}
-          placeholder="E.g 1"
+          placeholder="Unit number, e.g 1"
+          style={{ marginBottom: 0 }}
         />
         <Input
-          name="Street number"
-          type="text"
           value={streetNumber}
           onChange={setStreetNumber}
-          placeholder="E.g 12"
+          placeholder="Street number, e.g 12"
+          style={{ marginBottom: 0 }}
           required
         />
         <Input
-          name="Street name"
-          type="text"
           value={streetName}
           onChange={setStreetName}
-          placeholder="E.g Logan"
+          placeholder="Street name, e.g Logan"
+          style={{ marginBottom: 0 }}
           required
         />
         <Input
-          name="Suburb/Locality"
-          type="text"
           value={suburb}
           onChange={setSuburb}
-          placeholder="E.g"
+          placeholder="Suburb/Locality"
+          style={{ marginBottom: 0 }}
           required
         />
       </StyledAddressInputs>
-      <ButtonWrapper>
-        <Price>$1.28</Price>
-        <Button onClick={search}>
-          Browse
-        </Button>
-      </ButtonWrapper>
+      <ServiceButton text="Browse" price="1.28" onClick={search} />
     </Address>
   );
 };
@@ -92,37 +84,6 @@ const StyledAddressInputs = styled.div`
   grid-template-columns: repeat(3, 1fr);
   grid-gap: .75rem;
   margin-bottom: .75rem;
-`;
-
-const ButtonWrapper = styled.div<{ align?: string }>`
-  display: flex;
-  grid-gap: .75rem;
-  justify-content: ${({ align }) => align ? align : 'flex-end'};
-  align-items: center;
-  align-self: flex-end;
-`;
-
-const Button = styled.button`
-  padding: .625rem 2.25rem;
-  height: 42px;
-  border: none;
-  border-radius: 5px;
-  font-size: 14px;
-  color: #fff;
-  background-color: var(--primary-blue-color);
-  
-  :hover {
-    background-color: rgba(36, 99, 235, .9);
-  }
-`;
-
-const Price = styled.span`
-  padding: .4rem .65rem;
-  border: 1px solid rgba(30, 58, 138, .1);
-  border-radius: 4px;
-  font-size: 14px;
-  color: #1E3E8A;
-  background-color: #DBEAFE;
 `;
 
 export default AddressInputs;

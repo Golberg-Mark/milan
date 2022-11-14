@@ -10,6 +10,7 @@ import {
 } from '@/store/actions/orderActions';
 import Input from '@/components/Input';
 import { selectPriceList } from '@/store/selectors/userSelectors';
+import ServiceButton from '@/components/AddOrder/ServiceButton';
 
 const TitleInputs: React.FC = () => {
   const [referenceNumber, setReferenceNumber] = useInput();
@@ -45,21 +46,16 @@ const TitleInputs: React.FC = () => {
       <Input
         value={referenceNumber}
         onChange={setReferenceNumber}
-        placeholder="Title Reference, e.g LR121/33577A"
+        placeholder="Title Reference, e.g 1/SP1"
         style={{ marginBottom: 0 }}
         required
       />
-      <ButtonWrapper style={{ marginLeft: '-4px' }}>
-        <Button
-          style={{ borderTopLeftRadius: '0', borderBottomLeftRadius: '0' }}
-          onClick={search}
-        >
-          Verify
-        </Button>
-        <Price>
-          Free
-        </Price>
-      </ButtonWrapper>
+      <ServiceButton
+        text="Verify"
+        price="Free"
+        isMovedToTheLeft
+        onClick={search}
+      />
     </TitleReference>
   );
 };
@@ -68,40 +64,6 @@ const TitleReference = styled.div`
   display: grid;
   grid-template-columns: 1fr auto;
   margin-bottom: 1.25rem;
-`;
-
-const ButtonWrapper = styled.div<{ align?: string }>`
-  display: flex;
-  grid-gap: .75rem;
-  justify-content: ${({ align }) => align ? align : 'flex-end'};
-  align-items: center;
-  align-self: flex-end;
-`;
-
-const Button = styled.button`
-  padding: 8px 12px;
-  min-width: 73px;
-  height: 38px;
-  border: none;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 500;
-  color: #fff;
-  background-color: var(--primary-green-color);
-  
-  :hover {
-    background-color: var(--primary-green-hover-color);
-  }
-`;
-
-const Price = styled.span`
-  padding: .4rem .65rem;
-  border: 1px solid rgba(39, 163, 118, 0.2);
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--primary-green-color);
-  background-color: var(--primary-green-background-color);
 `;
 
 export default TitleInputs;

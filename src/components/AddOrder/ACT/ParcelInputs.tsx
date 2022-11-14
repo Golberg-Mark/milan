@@ -3,13 +3,14 @@ import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 
 import useInput from '@/hooks/useInput';
-import Input from '@/components/AddOrder/Input';
 import {
   getOrderItemsAction,
   initializeOrderAction,
   orderActions
 } from '@/store/actions/orderActions';
 import Select from '@/components/AddOrder/Select';
+import Input from '@/components/Input';
+import ServiceButton from '@/components/AddOrder/ServiceButton';
 
 const districts = [
   'Acton',
@@ -165,7 +166,6 @@ const ParcelInputs: React.FC = () => {
   return (
     <Parcel>
       <Label>
-        <span>District</span>
         <Select
           selectedItem={district}
           setSelectedItem={setDistrict}
@@ -173,35 +173,26 @@ const ParcelInputs: React.FC = () => {
         />
       </Label>
       <Input
-        name="Section"
         value={section}
         onChange={setSection}
-        placeholder="E.g 156"
+        placeholder="Section, e.g 156"
+        style={{ marginBottom: 0 }}
         required
       />
       <Input
-        name="Block"
         value={block}
         onChange={setBlock}
-        placeholder="E.g 16"
+        placeholder="Block, e.g 16"
+        style={{ marginBottom: 0 }}
         required
       />
       <Input
-        name="Unit"
         value={unit}
         onChange={setUnit}
-        placeholder="E.g 2"
+        placeholder="Unit, e.g 2"
+        style={{ marginBottom: 0 }}
       />
-      <ButtonWrapper align="flex-start">
-        <Button
-          onClick={search}
-        >
-          Browse
-        </Button>
-        <Price>
-          $2.70
-        </Price>
-      </ButtonWrapper>
+      <ServiceButton text="Browse" price="2.70" align="flex-start" onClick={search} />
     </Parcel>
   );
 };
@@ -222,37 +213,6 @@ const Label = styled.label`
     color: #6B7280;
     white-space: nowrap;
   }
-`;
-
-const ButtonWrapper = styled.div<{ align?: string }>`
-  display: flex;
-  grid-gap: .75rem;
-  justify-content: ${({ align }) => align ? align : 'flex-end'};
-  align-items: center;
-  align-self: flex-end;
-`;
-
-const Button = styled.button`
-  padding: .625rem 2.25rem;
-  height: 42px;
-  border: none;
-  border-radius: 5px;
-  font-size: 14px;
-  color: #fff;
-  background-color: var(--primary-blue-color);
-  
-  :hover {
-    background-color: rgba(36, 99, 235, .9);
-  }
-`;
-
-const Price = styled.span`
-  padding: .4rem .65rem;
-  border: 1px solid rgba(30, 58, 138, .1);
-  border-radius: 4px;
-  font-size: 14px;
-  color: #1E3E8A;
-  background-color: #DBEAFE;
 `;
 
 export default ParcelInputs;

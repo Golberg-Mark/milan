@@ -3,13 +3,14 @@ import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 
 import useInput from '@/hooks/useInput';
-import Input from '@/components/AddOrder/Input';
 import {
   getOrderItemsAction,
   initializeOrderAction,
   orderActions
 } from '@/store/actions/orderActions';
 import Select from '@/components/AddOrder/Select';
+import Input from '@/components/Input';
+import ServiceButton from '@/components/AddOrder/ServiceButton';
 
 const something = ['Free Test', 'Structured'];
 const townships = [
@@ -71,7 +72,6 @@ const CrownDescriptionInputs: React.FC = () => {
     <CrownDescription>
       <Inputs>
         <Label>
-          <span style={{ color: 'transparent' }}>Something</span>
           <Select
             selectedItem={selectedSomething}
             setSelectedItem={setSelectedSomething}
@@ -79,49 +79,42 @@ const CrownDescriptionInputs: React.FC = () => {
           />
         </Label>
         <Input
-          name="Crown Description"
-          type="text"
           value={crownDescription}
           onChange={setCrownDescription}
-          placeholder="E.g Allotments 12A Section B Parish of Hotham"
+          placeholder="Crown Description, e.g Allotments 12A Section B Parish of Hotham"
+          style={{ marginBottom: 0 }}
         />
         <Input
-          name="Allotments"
-          type="text"
           value={allotments}
           onChange={setAllotments}
-          placeholder="E.g 123"
+          placeholder="Allotments, e.g 123"
+          style={{ marginBottom: 0 }}
         />
         <Input
-          name="Portion"
-          type="text"
           value={portion}
           onChange={setPortion}
-          placeholder="E.g 49"
+          placeholder="Portion, e.g 49"
+          style={{ marginBottom: 0 }}
         />
         <Input
-          name="Block"
-          type="text"
           value={block}
           onChange={setBlock}
-          placeholder="E.g 1"
+          placeholder="Block, e.g 1"
+          style={{ marginBottom: 0 }}
         />
         <Input
-          name="Section"
-          type="text"
           value={section}
           onChange={setSection}
-          placeholder="E.g A"
+          placeholder="Section, e.g A"
+          style={{ marginBottom: 0 }}
         />
         <Input
-          name="Subdivision"
-          type="text"
           value={subdivision}
           onChange={setSubdivision}
-          placeholder="E.g Subdivision"
+          placeholder="Subdivision, e.g Subdivision"
+          style={{ marginBottom: 0 }}
         />
         <Label>
-          <span>Parish/Township</span>
           <Select
             selectedItem={parishTownship}
             setSelectedItem={setParishTownship}
@@ -129,12 +122,7 @@ const CrownDescriptionInputs: React.FC = () => {
           />
         </Label>
       </Inputs>
-      <ButtonWrapper>
-        <Button onClick={search}>
-          Browse
-        </Button>
-        <Price>$1.56</Price>
-      </ButtonWrapper>
+      <ServiceButton text="Browse" price="1.56" onClick={search} />
     </CrownDescription>
   );
 };
@@ -145,9 +133,17 @@ const CrownDescription = styled.div`
 
 const Inputs = styled.div`
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   grid-gap: .75rem;
   margin-bottom: 1rem;
+  
+  @media (min-width: 990px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  @media (min-width: 1200px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
 `;
 
 const Label = styled.label`
@@ -159,37 +155,6 @@ const Label = styled.label`
     color: #6B7280;
     white-space: nowrap;
   }
-`;
-
-const ButtonWrapper = styled.div<{ align?: string }>`
-  display: flex;
-  grid-gap: .75rem;
-  justify-content: ${({ align }) => align ? align : 'flex-end'};
-  align-items: center;
-  align-self: flex-end;
-`;
-
-const Button = styled.button`
-  padding: .625rem 2.25rem;
-  height: 42px;
-  border: none;
-  border-radius: 5px;
-  font-size: 14px;
-  color: #fff;
-  background-color: var(--primary-blue-color);
-  
-  :hover {
-    background-color: rgba(36, 99, 235, .9);
-  }
-`;
-
-const Price = styled.span`
-  padding: .4rem .65rem;
-  border: 1px solid rgba(30, 58, 138, .1);
-  border-radius: 4px;
-  font-size: 14px;
-  color: #1E3E8A;
-  background-color: #DBEAFE;
 `;
 
 export default CrownDescriptionInputs;

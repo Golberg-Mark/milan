@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 
 import useInput from '@/hooks/useInput';
-import Input from '@/components/AddOrder/Input';
 import {
   getOrderItemsAction,
   initializeOrderAction,
@@ -11,6 +10,8 @@ import {
 } from '@/store/actions/orderActions';
 import Select from '@/components/AddOrder/Select';
 import { municipality } from '@/utils/getRegionsData';
+import Input from '@/components/Input';
+import ServiceButton from '@/components/AddOrder/ServiceButton';
 
 const locality = ['Suburb', 'Postcode', 'Municipality'];
 
@@ -56,29 +57,25 @@ const AddressInputs: React.FC = () => {
     <Address>
       <StyledAddressInputs>
         <Input
-          name="Unit number"
-          type="text"
           value={unitNumber}
           onChange={setUnitNumber}
-          placeholder="E.g 1"
+          placeholder="Unit number, e.g 1"
+          style={{ marginBottom: 0 }}
         />
         <Input
-          name="Street number"
-          type="text"
           value={streetNumber}
           onChange={setStreetNumber}
-          placeholder="E.g 12"
+          placeholder="Street number, e.g 12"
+          style={{ marginBottom: 0 }}
         />
         <Input
-          name="Street name"
-          type="text"
           value={streetName}
           onChange={setStreetName}
-          placeholder="E.g Logan"
+          placeholder="Street name, e.g Logan"
+          style={{ marginBottom: 0 }}
           required
         />
         <Label>
-          <span>Locality</span>
           <Select
             selectedItem={selectedLocality}
             setSelectedItem={selectLocality}
@@ -87,27 +84,25 @@ const AddressInputs: React.FC = () => {
         </Label>
         {locality[selectedLocality] === 'Suburb' ? (
           <Input
-            name="Suburb"
-            type="text"
             value={suburb}
             onChange={setSuburb}
-            placeholder="E.g Canterbury"
+            placeholder="Suburb, e.g Canterbury"
+            style={{ marginBottom: 0 }}
             required
           />
         ) : ''}
         {locality[selectedLocality] === 'Postcode' ? (
           <Input
-            name="Postcode"
             type="text"
             value={postcode}
             onChange={setPostcode}
-            placeholder="E.g"
+            placeholder="Postcode, e.g"
+            style={{ marginBottom: 0 }}
             required
           />
         ) : ''}
         {locality[selectedLocality] === 'Municipality' ? (
           <Label>
-            <span>Municipality</span>
             <Select
               selectedItem={selectedMunicipality}
               setSelectedItem={setSelectedMunicipality}
@@ -116,12 +111,12 @@ const AddressInputs: React.FC = () => {
           </Label>
         ) : ''}
       </StyledAddressInputs>
-      <ButtonWrapper>
-        <Price>$1.28</Price>
-        <Button onClick={search}>
-          Browse
-        </Button>
-      </ButtonWrapper>
+      <ServiceButton
+        text="Browse"
+        price="1.28"
+        alignSelf="flex-end"
+        onClick={search}
+      />
     </Address>
   );
 };
@@ -146,37 +141,6 @@ const Label = styled.label`
     color: #6B7280;
     white-space: nowrap;
   }
-`;
-
-const ButtonWrapper = styled.div<{ align?: string }>`
-  display: flex;
-  grid-gap: .75rem;
-  justify-content: ${({ align }) => align ? align : 'flex-end'};
-  align-items: center;
-  align-self: flex-end;
-`;
-
-const Button = styled.button`
-  padding: .625rem 2.25rem;
-  height: 42px;
-  border: none;
-  border-radius: 5px;
-  font-size: 14px;
-  color: #fff;
-  background-color: var(--primary-blue-color);
-  
-  :hover {
-    background-color: rgba(36, 99, 235, .9);
-  }
-`;
-
-const Price = styled.span`
-  padding: .4rem .65rem;
-  border: 1px solid rgba(30, 58, 138, .1);
-  border-radius: 4px;
-  font-size: 14px;
-  color: #1E3E8A;
-  background-color: #DBEAFE;
 `;
 
 export default AddressInputs;

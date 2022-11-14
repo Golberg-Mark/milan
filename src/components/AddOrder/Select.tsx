@@ -54,16 +54,15 @@ const StyledSelect = styled.button`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: .5rem .75rem;
+  padding: 13px 16px;
   width: 100%;
   min-width: 160px;
-  height: 42px;
-  border: 1px solid rgba(156, 163, 175, .6);
-  border-radius: 5px;
+  height: 38px;
+  border: 1px solid rgba(35, 35, 35, 0.16);
+  border-radius: 4px;
+  font-size: 12px;
   text-align: left;
-  line-height: 1.5rem;
-  background-color: rgba(17, 24, 39, .05);
-  color: rgba(17, 24, 39, .6);
+  background-color: #fff;
 
   svg {
     margin-left: .5rem;
@@ -93,11 +92,12 @@ const Dropdown = styled.ul<{ openToTop: boolean }>`
 
 const DropdownItem = styled.li<{ isSelected: boolean }>`
   padding: .25rem .75rem;
-  color: ${({ isSelected }) => isSelected ? 'rgb(36, 99, 235)' : 'inherit'};
+  font-size: 12px;
+  color: ${({ isSelected }) => isSelected ? 'var(--primary-green-color)' : 'inherit'};
   cursor: pointer;
 
   :hover {
-    color: rgba(36, 99, 235, .7)
+    color: var(--primary-green-hover-color);
   }
 `;
 

@@ -3,13 +3,14 @@ import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 
 import useInput from '@/hooks/useInput';
-import Input from '@/components/AddOrder/Input';
 import {
   getOrderItemsAction,
   initializeOrderAction,
   orderActions
 } from '@/store/actions/orderActions';
 import { existingRegions } from '@/utils/getRegionsData';
+import Input from '@/components/Input';
+import ServiceButton from '@/components/AddOrder/ServiceButton';
 
 interface Props {
   region?: existingRegions,
@@ -47,35 +48,27 @@ const AddressInputs: React.FC<Props> = ({ region = 'WA', price = '1.28' }) => {
     <Address>
       <StyledAddressInputs>
         <Input
-          name="Street number"
-          type="text"
           value={streetNumber}
           onChange={setStreetNumber}
-          placeholder="E.g 16"
+          placeholder="Street number, e.g 16"
+          style={{ marginBottom: 0 }}
         />
         <Input
-          name="Street name"
-          type="text"
           value={streetName}
           onChange={setStreetName}
-          placeholder="E.g Boredeaux street"
+          placeholder="Street name, e.g Boredeaux street"
+          style={{ marginBottom: 0 }}
           required
         />
         <Input
-          name="Suburb"
-          type="text"
           value={suburb}
           onChange={setSuburb}
-          placeholder="E.g AVONDALE HEIGHTS"
+          placeholder="Suburb, e.g AVONDALE HEIGHTS"
+          style={{ marginBottom: 0 }}
           required
         />
       </StyledAddressInputs>
-      <ButtonWrapper>
-        <Price>${price}</Price>
-        <Button onClick={search}>
-          Browse
-        </Button>
-      </ButtonWrapper>
+      <ServiceButton text="Browse" price={price} onClick={search} />
     </Address>
   );
 };
@@ -89,37 +82,6 @@ const StyledAddressInputs = styled.div`
   grid-template-columns: repeat(3, 1fr);
   grid-gap: .75rem;
   margin-bottom: .75rem;
-`;
-
-const ButtonWrapper = styled.div<{ align?: string }>`
-  display: flex;
-  grid-gap: .75rem;
-  justify-content: ${({ align }) => align ? align : 'flex-end'};
-  align-items: center;
-  align-self: flex-end;
-`;
-
-const Button = styled.button`
-  padding: .625rem 2.25rem;
-  height: 42px;
-  border: none;
-  border-radius: 5px;
-  font-size: 14px;
-  color: #fff;
-  background-color: var(--primary-blue-color);
-  
-  :hover {
-    background-color: rgba(36, 99, 235, .9);
-  }
-`;
-
-const Price = styled.span`
-  padding: .4rem .65rem;
-  border: 1px solid rgba(30, 58, 138, .1);
-  border-radius: 4px;
-  font-size: 14px;
-  color: #1E3E8A;
-  background-color: #DBEAFE;
 `;
 
 export default AddressInputs;

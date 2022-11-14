@@ -1,8 +1,30 @@
 import { createGlobalStyle } from 'styled-components';
 import { normalize } from 'styled-normalize';
 
+import InterRegular from '@/assets/fonts/Inter-Regular.ttf';
+import InterMedium from '@/assets/fonts/Inter-Medium.ttf';
+import InterSemiBold from '@/assets/fonts/Inter-SemiBold.ttf';
+
 const GlobalStyle = createGlobalStyle`
   ${normalize};
+
+  @font-face {
+    font-family: 'Inter';
+    src: url(${InterRegular}) format('truetype');
+    font-weight: 400;
+  }
+
+  @font-face {
+    font-family: 'Inter';
+    src: url(${InterMedium}) format('truetype');
+    font-weight: 500;
+  }
+
+  @font-face {
+    font-family: 'Inter';
+    src: url(${InterSemiBold}) format('truetype');
+    font-weight: 600;
+  }
 
   * {
     --sidebar-width: 256px;
@@ -15,7 +37,7 @@ const GlobalStyle = createGlobalStyle`
     --primary-green-background-color: rgba(39, 163, 118, 0.1);
 
     box-sizing: border-box;
-    font-family: sans-serif;
+    font-family: 'Inter', sans-serif;
     color: var(--primary-dark-color);
 
     ::after, ::before {

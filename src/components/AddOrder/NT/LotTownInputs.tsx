@@ -3,12 +3,13 @@ import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 
 import useInput from '@/hooks/useInput';
-import Input from '@/components/AddOrder/Input';
 import {
   getOrderItemsAction,
   initializeOrderAction,
   orderActions
 } from '@/store/actions/orderActions';
+import Input from '@/components/Input';
+import ServiceButton from '@/components/AddOrder/ServiceButton';
 
 const LotTownInputs: React.FC = () => {
   const [lot, setLot] = useInput();
@@ -39,29 +40,18 @@ const LotTownInputs: React.FC = () => {
   return (
     <LotTown>
       <Input
-        name="Lot"
         value={lot}
         onChange={setLot}
-        placeholder={`E.g 200`}
+        placeholder="Lot, e.g 200"
         required
       />
       <Input
-        name="Town"
         value={town}
         onChange={setTown}
-        placeholder={`E.g Town of Darwin`}
+        placeholder="Town, e.g Town of Darwin"
         required
       />
-      <ButtonWrapper align="flex-start">
-        <Button
-          onClick={search}
-        >
-          Browse
-        </Button>
-        <Price>
-          $1.00
-        </Price>
-      </ButtonWrapper>
+      <ServiceButton text="Browse" price="1.00" align="flex-start" onClick={search} />
     </LotTown>
   );
 };
@@ -70,37 +60,6 @@ const LotTown = styled.div`
   display: flex;
   grid-gap: .75rem;
   margin-bottom: 1.25rem;
-`;
-
-const ButtonWrapper = styled.div<{ align?: string }>`
-  display: flex;
-  grid-gap: .75rem;
-  justify-content: ${({ align }) => align ? align : 'flex-end'};
-  align-items: center;
-  align-self: flex-end;
-`;
-
-const Button = styled.button`
-  padding: .625rem 2.25rem;
-  height: 42px;
-  border: none;
-  border-radius: 5px;
-  font-size: 14px;
-  color: #fff;
-  background-color: var(--primary-blue-color);
-  
-  :hover {
-    background-color: rgba(36, 99, 235, .9);
-  }
-`;
-
-const Price = styled.span`
-  padding: .4rem .65rem;
-  border: 1px solid rgba(30, 58, 138, .1);
-  border-radius: 4px;
-  font-size: 14px;
-  color: #1E3E8A;
-  background-color: #DBEAFE;
 `;
 
 export default LotTownInputs;

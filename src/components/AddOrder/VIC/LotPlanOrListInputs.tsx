@@ -3,13 +3,14 @@ import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 
 import useInput from '@/hooks/useInput';
-import Input from '@/components/AddOrder/Input';
 import {
   getOrderItemsAction,
   initializeOrderAction,
   orderActions
 } from '@/store/actions/orderActions';
 import Select from '@/components/AddOrder/Select';
+import Input from '@/components/Input';
+import ServiceButton from '@/components/AddOrder/ServiceButton';
 
 const options = ['Lot/Plan', 'Lot List'];
 
@@ -42,7 +43,6 @@ const AddressInputs = () => {
   return (
     <LotPlanOrList>
       <Label>
-        <span>Lot</span>
         <Select
           selectedItem={selectedLot}
           setSelectedItem={setSelectedLot}
@@ -50,18 +50,12 @@ const AddressInputs = () => {
         />
       </Label>
       <Input
-        name="Lot/Plan Number"
-        type="text"
         value={lotPlanNumber}
         onChange={setLotPlanNumber}
-        placeholder="E.g 8RP601844"
+        placeholder="Lot/Plan Number, e.g 8RP601844"
+        style={{ marginBottom: 0 }}
       />
-      <ButtonWrapper>
-        <Button onClick={search}>
-          Browse
-        </Button>
-        <Price>$4.83</Price>
-      </ButtonWrapper>
+      <ServiceButton text="Browse" price="4.83" onClick={search} />
     </LotPlanOrList>
   );
 };
@@ -81,37 +75,6 @@ const Label = styled.label`
     color: #6B7280;
     white-space: nowrap;
   }
-`;
-
-const ButtonWrapper = styled.div<{ align?: string }>`
-  display: flex;
-  grid-gap: .75rem;
-  justify-content: ${({ align }) => align ? align : 'flex-end'};
-  align-items: center;
-  align-self: flex-end;
-`;
-
-const Button = styled.button`
-  padding: .625rem 2.25rem;
-  height: 42px;
-  border: none;
-  border-radius: 5px;
-  font-size: 14px;
-  color: #fff;
-  background-color: var(--primary-blue-color);
-  
-  :hover {
-    background-color: rgba(36, 99, 235, .9);
-  }
-`;
-
-const Price = styled.span`
-  padding: .4rem .65rem;
-  border: 1px solid rgba(30, 58, 138, .1);
-  border-radius: 4px;
-  font-size: 14px;
-  color: #1E3E8A;
-  background-color: #DBEAFE;
 `;
 
 export default AddressInputs;

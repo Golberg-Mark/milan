@@ -107,7 +107,7 @@ const AddOrder = () => {
     }, 300);
   };
 
-  const regionProducts = useMemo(() => {
+  /*const regionProducts = useMemo(() => {
     return products?.filter((el) => new RegExp(`${mockedData[selectedRegion].region}`).test(el.collection)).map((el, i) => (
       <OrderItem
         key={el.searchType}
@@ -117,7 +117,7 @@ const AddOrder = () => {
         inputs={el['Label'] ? [{ label: el['Label'], placeholder: el['Placeholder'] }] : []}
       />
     ))
-  }, [products, selectedRegion]);
+  }, [products, selectedRegion]);*/
 
   const isMatterError = !matter;
   const isDescriptionError = !description;
@@ -196,7 +196,7 @@ const AddOrder = () => {
           </Titles>
         </TitleSection>
         <OrderItemsSection>
-          <Title>Order items</Title>
+          <SubTitle>Searches</SubTitle>
           <Description>
             Expand a product and select the references you want to purchase within it.
           </Description>
@@ -214,9 +214,9 @@ const AddOrder = () => {
               ))}
             </ul>
           ) : isProductsLoading ? <Loader/> : ''*/}
-          <ul>
+          {/*<ul>
             {regionProducts}
-          </ul>
+          </ul>*/}
         </OrderItemsSection>
       </Content>
       <Footer
@@ -231,6 +231,10 @@ const AddOrder = () => {
 const AddOrderPage = styled.section`
   padding: 32px 32px 134px;
   position: relative;
+  
+  * {
+    letter-spacing: -0.03em;
+  }
 `;
 
 const PageHeader = styled.div`
@@ -276,15 +280,10 @@ const Content = styled.div`
   overflow-x: hidden;
 `;
 
-const Title = styled.h2`
-  margin-bottom: .5rem;
-  font-size: 1.125rem;
-`;
-
 const SubTitle = styled.p<{ fontSize?: number }>`
   margin-bottom: 25px;
   font-size: ${({ fontSize = 16 }) => fontSize}px;
-  color: #4B5563;
+  color: #1A1C1E;
   font-weight: 500;
 `;
 
@@ -308,13 +307,18 @@ const Tip = styled.span<{ isSelected: boolean, width?: number }>`
   border-radius: 4px;
   background-color: ${({ isSelected }) => isSelected ? 'var(--primary-green-background-color)' : 'unset'};
   cursor: pointer;
+  
+  :hover {
+    border: 1px solid var(--primary-green-color);
+  }
 `;
 
 const TitleSection = styled.div`
-  border-bottom: 1px solid rgb(229, 231, 235);
+  border-bottom: 1px solid #E8E8E8;
 `;
 
 const Titles = styled.div`
+  margin-bottom: 32px;
   padding: 1rem;
   border-radius: .5rem;
   color: #00000099;
@@ -323,12 +327,13 @@ const Titles = styled.div`
 `;
 
 const OrderItemsSection = styled.div`
+  padding-top: 32px;
 `;
 
 const Description = styled.p`
   margin-bottom: 12px;
-  font-size: 14px;
-  color: rgba(0, 0, 0, .7);
+  font-size: 12px;
+  color: rgba(0, 0, 0, .5);
 `;
 
 export default AddOrder;
