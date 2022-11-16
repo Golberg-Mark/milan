@@ -121,7 +121,7 @@ export const placeOrderAction = (
   { mainApiProtected }
 ) => {
   try {
-    const {
+    /*const {
       matter,
       description,
       totalPrice,
@@ -154,12 +154,12 @@ export const placeOrderAction = (
       totalPrice: (totalPrice + productsPrice).toFixed(2),
       fulfilmentStatus: 'fulfiled',
       products: filteredProducts,
-      organisationId: user!.organisations[0].id, /*TODO: change it after adding select organisation logic*/
+      organisationId: user!.organisations[0].id, /!*TODO: change it after adding select organisation logic*!/
       orderType: 'regular'
     };
 
     const { orderId } = await mainApiProtected.placeOrder(order);
-    dispatch(orderActions.setOrderId(orderId));
+    dispatch(orderActions.setOrderId(orderId));*/
   } catch (error: any) {
     console.log(error);
   }
