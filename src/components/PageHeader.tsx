@@ -204,6 +204,10 @@ const Notices = styled.div`
   border: 1px solid rgba(35, 35, 35, 0.16);
   border-radius: 50%;
   cursor: pointer;
+  
+  :hover {
+    border: 1px solid var(--primary-dark-color);
+  }
 `;
 
 const PhotoWrapper = styled.div`
