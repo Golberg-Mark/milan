@@ -283,7 +283,7 @@ const Content = styled.div`
 const SubTitle = styled.p<{ fontSize?: number }>`
   margin-bottom: 25px;
   font-size: ${({ fontSize = 16 }) => fontSize}px;
-  color: #1A1C1E;
+  color: var(--primary-dark-color);
   font-weight: 500;
 `;
 

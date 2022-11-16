@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import MainApi from '@/api/mainApi';
 
 class HttpClient {
   protected readonly instance: AxiosInstance;
@@ -20,17 +21,30 @@ class HttpClient {
 
   private responseSuccess = (response: AxiosResponse) => response.data.data;
 
-  private responseError = (error: any) => {
+  private responseError = async (error: any) => {
     const status = error.response.status;
+    const refreshToken = localStorage.getItem('refreshToken');
 
-    if (status === 0 || status === 401) {
-      localStorage.removeItem('token');
+    if (status === 0 || status === 401 && refreshToken) {
+      try {
+        const { accessToken: access_token, refreshToken: refresh_token } = await new MainApi()
+          .refreshAccessToken(refreshToken!);
+
+        localStorage.setItem('token', access_token);
+        localStorage.setItem('refreshToken', refresh_token);
+
+        error.config.headers.Authorization = `Bearer ${access_token}`;
+        return await this.instance.request(error.config);
+      } catch (_) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+
+        return Promise.reject({
+          code: status,
+          message: error.response.data?.message || ''
+        });
+      }
     }
-
-    return Promise.reject({
-      code: status,
-      message: error.response.data?.message || ''
-    });
   };
 }
 

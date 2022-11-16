@@ -4,7 +4,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
 import styled, { css } from 'styled-components';
 import DatePicker from 'react-datepicker';
-import { BsChevronLeft, BsChevronRight } from 'react-icons/all';
 
 import convertTimestamp from '@/utils/convertTimestamp';
 import { Order, OrderStatusEnum, OrganizationUser } from '@/store/reducers/user';
@@ -18,6 +17,8 @@ import 'react-datepicker/dist/react-datepicker.css';
 import useToggle from '@/hooks/useToggle';
 import getNounByForm from '@/utils/getNounByForm';
 import getUserAvatar from '@/utils/getUserAvatar';
+import Pagination from '@/components/Pagination';
+import Checkbox from '@/components/Checkbox';
 
 interface Props {
   orders: Order[],
@@ -45,6 +46,7 @@ const limit = 10;
 const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
   const [search, setSearch] = useInput();
   const [startDay, setStartDay] = useState<Date | null>(null);
+  const [isDatePickerVisible, toggleIsDatePickerVisible] = useToggle();
   const [endDay, setEndDay] = useState<Date | null>(null);
   const [status, setStatus] = useState< keyof typeof OrderStatusEnum | null>(null);
   const [statusRef, isStatusVisible, toggleIsStatusVisible] = useOnClickOutside<HTMLButtonElement>();
@@ -58,7 +60,9 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
 
   const navigate = useNavigate();
 
-  const maxPages = Math.ceil(orders.length / limit);
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth'});
+  }, [offset]);
 
   const onDateChange = (dates: any) => {
     const [start, end] = dates;
@@ -103,18 +107,22 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
     }
   };
 
-  const previousPage = () => {
-    setOffset(prevState => prevState ? prevState - 1 : 0);
-  };
-
-  const nextPage = () => {
-    setOffset(prevState => prevState + 2 > maxPages ? prevState : prevState + 1);
-  };
-
   // @ts-ignore
   const CustomInput = forwardRef(({ value, onClick }, ref: ForwardedRef<HTMLButtonElement>) => (
-    <FilterButton onClick={onClick} ref={ref} isApplied={!!startDay}>
+    <FilterButton
+      ref={ref}
+      onClick={() => {
+        toggleIsDatePickerVisible(!isDatePickerVisible);
+        onClick();
+      }}
+      isApplied={!!startDay}
+      isDropdownVisible={isDatePickerVisible}
+      style={{ marginRight: '8px' }}
+    >
       {value || 'Date'}
+      <svg width="8" height="4" viewBox="0 0 8 4" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ transition: '.1 ease-in-out' }}>
+        <path d="M6.96012 0.0900269H3.84512H1.04012C0.560118 0.0900269 0.320118 0.670027 0.660118 1.01003L3.25012 3.60003C3.66512 4.01503 4.34012 4.01503 4.75512 3.60003L5.74012 2.61503L7.34512 1.01003C7.68012 0.670027 7.44012 0.0900269 6.96012 0.0900269Z" fill="#292D32"/>
+      </svg>
     </FilterButton>
   ));
 
@@ -135,10 +143,12 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
     if (!selectedUser) return true;
     return order.user === selectedUser.id
   }), [search, startDay, endDay, status, selectedUser]);
+
+  const maxPages = Math.ceil(ordersWithAppliedFilters.length / limit);
   const filteredOrders: Order[] = [];
 
   if (maxPages >= 1) {
-    for (let i = offset * limit; i <= offset * limit + limit; i++) {
+    for (let i = offset * limit; i < offset * limit + limit; i++) {
       if (ordersWithAppliedFilters[i]) {
         filteredOrders.push(ordersWithAppliedFilters[i]);
       }
@@ -149,86 +159,97 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
 
   return orgUsers ? (
     <>
-      <div>
-        <Filters>
-          <Search
-            value={search}
-            onChange={setSearch}
-            placeholder="Search matters & orders"
-            clearField={() => setSearch('')}
-          />
-          <Buttons>
-            {isFiltered ? (
-              <FilterButton onClick={clearFilters}>
-                Clear filters
-              </FilterButton>
-            ) : ''}
-            <DatePicker
-              startDate={startDay}
-              endDate={endDay}
-              onChange={onDateChange}
-              customInput={<CustomInput />}
-              tabIndex={0}
-              selectsRange
+      <StyledWrapper>
+        <div>
+          <Filters>
+            <Search
+              value={search}
+              onChange={(evt) => {
+                setSearch(evt.target.value);
+                setOffset(0);
+              }}
+              placeholder="Search matters & orders"
+              clearField={() => setSearch('')}
             />
-            <FilterButton
-              ref={statusRef}
-              isApplied={!!status}
-              onClick={toggleIsStatusVisible}
-            >
-              {status?.toLowerCase() || 'Status'}
-              {isStatusVisible ? (
-                <List>
-                  {statuses.map((el) => (
-                    <ListItem
-                      key={el}
-                      isSelected={el === status}
-                      onClick={() => selectStatus(el)}
-                    >
-                      {el.toLowerCase().replaceAll('_', ' ')}
-                    </ListItem>
-                  ))}
-                </List>
+            <Buttons>
+              {isFiltered ? (
+                <FilterButton onClick={clearFilters}>
+                  Clear filters
+                </FilterButton>
               ) : ''}
-            </FilterButton>
-            <FilterButton
-              ref={usersRef}
-              isApplied={!!selectedUser}
-              onClick={toggleIsUsersVisible}
-            >
-              {selectedUser?.name || 'User'}
-              {isUsersVisible ? (
-                <List>
-                  {orgUsers.map((el) => (
-                    <ListItem
-                      key={el.email}
-                      isSelected={el.id === selectedUser?.id}
-                      onClick={() => selectOrgUser(el)}
-                    >
-                      {el.name}
-                    </ListItem>
-                  ))}
-                </List>
-              ) : ''}
-            </FilterButton>
-          </Buttons>
-        </Filters>
-        {filteredOrders.length ? (
-          <>
+              <DatePicker
+                startDate={startDay}
+                endDate={endDay}
+                onChange={onDateChange}
+                customInput={<CustomInput />}
+                onClickOutside={toggleIsDatePickerVisible}
+                tabIndex={0}
+                selectsRange
+              />
+              <FilterButton
+                ref={statusRef}
+                isApplied={!!status}
+                isDropdownVisible={isStatusVisible}
+                onClick={toggleIsStatusVisible}
+              >
+                {status?.toLowerCase() || 'Status'}
+                <svg width="8" height="4" viewBox="0 0 8 4" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6.96012 0.0900269H3.84512H1.04012C0.560118 0.0900269 0.320118 0.670027 0.660118 1.01003L3.25012 3.60003C3.66512 4.01503 4.34012 4.01503 4.75512 3.60003L5.74012 2.61503L7.34512 1.01003C7.68012 0.670027 7.44012 0.0900269 6.96012 0.0900269Z" fill="#292D32"/>
+                </svg>
+                {isStatusVisible ? (
+                  <List>
+                    {statuses.map((el) => (
+                      <ListItem
+                        key={el}
+                        isSelected={el === status}
+                        onClick={() => selectStatus(el)}
+                      >
+                        {el.toLowerCase().replaceAll('_', ' ')}
+                      </ListItem>
+                    ))}
+                  </List>
+                ) : ''}
+              </FilterButton>
+              <FilterButton
+                ref={usersRef}
+                isApplied={!!selectedUser}
+                isDropdownVisible={isUsersVisible}
+                onClick={toggleIsUsersVisible}
+              >
+                {selectedUser?.name || 'User'}
+                <svg width="8" height="4" viewBox="0 0 8 4" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6.96012 0.0900269H3.84512H1.04012C0.560118 0.0900269 0.320118 0.670027 0.660118 1.01003L3.25012 3.60003C3.66512 4.01503 4.34012 4.01503 4.75512 3.60003L5.74012 2.61503L7.34512 1.01003C7.68012 0.670027 7.44012 0.0900269 6.96012 0.0900269Z" fill="#292D32"/>
+                </svg>
+                {isUsersVisible ? (
+                  <List>
+                    {orgUsers.map((el) => (
+                      <ListItem
+                        key={el.email}
+                        isSelected={el.id === selectedUser?.id}
+                        onClick={() => selectOrgUser(el)}
+                      >
+                        {el.name}
+                      </ListItem>
+                    ))}
+                  </List>
+                ) : ''}
+              </FilterButton>
+            </Buttons>
+          </Filters>
+          {filteredOrders.length ? (
             <TableWrapper>
               <Table>
                 <THead>
                   <tr>
-                    <th style={{ padding: '1rem 0 1rem 1.5rem' }}>
+                    <CheckboxCell>
                       <Checkbox
                         type="checkbox"
                         checked={isAllCheckboxChecked}
-                        onClick={(evt) => evt.stopPropagation()}
                         onChange={({ target }) => selectAllCheckboxes(target.checked)}
                       />
-                    </th>
+                    </CheckboxCell>
                     {!isFromMatter ? (
-                      <th style={{ padding: '14px 12px 14px 24px' }}>
+                      <th>
                         Matter
                       </th>
                     ) : ''}
@@ -241,99 +262,81 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
                     <th>
                       Status
                     </th>
-                    <th style={{ padding: '14px 12px', textAlign: 'center' }}>
+                    <th>
                       User
                     </th>
-                    <th style={{ textAlign: 'center' }}>
+                    <th>
                       Date
                     </th>
-                    <th style={{ padding: '14px 24px 14px 12px' }} />
+                    <MoreCell />
                   </tr>
                 </THead>
                 <TBody>
                   {filteredOrders.map((order, i) => (
-                    <TRow key={i} onClick={() => navigate(`/orders/${order.id}`)}>
-                      <th style={{ padding: '1rem 0 1rem 1.5rem' }}>
+                    <TRow
+                      key={i}
+                      isChecked={!!selectedOrders.find(el => el === order.id)}
+                      onClick={() => navigate(`/orders/${order.id}`)}
+                    >
+                      <CheckboxCell>
                         <Checkbox
                           type="checkbox"
                           disabled={order.status !== 'complete'}
                           checked={!!selectedOrders.find(el => el === order.id)}
-                          onClick={(evt) => evt.stopPropagation()}
                           onChange={({ target }) => onCheckboxClick(target.checked, order.id)}
                         />
-                      </th>
+                      </CheckboxCell>
                       {!isFromMatter ? (
-                        <th style={{ padding: '16px 12px 16px 24px' }}>
+                        <th>
                           <MatterLink to={`/matters/${order.matter}`}>
                             {order.matter}
                           </MatterLink>
                         </th>
                       ) : ''}
-                      <td>
+                      <th>
                         {order.service}
-                      </td>
-                      <td>
+                      </th>
+                      <th>
                         {order.description}
-                      </td>
-                      <td>
+                      </th>
+                      <th>
                         <Status orderStatus={order.status}>
                           {order.type === 'list' ? 'list' : order.status}
                         </Status>
-                      </td>
-                      <td style={{ textAlign: 'center' }}>
-                        <User>
-                          {getUserAvatar(String(orgUsers!.find((el) => el.id === order.user)?.name))}
-                        </User>
-                      </td>
-                      <td style={{ textAlign: 'center' }}>
-                        {convertTimestamp(order.date)}
-                      </td>
-                      <th style={{ padding: '16px 24px 16px 1px' }}>
-                        <EyeWrapper>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth="1.5"
-                            stroke="#000"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
-                            />
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                            />
-                          </svg>
-                        </EyeWrapper>
                       </th>
+                      <UserCell>
+                        <User>
+                          {getUserAvatar(String(orgUsers!.find((el) => el.id === order.user)?.name), false)}
+                        </User>
+                        {orgUsers!.find((el) => el.id === order.user)?.name.split(' ')[0]}
+                      </UserCell>
+                      <th>
+                        {convertTimestamp(order.date)}
+                      </th>
+                      <MoreCell onClick={(evt) => evt.stopPropagation()}>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M5 10C3.9 10 3 10.9 3 12C3 13.1 3.9 14 5 14C6.1 14 7 13.1 7 12C7 10.9 6.1 10 5 10Z" stroke="#292D32" strokeWidth="1.5"/>
+                          <path d="M19 10C17.9 10 17 10.9 17 12C17 13.1 17.9 14 19 14C20.1 14 21 13.1 21 12C21 10.9 20.1 10 19 10Z" stroke="#292D32" strokeWidth="1.5"/>
+                          <path d="M12 10C10.9 10 10 10.9 10 12C10 13.1 10.9 14 12 14C13.1 14 14 13.1 14 12C14 10.9 13.1 10 12 10Z" stroke="#292D32" strokeWidth="1.5"/>
+                        </svg>
+                      </MoreCell>
                     </TRow>
                   ))}
                 </TBody>
               </Table>
             </TableWrapper>
-            {maxPages > 1 ? (
-              <Pagination>
-                <PageWrapper>
-                  <Arrow isDisabled={!offset}>
-                    <BsChevronLeft onClick={previousPage} />
-                  </Arrow>
-                  <Page>
-                    Page
-                    <span>{offset + 1}</span>
-                  </Page>
-                  <Arrow isDisabled={offset + 1 === maxPages}>
-                    <BsChevronRight onClick={nextPage} />
-                  </Arrow>
-                </PageWrapper>
-              </Pagination>
-            ) : ''}
-          </>
+          ) : ''}
+        </div>
+        {filteredOrders.length ? (
+          <Pagination
+            changePage={setOffset}
+            currentPage={offset}
+            maxPages={maxPages}
+            maxElements={search || isFiltered ? ordersWithAppliedFilters.length : orders.length}
+            limit={limit}
+          />
         ) : ''}
-      </div>
+      </StyledWrapper>
       {selectedOrders.length ? (
         <PopUp>
           <FilesCount>
@@ -384,42 +387,18 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
   ) : <></>;
 };
 
+const StyledWrapper = styled.div`
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+  flex: 1;
+`;
+
 const Filters = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-gap: 1rem;
+  display: flex;
+  grid-gap: 16px;
   align-items: center;
   margin-bottom: 1rem;
-  padding: 0 16px;
-  
-  .react-datepicker-wrapper {
-    width: auto;
-  }
-  
-  input {
-    padding: .5rem .75rem .5rem 2.25rem;
-    width: 100%;
-    max-width: 300px;
-    height: 34px;
-    border: 1px solid rgba(156, 163, 175, .6);
-    border-radius: 5px;
-    font-size: calc(1rem - 2px);
-    line-height: 1.5rem;
-    background-color: rgba(17, 24, 39, .05);
-    color: rgba(17, 24, 39, .6);
-
-    ::placeholder {
-      color: rgba(17, 24, 39, .35);
-    }
-
-    :focus {
-      outline: 2px solid var(--primary-blue-color);
-    }
-  }
-
-  @media (min-width: 768px) {
-    padding: 0 32px;
-  }
 `;
 
 const Buttons = styled.div`
@@ -428,18 +407,35 @@ const Buttons = styled.div`
   align-items: center;
 `;
 
-const FilterButton = styled.button<{ isApplied?: boolean }>`
+const FilterButton = styled.button<{ isDropdownVisible?: boolean, isApplied?: boolean }>`
   position: relative;
-  margin-left: .5rem;
-  padding: .5rem 1rem;
-  border: 1px solid rgba(0, 0, 0, .3);
-  border-radius: 6px;
-  font-size: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  grid-gap: 6px;
+  padding: 0 19px;
+  height: 38px;
+  border: 1px solid rgba(35, 35, 35, 0.16);
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
   text-transform: capitalize;
-  background-color: ${({ isApplied }) => isApplied ? 'rgba(36, 99, 235, .07)' : '#fff'};
+  white-space: nowrap;
+  background-color: ${({ isApplied }) => isApplied ? 'var(--primary-green-background-color)' : '#fff'};
+  
+  :not(:last-child) {
+    margin-right: 8px;
+  }
   
   :hover {
-    border: 1px solid var(--primary-blue-color);
+    border: 1px solid var(--primary-dark-hover-color);
+  }
+  
+  svg {
+    width: 8px;
+    height: 4px;
+    transition: .1s ease-in-out;
+    ${({ isDropdownVisible }) => isDropdownVisible ? 'transform: rotate(180deg)' : ''}
   }
 `;
 
@@ -469,12 +465,7 @@ const ListItem = styled.li<{ isSelected: boolean }>`
 
 const TableWrapper = styled.div`
   margin-bottom: 1rem;
-  padding: 0 16px;
   overflow-x: auto;
-  
-  @media (min-width: 768px) {
-    padding: 0 32px;
-  }
 `;
 
 const Table = styled.table`
@@ -490,100 +481,83 @@ const Table = styled.table`
 `;
 
 const THead = styled.thead`
-  background-color: rgb(249, 250, 251);
-  
+  background-color: #F9F9F9;
+
   th {
-    padding: 14px 32px;
-    font-size: 14px;
-    font-weight: 600;
+    padding: 12px 35px 12px 0;
+    font-size: 12px;
+    font-weight: 400;
+    color: rgba(17, 24, 39, 0.5);
+    text-transform: uppercase;
     text-align: left;
-    border-top: 1px solid rgb(229, 231, 235);
-    
+
     :first-child {
-      border-left: 1px solid rgb(229, 231, 235);
-      border-top-left-radius: 8px;
+      padding-left: 18px;
+      border-top-left-radius: 4px;
     }
-    
+
     :last-child {
-      border-right: 1px solid rgb(229, 231, 235);
-      border-top-right-radius: 8px;
+      border-top-right-radius: 4px;
     }
   }
 `;
 
-const Checkbox = styled.input`
-  width: 1rem;
-  height: 1rem;
-  border: 1px solid #6b7280;
-  cursor: pointer;
+const CheckboxCell = styled.th`
+  width: 18px;
+`;
+
+const UserCell = styled.th`
+  display: flex;
+  align-items: center;
+  grid-gap: 16px;
+`;
+
+const MoreCell = styled.th`
+  padding-right: 18px;
+  width: 24px;
   
-  :disabled {
-    cursor: default;
-  }
-  
-  &:checked {
-    border: 1px solid rgb(36, 99, 235);
-    background-color: rgb(36, 99, 235);
+  svg {
+    width: 24px;
+    
+    :hover * {
+      stroke: var(--primary-green-color);
+    }
   }
 `;
 
 const TBody = styled.tbody`
-  th, td {
-    padding: 16px 32px;
-    height: 70px;
-    line-height: 1.25rem;
-    background-color: #fff;
-  }
-  
   th {
+    height: 64px;
+    background-color: #fff;
     font-size: 14px;
+    font-weight: 500;
     text-align: left;
-    border-top: 1px solid rgb(229, 231, 235);
-
-    :first-child {
-      display: flex;
-      align-items: center;
-      border-left: 1px solid rgb(229, 231, 235);
-    }
-
-    :last-child {
-      border-right: 1px solid rgb(229, 231, 235);
-    }
-    
-    svg {
-      width: .875rem;
-      height: .875rem;
-    }
-  }
-
-  td {
-    font-size: 14px;
-    text-align: left;
-    color: #6B7280;
-    border-top: 1px solid rgb(229, 231, 235);
   }
 `;
 
-const TRow = styled.tr`
+const TRow = styled.tr<{ isChecked: boolean }>`
   cursor: pointer;
   
-  :hover td, :hover th {
-    background-color: rgba(229, 231, 235, .01);
+  th {
+    padding: 14px 35px 14px 0;
+    background-color: ${({ isChecked }) => isChecked ? '#E8F6FA' : '#fff'};
+    
+    :first-child {
+      padding-left: 18px;
+    }
+  }
+  
+  :hover th {
+    background-color: ${({ isChecked }) => isChecked ? '#E8F6FA' : '#F9F9F9'};
   }
   
   :last-child {
-    th, td {
-      border-bottom: 1px solid rgb(229, 231, 235);
-    }
-
     th:first-child {
-      border-left: 1px solid rgb(229, 231, 235);
-      border-bottom-left-radius: 8px;
+      border-bottom-left-radius: 4px;
     }
 
     th:last-child {
-      border-right: 1px solid rgb(229, 231, 235);
-      border-bottom-right-radius: 8px;
+      border-bottom-right-radius: 4px;
     }
   }
 `;
@@ -598,22 +572,23 @@ const MatterLink = styled(Link)`
 
 const Status = styled.span<{ orderStatus: OrderStatusEnum }>`
   display: block;
-  padding: 6px 12px;
+  padding: 4px 6px;
+  width: fit-content;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
   text-align: center;
-  font-weight: 500;
-  border-radius: 100px;
+  text-transform: uppercase;
   background-color: rgb(229, 231, 235);
   
   ${({ orderStatus }) => {
     if (orderStatus === OrderStatusEnum.ERROR) return css`
-      background-color: rgba(255, 51, 51, 0.3);
-      color: rgb(255, 51, 51);
-      font-weight: 600;
+      background-color: #DD5757;
+      color: #fff;
     `;
     if (orderStatus === OrderStatusEnum.COMPLETE) return css`
-      background-color: rgba(47, 255, 0, 0.3);
-      color: rgb(40, 154, 0);
-      font-weight: 600;
+      background-color: var(--primary-green-color);
+      color: #fff;
     `;
   }}
 `;
@@ -622,71 +597,10 @@ const User = styled.span`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 0 auto;
   width: 2.25rem;
   height: 2.25rem;
   border-radius: 50%;
   background-color: rgb(229, 231, 235);
-`;
-
-const EyeWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 1.5rem;
-  height: 1.5rem;
-  border-radius: 50%;
-  background-color: rgba(229, 231, 235, .4);
-  cursor: pointer;
-  
-  :hover {
-    background-color: rgba(229, 231, 235, .8);
-  }
-`;
-
-const Pagination = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  grid-gap: 2rem;
-`;
-
-const PageWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  grid-gap: .5rem;
-`;
-
-const Arrow = styled.div<{ isDisabled: boolean }>`
-  width: 1rem;
-  height: 1rem;
-  
-  svg {
-    cursor: ${({ isDisabled }) => isDisabled ? 'default' : 'pointer'};
-
-    ${({ isDisabled }) => !isDisabled ? css`
-      :hover {
-        fill: var(--primary-blue-color);
-      }
-    ` : css`
-      fill: rgba(0, 0, 0, .2);
-    `}
-  }
-`;
-
-const Page = styled.p`
-  display: flex;
-  align-items: center;
-  grid-gap: .5rem;
-  
-  span {
-    display: block;
-    padding: .25rem 1rem;
-    border-radius: 3px;
-    background-color: #fff;
-    background-color: rgba(17, 24, 39, .05);
-  }
 `;
 
 const PopUp = styled.div`

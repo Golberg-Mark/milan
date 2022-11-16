@@ -84,7 +84,7 @@ const StyledMenu = styled.menu`
   min-width: 256px;
   max-width: 256px;
   height: 100vh;
-  background-color: #1A1C1E;
+  background-color: var(--primary-dark-color);
   z-index: 1000;
 `;
 

@@ -10,6 +10,7 @@ import PageTitle from '@/components/PageTitle';
 import Loader from '@/components/Loader';
 import OrdersTable from '@/components/Dashboard/OrdersTable';
 import Matters from '@/components/Dashboard/Matters';
+import Button from '@/components/Button';
 
 const Orders = () => {
   const orders = useSelector(selectOrders);
@@ -33,11 +34,8 @@ const Orders = () => {
       <PageHeader>
         <div>
           <PageTitle fontSize={20}>
-            All Matters & Orders
+            Matters & Orders
           </PageTitle>
-          <Description>
-            A list of all the orders you've requested for in the past.
-          </Description>
         </div>
         <Link to="/new-order">
           <StyledButton>
@@ -57,22 +55,27 @@ const Orders = () => {
           </StyledButton>
         </Link>
       </PageHeader>
-      <NavWrapper>
-        <Nav>
-          <StyledNavLink to="/dashboard/" end>All orders</StyledNavLink>
-          <StyledNavLink to="/dashboard/matters">All matters</StyledNavLink>
-        </Nav>
-      </NavWrapper>
-      <Routes>
-        <Route path="/" element={<OrdersTable orders={orders} />} />
-        <Route path="/matters/*" element={<Matters />} />
-      </Routes>
+      <Content>
+        <NavWrapper>
+          <Nav>
+            <StyledNavLink to="/dashboard/" end>All orders</StyledNavLink>
+            <StyledNavLink to="/dashboard/matters">All matters</StyledNavLink>
+          </Nav>
+        </NavWrapper>
+        <Routes>
+          <Route path="/" element={<OrdersTable orders={orders} />} />
+          <Route path="/matters/*" element={<Matters />} />
+        </Routes>
+      </Content>
     </OrdersPage>
   ) : <Loader />;
 };
 
 const OrdersPage = styled.div`
-  padding-bottom: 2.5rem;
+  display: flex;
+  flex-flow: column;
+  min-height: calc(100vh - var(--search-height));
+  padding: 32px;
 `;
 
 const PageHeader = styled.div`
@@ -80,35 +83,17 @@ const PageHeader = styled.div`
   flex-direction: column;
   justify-content: space-between;
   grid-gap: 1rem;
-  margin-bottom: 2rem;
-  padding: 1.5rem 1rem 0;
+  margin-bottom: 32px;
   
   @media (min-width: 768px) {
     flex-direction: row;
     align-items: center;
-    padding: 1.5rem 2rem 0;
   }
 `;
 
-const Description = styled.p`
-  font-size: 14px;
-  color: var(--primary-gray-color);
-`;
-
-const StyledButton = styled.button`
+const StyledButton = styled(Button)`
   display: flex;
   align-items: center;
-  padding: 8px 16px;
-  font-size: 14px;
-  color: #fff;
-  white-space: nowrap;
-  border: none;
-  border-radius: 6px;
-  background-color: rgb(36, 99, 235);
-  
-  :hover {
-    background-color: rgba(36, 99, 235, .9);
-  }
   
   svg {
     margin-right: 8px;
@@ -118,31 +103,41 @@ const StyledButton = styled.button`
 `;
 
 const NavWrapper = styled.div`
-  margin-bottom: 1.5rem;
-  padding: 1.5rem 1rem 0;
-
-  @media (min-width: 768px) {
-    padding: 1.5rem 2rem 0;
-  }
+  margin-bottom: 24px;
 `;
 
 const Nav = styled.div`
+  position: relative;
   display: flex;
   grid-gap: 1rem;
-  padding-bottom: .5rem;
-  border-bottom: 1px solid rgb(210, 210, 210);
+  border-bottom: 1px solid rgba(26, 28, 30, 0.2);
 `;
 
 const StyledNavLink = styled(NavLink)`
+  margin-bottom: -1px;
+  padding-bottom: 24px;
+  color: rgba(26, 28, 30, 0.4);
+  font-weight: 500;
   transition: .1s ease-in-out;
-  
+
   :not(&.active):hover {
-    color: rgba(36, 99, 235, .8);
+    color: var(--primary-dark-hover-color);
   }
-  
+
   &.active {
-    color: var(--primary-blue-color);
+    color: var(--primary-dark-color);
+    border-bottom: 2px solid var(--primary-dark-color);
   }
+`;
+
+const Content = styled.div`
+  display: flex;
+  flex-flow: column;
+  flex-grow: 1;
+  padding: 32px;
+  border-radius: 12px;
+  background-color: #fff;
+  overflow-x: hidden;
 `;
 
 export default Orders;
