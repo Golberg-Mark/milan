@@ -16,7 +16,8 @@ const ProtectedRouter: React.FC<any> = ({ children }: any) => {
   }, []);
 
   if (!isLoggedIn) {
-    return <Navigate to="/auth" />
+    //return <Navigate to="/auth" /> TODO: remove comment after auth logic will be done
+    return <Navigate to="/" />
   }
 
   return user ? children : <div style={{ minHeight: '100vh' }}><Loader /></div>;
