@@ -118,7 +118,7 @@ const StyledNavLink = styled(NavLink)`
   padding-bottom: 24px;
   color: rgba(26, 28, 30, 0.4);
   font-weight: 500;
-  transition: .1s ease-in-out;
+  transition: color .1s ease-in-out;
 
   :not(&.active):hover {
     color: var(--primary-dark-hover-color);
