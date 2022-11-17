@@ -107,17 +107,17 @@ const AddOrder = () => {
     }, 300);
   };
 
-  /*const regionProducts = useMemo(() => {
+  const regionProducts = useMemo(() => {
     return products?.filter((el) => new RegExp(`${mockedData[selectedRegion].region}`).test(el.collection)).map((el, i) => (
       <OrderItem
         key={el.searchType}
         name={el.searchType}
         index={i}
         price={el.priceInclGST}
-        inputs={el['Label'] ? [{ label: el['Label'], placeholder: el['Placeholder'] }] : []}
+        inputs={[{ placeholder: el.input1 }, { placeholder: el.input2 || '' }]}
       />
     ))
-  }, [products, selectedRegion]);*/
+  }, [products, selectedRegion]);
 
   const isMatterError = !matter;
   const isDescriptionError = !description;
@@ -214,9 +214,9 @@ const AddOrder = () => {
               ))}
             </ul>
           ) : isProductsLoading ? <Loader/> : ''*/}
-          {/*<ul>
+          <ul>
             {regionProducts}
-          </ul>*/}
+          </ul>
         </OrderItemsSection>
       </Content>
       <Footer

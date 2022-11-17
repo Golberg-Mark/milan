@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import useToggle from '@/hooks/useToggle';
 import SuccessIcon from '@/assets/icons/SuccessIcon';
-import Input from '@/components/AddOrder/Input';
+import Input from '@/components/Input';
 
 interface Props {
   name: string,
@@ -15,7 +15,6 @@ interface Props {
   }[],
   setSubItems?: Function,
   inputs: {
-    label: string,
     placeholder: string
   }[] | []
 }
@@ -71,8 +70,7 @@ const OrderItem: React.FC<Props> = ({ name, price, index, subItems, setSubItems,
       ) : ''}
       {isSelected && inputs.length ? (
         <Inputs>
-          {inputs.map((el) => <Input name={el.label} placeholder={el.placeholder} />)}
-
+          {inputs.map((el) => el.placeholder ? <Input key={el.placeholder} placeholder={el.placeholder} /> : '')}
         </Inputs>
       ) : ''}
     </Li>
