@@ -10,9 +10,9 @@ export const selectUser: Selector<State, User | null> = createSelector(
   ({ user }) => user
 );
 
-export const selectIsLoggedIn: Selector<State, boolean> = createSelector(
+export const selectIsLoadingUser: Selector<State, boolean> = createSelector(
   userState,
-  ({ isLoggedIn }) => isLoggedIn
+  ({ isLoadingUser }) => isLoadingUser
 );
 
 export const selectPriceList: Selector<State, Product[] | null> = createSelector(

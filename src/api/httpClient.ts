@@ -33,8 +33,16 @@ class HttpClient {
         localStorage.setItem('token', access_token);
         localStorage.setItem('refreshToken', refresh_token);
 
-        error.config.headers.Authorization = `Bearer ${access_token}`;
-        return await this.instance.request(error.config);
+        const newConfig = {
+          ...error.config,
+          headers: {
+            ...error.config.headers,
+            Authorization: `Bearer ${access_token}`,
+            'Content-Type': 'application/json',
+          },
+        };
+
+        return (await axios.request(newConfig)).data.data;
       } catch (_) {
         localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');

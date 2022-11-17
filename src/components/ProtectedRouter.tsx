@@ -2,22 +2,25 @@ import React, { useEffect } from 'react';
 import { Navigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { selectIsLoggedIn, selectUser } from '@/store/selectors/userSelectors';
-import { getMeAction } from '@/store/actions/userActions';
+import { selectIsLoadingUser, selectUser } from '@/store/selectors/userSelectors';
 import Loader from '@/components/Loader';
+import { getMeAction } from '@/store/actions/userActions';
+import useToggle from '@/hooks/useToggle';
 
 const ProtectedRouter: React.FC<any> = ({ children }: any) => {
+  const [isFinished, toggleIsFinished] = useToggle(false);
   const dispatch = useDispatch<any>();
   const user = useSelector(selectUser);
-  const isLoggedIn = useSelector(selectIsLoggedIn);
+  const isLoading = useSelector(selectIsLoadingUser);
 
   useEffect(() => {
-    if (!user) dispatch(getMeAction());
+    dispatch(getMeAction(toggleIsFinished));
   }, []);
 
-  if (!isLoggedIn) {
-    //return <Navigate to="/auth" /> TODO: remove comment after auth logic will be done
-    return <Navigate to="/" />
+  if (isLoading && !isFinished) return <div style={{ minHeight: '100vh' }}><Loader /></div>;
+
+  if (!isLoading && isFinished && !user) {
+    return <Navigate to="/auth" />
   }
 
   return user ? children : <div style={{ minHeight: '100vh' }}><Loader /></div>;

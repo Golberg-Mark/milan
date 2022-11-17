@@ -16,7 +16,7 @@ const Input: React.FC<Props> = ({
   ...props
 }) => {
   return (
-    <Label>
+    <Label onClick={(evt) => evt.stopPropagation()}>
       {label ? (
         <LabelText fontSize={labelFontSize} marginBottom={labelMarginBottom}>
           {label}

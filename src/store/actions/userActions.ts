@@ -2,19 +2,20 @@ import { createActionCreators } from 'immer-reducer';
 
 import { UserReducer } from '@/store/reducers/user';
 import { AsyncAction } from '@/store/actions/common';
+import { HandleToggle } from '@/hooks/useToggle';
 
 export const userActions = createActionCreators(UserReducer);
 
-export type UserActions = ReturnType<typeof userActions.setIsLoggedIn>
-  | ReturnType<typeof userActions.setOrders>
+export type UserActions = ReturnType<typeof userActions.setOrders>
   | ReturnType<typeof userActions.setMatters>
   | ReturnType<typeof userActions.setOrderDetails>
   | ReturnType<typeof userActions.setUser>
+  | ReturnType<typeof userActions.setIsLoadingUser>
   | ReturnType<typeof userActions.setPriceList>
   | ReturnType<typeof userActions.setOrgUsers>
   | ReturnType<typeof userActions.logout>;
 
-export const getMeAction = (): AsyncAction => async (
+export const getMeAction = (toggleIsFinished: HandleToggle): AsyncAction => async (
   dispatch,
   _,
   { mainApiProtected }
@@ -23,9 +24,12 @@ export const getMeAction = (): AsyncAction => async (
     const user = await mainApiProtected.getMe();
 
     dispatch(userActions.setUser(user));
-    dispatch(userActions.setIsLoggedIn(true));
+    dispatch(userActions.setIsLoadingUser(false));
+    toggleIsFinished(true);
   } catch (error: any) {
     console.log(error);
+    dispatch(userActions.setIsLoadingUser(false));
+    toggleIsFinished(true);
   }
 };
 

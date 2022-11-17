@@ -91,7 +91,7 @@ export interface OrganizationUser {
 interface UserState {
   user: User | null,
   orgUsers: OrganizationUser[] | null,
-  isLoggedIn: boolean,
+  isLoadingUser: boolean,
   orders: Order[] | null,
   matters: Matters | null,
   orderDetails: OrderDetails | null,
@@ -101,7 +101,7 @@ interface UserState {
 const InitialState: UserState = {
   user: null,
   orgUsers: null,
-  isLoggedIn: !!localStorage.getItem('token'),
+  isLoadingUser: false,
   orders: null,
   matters: null,
   orderDetails: null,
@@ -113,12 +113,12 @@ export class UserReducer extends ImmerReducer<UserState> {
     this.draftState.user = value;
   }
 
-  public setPriceList(value: Product[] | null) {
-    this.draftState.priceList = value;
+  public setIsLoadingUser(value: boolean) {
+    this.draftState.isLoadingUser = value;
   }
 
-  public setIsLoggedIn(value: boolean) {
-    this.draftState.isLoggedIn = value;
+  public setPriceList(value: Product[] | null) {
+    this.draftState.priceList = value;
   }
 
   public setOrders(value: Order[] | null) {
@@ -139,7 +139,6 @@ export class UserReducer extends ImmerReducer<UserState> {
 
   public logout() {
     this.draftState.user = null;
-    this.draftState.isLoggedIn = false;
   }
 }
 
