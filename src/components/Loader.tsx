@@ -12,13 +12,18 @@ const rotate = keyframes`
 
 interface Props {
   size?: number,
+  thickness?: number,
   color?: string
 }
 
-const CircleSpinner: React.FC<Props> = ({ size = 40, color = 'rgb(36, 99, 235)' }) => {
+const CircleSpinner: React.FC<Props> = ({
+  size = 40,
+  thickness = 4,
+  color = 'var(--primary-green-color)' }
+) => {
   return (
     <PageWrapper>
-      <Wrapper size={size} color={color} />
+      <Wrapper size={size} thickness={thickness} color={color} />
     </PageWrapper>
   );
 };
@@ -31,13 +36,13 @@ const PageWrapper = styled.div`
   min-height: inherit;
 `;
 
-const Wrapper = styled.div<{ size: number, color: string }>`
+const Wrapper = styled.div<{ size: number, thickness: number, color: string }>`
     display: flex;
     justify-content: center;
     align-items: center;
     width: ${props => `${props.size}px`};
     height: ${props => `${props.size}px`};
-    border: ${props => `4px solid ${props.color}`};
+    border: ${props => `${props.thickness}px solid ${props.color}`};
     border-right-color: transparent;
     border-radius: 50%;
     animation: ${rotate} 0.75s linear infinite;

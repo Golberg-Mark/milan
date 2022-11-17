@@ -14,7 +14,10 @@ const Button: React.FC<Props> = ({ children, ...props }) => {
 };
 
 const StyledButton = styled.button`
-  padding: 13px 22px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 22px;
   height: 38px;
   border: none;
   border-radius: 5px;

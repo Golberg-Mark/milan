@@ -15,6 +15,22 @@ export type UserActions = ReturnType<typeof userActions.setOrders>
   | ReturnType<typeof userActions.setOrgUsers>
   | ReturnType<typeof userActions.logout>;
 
+export const loginAction = (email: string, password: string, callback: () => void): AsyncAction => async (
+  dispatch,
+  _,
+  { mainApi }
+) => {
+  try {
+    const { accessToken, refreshToken } = await mainApi.login(email, password);
+
+    localStorage.setItem('token', accessToken);
+    localStorage.setItem('refreshToken', refreshToken);
+    callback();
+  } catch (error: any) {
+    console.log(error);
+  }
+};
+
 export const getMeAction = (toggleIsFinished: HandleToggle): AsyncAction => async (
   dispatch,
   _,

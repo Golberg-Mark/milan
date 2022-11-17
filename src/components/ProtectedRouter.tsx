@@ -8,6 +8,8 @@ import { getMeAction } from '@/store/actions/userActions';
 import useToggle from '@/hooks/useToggle';
 
 const ProtectedRouter: React.FC<any> = ({ children }: any) => {
+  if (!localStorage.getItem('token') && !localStorage.getItem('refreshToken')) return <Navigate to="/auth" />
+
   const [isFinished, toggleIsFinished] = useToggle(false);
   const dispatch = useDispatch<any>();
   const user = useSelector(selectUser);

@@ -1,44 +1,56 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { useDispatch } from 'react-redux';
 
 import Input from '@/components/Input';
 import useInput from '@/hooks/useInput';
 import AuthImage from '@/assets/AuthImage.png';
 import checkEmail from '@/utils/checkEmail';
 import useToggle from '@/hooks/useToggle';
-import SuccessIcon from '@/assets/icons/SuccessIcon';
+import Button from '@/components/Button';
+import useIsFirstRender from '@/hooks/useIsFirstRender';
+import { loginAction } from '@/store/actions/userActions';
+import Loader from '@/components/Loader';
 
 const Auth = () => {
   const [email, setEmail] = useInput();
+  const [isEmailChanged, toggleIsEmailChanged] = useToggle();
   const [password, setPassword] = useInput();
-  const [isPopupVisible, toggleIsPopupVisible] = useToggle();
+  const [isPasswordChanged, toggleIsPasswordChanged] = useToggle();
+  const [isLoading, toggleIsLoading] = useToggle();
+  const isFirstRender = useIsFirstRender();
+
+  const dispatch = useDispatch<any>();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (isPopupVisible) {
-      const timer = setTimeout(() => {
-        toggleIsPopupVisible(false);
-      }, 4000);
+    if (!isFirstRender) toggleIsEmailChanged(true);
+  }, [email]);
 
-      return () => {
-        clearTimeout(timer);
+  useEffect(() => {
+    if (!isFirstRender) toggleIsPasswordChanged(true);
+  }, [password]);
+
+  const sendData = async () => {
+    if (!isEmailError && !isPasswordError) {
+      try {
+        toggleIsLoading(true);
+        await dispatch(loginAction(email, password, () => navigate('/dashboard')));
+      } finally {
+        toggleIsLoading(false);
       }
-    }
-  }, [isPopupVisible]);
-
-  const sendData = () => {
-    if (isEmailValid && password) {
-      toggleIsPopupVisible(true);
     }
   };
 
-  const isEmailValid = checkEmail(email);
+  const isEmailError = isEmailChanged && !checkEmail(email);
+  const isPasswordError = isPasswordChanged && password.length < 8;
 
   return (
     <StyledAuth>
       <Content>
         <PageTitle>
-          Sign Up
+          Sign In
         </PageTitle>
         <StyledInput
           type="email"
@@ -47,6 +59,7 @@ const Auth = () => {
           labelFontSize=".95rem"
           label="Email"
           placeholder="Enter username"
+          isError={isEmailError}
         />
         <StyledInput
           type="password"
@@ -55,26 +68,21 @@ const Auth = () => {
           labelFontSize=".9rem"
           label="Password"
           placeholder="Enter password"
+          isError={isPasswordError}
         />
         <Buttons>
-          <StyledLink to="#">Resend link</StyledLink>
+          <StyledLink to="#">Forgot Password</StyledLink>
           <Button
-            disabled={!isEmailValid || !password}
+            disabled={isEmailError || isPasswordError || !isEmailChanged || !isPasswordChanged}
             onClick={sendData}
           >
-            Log In
+            {isLoading ? <Loader size={24} thickness={2} color="#fff" /> : 'Log In'}
           </Button>
         </Buttons>
       </Content>
-      {/*<div>
+      <div>
         <img src={AuthImage} alt="Auth image"/>
-      </div>*/}
-      {isPopupVisible ? (
-        <Popup>
-          <SuccessIcon />
-          Verification link was sent to your email.
-        </Popup>
-      ) : ''}
+      </div>
     </StyledAuth>
   );
 };
@@ -84,6 +92,7 @@ const StyledAuth = styled.div`
   align-items: center;
   padding: 40px 15px;
   min-height: inherit;
+  background-color: #fff;
   
   @media (min-width: 768px) {
     display: flex;
@@ -112,16 +121,20 @@ const PageTitle = styled.h1`
   }
 `;
 
-const StyledInput = styled(Input)`
+const StyledInput = styled(Input)<{ isError: boolean }>`
   width: 100%;
   max-width: 420px;
+  
+  ${({ isError }) => isError ? 'border: 1px solid #DD5757' : ''}
 `;
 
 const StyledLink = styled(Link)`
-  color: var(--primary-blue-color);
+  font-size: 14px;
+  color: var(--primary-dark-color);
+  transition: .1s ease-in-out;
   
   :hover {
-    color: rgba(36, 99, 235, .7);
+    color: var(--primary-green-hover-color);
   }
 `;
 
@@ -130,61 +143,6 @@ const Buttons = styled.div`
   justify-content: space-between;
   align-items: center;
   grid-gap: 20px;
-`;
-
-const Button = styled.button`
-  padding: .75rem 1rem;
-  width: 100%;
-  max-width: 180px;
-  border: none;
-  border-radius: 5px;
-  font-size: .9rem;
-  font-weight: 600;
-  color: #fff;
-  background-color: rgb(36, 99, 235);
-  
-  :hover {
-    background-color: rgba(36, 99, 235, .9);
-  }
-  
-  :disabled {
-    cursor: default;
-    color: rgb(187, 187, 187);
-    background-color: rgba(187, 187, 187, 0.3);
-  }
-`;
-
-const Popup = styled.div`
-  position: absolute;
-  top: 40px;
-  right: 15px;
-  left: 15px;
-  display: flex;
-  align-items: center;
-  grid-gap: 10px;
-  padding: .75rem 1rem;
-  width: auto;
-  border: 1px solid rgba(187, 187, 187, 1);
-  font-size: .9rem;
-  border-radius: 10px;
-  background-color: #fff;
-  
-  svg {
-    width: 1.25rem;
-    height: 1.25rem;
-  }
-  
-  @media (min-width: 480px) {
-    top: 60px;
-    right: unset;
-    padding: 1rem 1.25rem;
-    font-size: 1rem;
-    
-    svg {
-      width: 1.5rem;
-      height: 1.5rem;
-    }
-  }
 `;
 
 export default Auth;

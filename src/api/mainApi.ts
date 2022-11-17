@@ -15,6 +15,13 @@ class MainApi extends HttpClient {
     return MainApi.instanceCached;
   }
 
+  public login = (email: string, password: string) => (
+    this.instance.post<{ accessToken: string, refreshToken: string }>('/login', {
+      email,
+      password
+    })
+  );
+
   public refreshAccessToken = (refreshToken: string) => this.instance.post('/login/refresh', { refreshToken });
 
   public getOrders = () => this.instance.get<Order[]>('/orders');
