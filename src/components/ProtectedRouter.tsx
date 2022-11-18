@@ -7,7 +7,11 @@ import Loader from '@/components/Loader';
 import { getMeAction } from '@/store/actions/userActions';
 import useToggle from '@/hooks/useToggle';
 
-const ProtectedRouter: React.FC<any> = ({ children }: any) => {
+interface Props extends React.PropsWithChildren {
+  isForAuth?: boolean
+}
+
+const ProtectedRouter: React.FC<Props> = ({ isForAuth = false, children }) => {
   if (!localStorage.getItem('token') && !localStorage.getItem('refreshToken')) return <Navigate to="/auth" />
 
   const [isFinished, toggleIsFinished] = useToggle(false);
@@ -21,11 +25,12 @@ const ProtectedRouter: React.FC<any> = ({ children }: any) => {
 
   if (isLoading && !isFinished) return <div style={{ minHeight: '100vh' }}><Loader /></div>;
 
-  if (!isLoading && isFinished && !user) {
-    return <Navigate to="/auth" />
+  if (!isLoading && isFinished) {
+    if (!user) return <Navigate to="/auth" />;
+    if (isForAuth && user) return <Navigate to="/dashboard" />
   }
 
-  return user ? children : <div style={{ minHeight: '100vh' }}><Loader /></div>;
+  return user ? <>{children}</> : <div style={{ minHeight: '100vh' }}><Loader /></div>;
 };
 
 export default ProtectedRouter;
