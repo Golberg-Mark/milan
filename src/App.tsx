@@ -19,7 +19,7 @@ const App = () => {
       <GlobalStyle />
       <Routes>
         <Route path="/" element={<ProtectedRouter><Navigate to="/dashboard" /></ProtectedRouter>} />
-        <Route path="/auth" element={<ProtectedRouter isForAuth><Auth /></ProtectedRouter>} />
+        <Route path="/auth" element={<Auth />} />
         <Route path="/*" element={(
           <ProtectedRouter>
             <Menu />
