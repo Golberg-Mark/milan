@@ -15,7 +15,12 @@ export type UserActions = ReturnType<typeof userActions.setOrders>
   | ReturnType<typeof userActions.setOrgUsers>
   | ReturnType<typeof userActions.logout>;
 
-export const loginAction = (email: string, password: string, callback: () => void): AsyncAction => async (
+export const loginAction = (
+  email: string,
+  password: string,
+  rememberMe: boolean,
+  callback: () => void
+): AsyncAction => async (
   dispatch,
   _,
   { mainApi }
@@ -23,8 +28,13 @@ export const loginAction = (email: string, password: string, callback: () => voi
   try {
     const { accessToken, refreshToken } = await mainApi.login(email, password);
 
-    localStorage.setItem('token', accessToken);
-    localStorage.setItem('refreshToken', refreshToken);
+    if (rememberMe) {
+      localStorage.setItem('token', accessToken);
+      localStorage.setItem('refreshToken', refreshToken);
+    } else {
+      sessionStorage.setItem('token', accessToken);
+      sessionStorage.setItem('refreshToken', refreshToken);
+    }
     callback();
   } catch (error: any) {
     console.log(error);
@@ -136,6 +146,8 @@ export const logoutAction = (): AsyncAction => async (
   try {
     localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('refreshToken');
     dispatch(userActions.logout());
   } catch (error: any) {
     console.log(error);

@@ -23,29 +23,46 @@ class HttpClient {
 
   private responseError = async (error: any) => {
     const status = error.response.status;
-    const refreshToken = localStorage.getItem('refreshToken');
 
-    if (status === 0 || status === 401 && refreshToken) {
+    if (status === 0 || status === 401) {
       try {
-        const { accessToken: access_token, refreshToken: refresh_token } = await new MainApi()
-          .refreshAccessToken(refreshToken!);
-
-        localStorage.setItem('token', access_token);
-        localStorage.setItem('refreshToken', refresh_token);
-
+        let refreshToken = localStorage.getItem('refreshToken');
         const newConfig = {
           ...error.config,
           headers: {
             ...error.config.headers,
-            Authorization: `Bearer ${access_token}`,
             'Content-Type': 'application/json',
           },
         };
+
+        if (refreshToken) {
+          const { accessToken: access_token, refreshToken: refresh_token } = await new MainApi()
+            .refreshAccessToken(refreshToken);
+
+          localStorage.setItem('token', access_token);
+          localStorage.setItem('refreshToken', refresh_token);
+
+          newConfig.headers.Authorization = `Bearer ${access_token}`;
+        }
+
+        const sessionRefreshToken = sessionStorage.getItem('refreshToken');
+
+        if (sessionRefreshToken) {
+          const { accessToken: access_token, refreshToken: refresh_token } = await new MainApi()
+            .refreshAccessToken(sessionRefreshToken);
+
+          sessionStorage.setItem('token', access_token);
+          sessionStorage.setItem('refreshToken', refresh_token);
+
+          newConfig.headers.Authorization = `Bearer ${access_token}`;
+        }
 
         return (await axios.request(newConfig)).data.data;
       } catch (_) {
         localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('refreshToken');
 
         return Promise.reject({
           code: status,

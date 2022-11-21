@@ -14,7 +14,7 @@ export class HttpClientProtected extends HttpClient {
   }
 
   private requestInterceptor(config: AxiosRequestConfig) {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 
     config.headers!.Authorization = `Bearer ${token}`;
 

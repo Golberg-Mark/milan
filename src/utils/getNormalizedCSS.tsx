@@ -4,6 +4,7 @@ import { normalize } from 'styled-normalize';
 import InterRegular from '@/assets/fonts/Inter-Regular.ttf';
 import InterMedium from '@/assets/fonts/Inter-Medium.ttf';
 import InterSemiBold from '@/assets/fonts/Inter-SemiBold.ttf';
+import InterBold from '@/assets/fonts/Inter-Bold.ttf';
 
 const GlobalStyle = createGlobalStyle`
   ${normalize}
@@ -28,6 +29,12 @@ const GlobalStyle = createGlobalStyle`
     font-weight: 600;
   }
 
+  @font-face {
+    font-family: 'Inter';
+    src: url(${InterBold}) format('truetype');
+    font-weight: 700;
+  }
+
   * {
     --sidebar-width: 256px;
     --search-height: 82px;
@@ -35,6 +42,7 @@ const GlobalStyle = createGlobalStyle`
     --primary-dark-hover-color: rgba(26, 28, 30, 0.8);
     --primary-green-color: #27A376;
     --primary-green-hover-color: rgba(39, 163, 118, 0.8);
+    --primary-red-color: #DD5757;
     --primary-green-background-color: rgba(39, 163, 118, 0.1);
 
     box-sizing: border-box;
