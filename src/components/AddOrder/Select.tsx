@@ -56,7 +56,6 @@ const StyledSelect = styled.button`
   align-items: center;
   padding: 13px 16px;
   width: 100%;
-  min-width: 160px;
   height: 38px;
   border: 1px solid rgba(35, 35, 35, 0.16);
   border-radius: 4px;

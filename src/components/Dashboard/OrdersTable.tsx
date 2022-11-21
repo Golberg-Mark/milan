@@ -41,7 +41,7 @@ export const Wrapper: React.FC = () => {
     : <Loader />;
 };
 
-const limit = 10;
+const limits = [20, 50, 100];
 
 const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
   const [search, setSearch] = useInput();
@@ -55,6 +55,7 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
   const [isAllCheckboxChecked, toggleIsAllCheckboxChecked] = useToggle();
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
   const [offset, setOffset] = useState(0);
+  const [limit, setLimit] = useState(0);
 
   const orgUsers = useSelector(selectOrganizationUsers);
 
@@ -144,11 +145,12 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
     return order.user === selectedUser.id
   }), [search, startDay, endDay, status, selectedUser]);
 
-  const maxPages = Math.ceil(ordersWithAppliedFilters.length / limit);
+  const maxPages = Math.ceil(ordersWithAppliedFilters.length / limits[limit]);
+  const calculatedOffset = maxPages > 1 ? offset : 0;
   const filteredOrders: Order[] = [];
 
   if (maxPages >= 1) {
-    for (let i = offset * limit; i < offset * limit + limit; i++) {
+    for (let i = calculatedOffset * limits[limit]; i < calculatedOffset * limits[limit] + limits[limit]; i++) {
       if (ordersWithAppliedFilters[i]) {
         filteredOrders.push(ordersWithAppliedFilters[i]);
       }
@@ -330,10 +332,12 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
         {filteredOrders.length ? (
           <Pagination
             changePage={setOffset}
-            currentPage={offset}
+            currentPage={calculatedOffset}
             maxPages={maxPages}
             maxElements={search || isFiltered ? ordersWithAppliedFilters.length : orders.length}
+            limits={limits}
             limit={limit}
+            setLimit={setLimit}
           />
         ) : ''}
       </StyledWrapper>

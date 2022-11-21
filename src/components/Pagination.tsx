@@ -1,12 +1,15 @@
 import React from 'react';
 import styled from 'styled-components';
+import Select from '@/components/AddOrder/Select';
 
 interface Props {
   changePage: React.Dispatch<React.SetStateAction<number>>,
   currentPage: number,
   maxPages: number,
   maxElements: number,
-  limit: number
+  limits: number[],
+  limit: number,
+  setLimit: React.Dispatch<React.SetStateAction<number>>
 }
 
 type stringAndNumber = number | string;
@@ -16,7 +19,9 @@ const Pagination: React.FC<Props> = ({
   currentPage,
   maxPages,
   maxElements,
-  limit
+  limits,
+  limit,
+  setLimit
 }) => {
   const previousPage = () => {
     changePage(prevState => prevState ? prevState - 1 : 0);
@@ -26,7 +31,9 @@ const Pagination: React.FC<Props> = ({
     changePage(prevState => prevState + 2 > maxPages ? prevState : prevState + 1);
   };
 
-  const toElements = currentPage * limit + limit < maxElements ? currentPage * limit + limit : maxElements;
+  const toElements = currentPage * limits[limit] + limits[limit] < maxElements
+    ? currentPage * limits[limit] + limits[limit]
+    : maxElements;
 
   const getPages = () => {
     if (maxPages < 8) {
@@ -85,7 +92,16 @@ const Pagination: React.FC<Props> = ({
         </Arrow>
       </StyledPagination>
       <Info>
-        {`Showing ${currentPage * limit + 1} to ${toElements} of ${maxElements}`}
+        <Label>
+          <Select
+            selectedItem={limit}
+            setSelectedItem={setLimit}
+            items={limits}
+            prefix="Show"
+            openToTop
+          />
+        </Label>
+        <p>{`Showing ${currentPage * limits[limit] + 1} to ${toElements} of ${maxElements}`}</p>
       </Info>
     </Wrapper>
   );
@@ -139,9 +155,19 @@ const PageNumber = styled.li<{ isActive?: boolean }>`
   cursor: pointer;
 `;
 
-const Info = styled.p`
-  font-size: 14px;
-  font-weight: 500;
+const Info = styled.div`
+  display: flex;
+  align-items: center;
+  grid-gap: 24px;
+  
+  p {
+    font-size: 14px;
+    font-weight: 500;
+  }
+`;
+
+const Label = styled.label`
+  max-width: 120px;
 `;
 
 export default Pagination;

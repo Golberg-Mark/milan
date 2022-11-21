@@ -14,7 +14,7 @@ import Search from '@/components/Dashboard/Search';
 import Pagination from '@/components/Pagination';
 import useToggle from '@/hooks/useToggle';
 
-const limit = 10;
+const limits = [20, 50, 100];
 
 const MattersTable = () => {
   const [search, setSearch] = useInput();
@@ -22,6 +22,7 @@ const MattersTable = () => {
   const [endDay, setEndDay] = useState<Date | null>(null);
   const [isDatePickerVisible, toggleIsDatePickerVisible] = useToggle();
   const [offset, setOffset] = useState(0);
+  const [limit, setLimit] = useState(0);
 
   const matters = Object.values(useSelector(selectMatters) || {});
   const navigate = useNavigate();
@@ -78,11 +79,12 @@ const MattersTable = () => {
     });
   }, [search, matters, startDay, endDay]);
 
+  const maxPages = Math.ceil(matters.length / limits[limit]);
+  const calculatedOffset = maxPages > 1 ? offset : 0;
   const filteredMatters = [];
-  const maxPages = Math.ceil(matters.length / limit);
 
   if (maxPages >= 1) {
-    for (let i = offset * limit; i < offset * limit + limit; i++) {
+    for (let i = calculatedOffset * limits[limit]; i < calculatedOffset * limits[limit] + limits[limit]; i++) {
       if (mattersWithAppliedFilters[i]) {
         filteredMatters.push(mattersWithAppliedFilters[i]);
       }
@@ -179,10 +181,12 @@ const MattersTable = () => {
       {filteredMatters.length ? (
         <Pagination
           changePage={setOffset}
-          currentPage={offset}
+          currentPage={calculatedOffset}
           maxPages={maxPages}
           maxElements={search || isFiltered ? mattersWithAppliedFilters.length : matters.length}
+          limits={limits}
           limit={limit}
+          setLimit={setLimit}
         />
       ) : ''}
     </StyledWrapper>
