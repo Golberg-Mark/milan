@@ -62,7 +62,7 @@ const OrderItem: React.FC<Props> = ({ name, price, index, subItems, setSubItems,
               key={subItem.name}
               onClick={(evt) => onSubItemClick(evt, i)}
             >
-              {subItem.isChosen ? <SuccessIcon color="var(--primary-blue-color)" /> : ''}
+              {subItem.isChosen ? <SuccessIcon /> : ''}
               {subItem.name}
             </SubItem>
           ))}
