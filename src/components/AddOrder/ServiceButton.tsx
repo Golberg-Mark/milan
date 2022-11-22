@@ -44,6 +44,7 @@ const ButtonWrapper = styled.div<{ align?: string }>`
   justify-content: ${({ align }) => align ? align : 'flex-end'};
   align-items: center;
   align-self: flex-end;
+  z-index: 1;
 `;
 
 const Button = styled.button`

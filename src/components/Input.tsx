@@ -83,6 +83,7 @@ const InputWrapper = styled.div`
 
 const StyledInput = styled.input<{ isError?: boolean }>`
   padding: 13px 16px;
+  width: 100%;
   height: 38px;
   border: 1px solid ${({ isError }) => isError ? '#ff3333' : 'rgba(35, 35, 35, 0.16)'};
   border-radius: 4px;
