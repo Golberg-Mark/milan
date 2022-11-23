@@ -1,9 +1,8 @@
-import React, { ForwardedRef, forwardRef, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
 import styled, { css } from 'styled-components';
-import DatePicker from 'react-datepicker';
 
 import convertTimestamp from '@/utils/convertTimestamp';
 import { Order, OrderStatusEnum, OrganizationUser } from '@/store/reducers/user';
@@ -12,13 +11,13 @@ import Loader from '@/components/Loader';
 import useOnClickOutside from '@/hooks/useOnClickOutside';
 import useInput from '@/hooks/useInput';
 import Search from '@/components/Dashboard/Search';
-
-import 'react-datepicker/dist/react-datepicker.css';
 import useToggle from '@/hooks/useToggle';
 import getNounByForm from '@/utils/getNounByForm';
 import getUserAvatar from '@/utils/getUserAvatar';
 import Pagination from '@/components/Pagination';
 import Checkbox from '@/components/Checkbox';
+import Datepicker from '@/components/Datepicker/Datepicker';
+import FilterButton from '@/components/FilterButton';
 
 interface Props {
   orders: Order[],
@@ -45,13 +44,12 @@ const limits = [20, 50, 100];
 
 const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
   const [search, setSearch] = useInput();
-  const [startDay, setStartDay] = useState<Date | null>(null);
-  const [isDatePickerVisible, toggleIsDatePickerVisible] = useToggle();
-  const [endDay, setEndDay] = useState<Date | null>(null);
+  const [startDay, setStartDay] = useState<Date>();
+  const [endDay, setEndDay] = useState<Date>();
   const [status, setStatus] = useState< keyof typeof OrderStatusEnum | null>(null);
-  const [statusRef, isStatusVisible, toggleIsStatusVisible] = useOnClickOutside<HTMLButtonElement>();
+  const [statusRef, isStatusVisible, toggleIsStatusVisible] = useOnClickOutside<HTMLDivElement>();
   const [selectedUser, setSelectedUser] = useState<OrganizationUser | null>(null);
-  const [usersRef, isUsersVisible, toggleIsUsersVisible] = useOnClickOutside<HTMLButtonElement>();
+  const [usersRef, isUsersVisible, toggleIsUsersVisible] = useOnClickOutside<HTMLDivElement>();
   const [isAllCheckboxChecked, toggleIsAllCheckboxChecked] = useToggle();
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
   const [offset, setOffset] = useState(0);
@@ -65,12 +63,9 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
     window.scrollTo({ top: 0, left: 0, behavior: 'smooth'});
   }, [offset]);
 
-  const onDateChange = (dates: any) => {
-    const [start, end] = dates;
-
+  const submitDates = (start?: Date, end?: Date) => {
     setStartDay(start);
-    if (end) setEndDay(new Date(end.setHours(23, 59, 59, 99)));
-    else setEndDay(null);
+    setEndDay(end);
   };
 
   const selectStatus = (s: keyof typeof OrderStatusEnum) => {
@@ -81,13 +76,6 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
   const selectOrgUser = (userObj: OrganizationUser) => {
     setSelectedUser(userObj);
     toggleIsUsersVisible(false);
-  };
-
-  const clearFilters = () => {
-    setStartDay(null);
-    setEndDay(null);
-    setStatus(null);
-    setSelectedUser(null);
   };
 
   const onCheckboxClick = (isChecked: boolean, id: string) => {
@@ -107,25 +95,6 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
       toggleIsAllCheckboxChecked(true);
     }
   };
-
-  // @ts-ignore
-  const CustomInput = forwardRef(({ value, onClick }, ref: ForwardedRef<HTMLButtonElement>) => (
-    <FilterButton
-      ref={ref}
-      onClick={() => {
-        toggleIsDatePickerVisible(!isDatePickerVisible);
-        onClick();
-      }}
-      isApplied={!!startDay}
-      isDropdownVisible={isDatePickerVisible}
-      style={{ marginRight: '8px' }}
-    >
-      {value || 'Date'}
-      <svg width="8" height="4" viewBox="0 0 8 4" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ transition: '.1 ease-in-out' }}>
-        <path d="M6.96012 0.0900269H3.84512H1.04012C0.560118 0.0900269 0.320118 0.670027 0.660118 1.01003L3.25012 3.60003C3.66512 4.01503 4.34012 4.01503 4.75512 3.60003L5.74012 2.61503L7.34512 1.01003C7.68012 0.670027 7.44012 0.0900269 6.96012 0.0900269Z" fill="#292D32"/>
-      </svg>
-    </FilterButton>
-  ));
 
   const ordersWithAppliedFilters = useMemo(() => orders.filter((order) => {
     if (!search) return true;
@@ -174,30 +143,14 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
               clearField={() => setSearch('')}
             />
             <Buttons>
-              {isFiltered ? (
-                <FilterButton onClick={clearFilters}>
-                  Clear filters
-                </FilterButton>
-              ) : ''}
-              <DatePicker
-                startDate={startDay}
-                endDate={endDay}
-                onChange={onDateChange}
-                customInput={<CustomInput />}
-                onClickOutside={toggleIsDatePickerVisible}
-                tabIndex={0}
-                selectsRange
-              />
+              <Datepicker isApplied={!!(startDay && endDay)} setDates={submitDates} />
               <FilterButton
                 ref={statusRef}
                 isApplied={!!status}
                 isDropdownVisible={isStatusVisible}
                 onClick={toggleIsStatusVisible}
               >
-                {status?.toLowerCase() || 'Status'}
-                <svg width="8" height="4" viewBox="0 0 8 4" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M6.96012 0.0900269H3.84512H1.04012C0.560118 0.0900269 0.320118 0.670027 0.660118 1.01003L3.25012 3.60003C3.66512 4.01503 4.34012 4.01503 4.75512 3.60003L5.74012 2.61503L7.34512 1.01003C7.68012 0.670027 7.44012 0.0900269 6.96012 0.0900269Z" fill="#292D32"/>
-                </svg>
+                {status?.toLowerCase().replaceAll('_', ' ') || 'Status'}
                 {isStatusVisible ? (
                   <List>
                     {statuses.map((el) => (
@@ -219,9 +172,6 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
                 onClick={toggleIsUsersVisible}
               >
                 {selectedUser?.name || 'User'}
-                <svg width="8" height="4" viewBox="0 0 8 4" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M6.96012 0.0900269H3.84512H1.04012C0.560118 0.0900269 0.320118 0.670027 0.660118 1.01003L3.25012 3.60003C3.66512 4.01503 4.34012 4.01503 4.75512 3.60003L5.74012 2.61503L7.34512 1.01003C7.68012 0.670027 7.44012 0.0900269 6.96012 0.0900269Z" fill="#292D32"/>
-                </svg>
                 {isUsersVisible ? (
                   <List>
                     {orgUsers.map((el) => (
@@ -411,41 +361,9 @@ const Buttons = styled.div`
   align-items: center;
 `;
 
-const FilterButton = styled.button<{ isDropdownVisible?: boolean, isApplied?: boolean }>`
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  grid-gap: 6px;
-  padding: 0 19px;
-  height: 38px;
-  border: 1px solid rgba(35, 35, 35, 0.16);
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 500;
-  text-transform: capitalize;
-  white-space: nowrap;
-  background-color: ${({ isApplied }) => isApplied ? 'var(--primary-green-background-color)' : '#fff'};
-  
-  :not(:last-child) {
-    margin-right: 8px;
-  }
-  
-  :hover {
-    border: 1px solid var(--primary-dark-hover-color);
-  }
-  
-  svg {
-    width: 8px;
-    height: 4px;
-    transition: .1s ease-in-out;
-    ${({ isDropdownVisible }) => isDropdownVisible ? 'transform: rotate(180deg)' : ''}
-  }
-`;
-
 const List = styled.ul`
   position: absolute;
-  top: calc(100% + .8rem);
+  top: calc(100% + 24px);
   left: 50%;
   padding: .5rem 0;
   border-radius: 6px;

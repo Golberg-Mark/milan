@@ -1,9 +1,7 @@
-import React, { ForwardedRef, forwardRef, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import DatePicker from 'react-datepicker';
-import { AiOutlineFolder } from 'react-icons/all';
 
 import convertTimestamp from '@/utils/convertTimestamp';
 import { selectMatters } from '@/store/selectors/userSelectors';
@@ -12,56 +10,28 @@ import getNounByForm from '@/utils/getNounByForm';
 import useInput from '@/hooks/useInput';
 import Search from '@/components/Dashboard/Search';
 import Pagination from '@/components/Pagination';
-import useToggle from '@/hooks/useToggle';
+import Datepicker from '@/components/Datepicker/Datepicker';
 
 const limits = [20, 50, 100];
 
 const MattersTable = () => {
   const [search, setSearch] = useInput();
-  const [startDay, setStartDay] = useState<Date | null>(null);
-  const [endDay, setEndDay] = useState<Date | null>(null);
-  const [isDatePickerVisible, toggleIsDatePickerVisible] = useToggle();
+  const [startDay, setStartDay] = useState<Date>();
+  const [endDay, setEndDay] = useState<Date>();
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(0);
 
   const matters = Object.values(useSelector(selectMatters) || {});
   const navigate = useNavigate();
 
-  const onDateChange = (dates: any) => {
-    const [start, end] = dates;
-
+  const submitDates = (start?: Date, end?: Date) => {
     setStartDay(start);
-    if (end) setEndDay(new Date(end.setHours(23, 59, 59, 99)));
-    else setEndDay(null);
-  };
-
-  const clearFilters = () => {
-    setStartDay(null);
-    setEndDay(null);
+    setEndDay(end);
   };
 
   const chooseMatter = (matter: string) => {
     navigate(`/dashboard/matters/${matter}`);
   };
-
-  // @ts-ignore
-  const CustomInput = forwardRef(({ value, onClick }, ref: ForwardedRef<HTMLButtonElement>) => (
-    <FilterButton
-      ref={ref}
-      onClick={() => {
-        toggleIsDatePickerVisible(!isDatePickerVisible);
-        onClick();
-      }}
-      isApplied={!!startDay}
-      isDropdownVisible={isDatePickerVisible}
-      style={{ marginRight: '8px' }}
-    >
-      {value || 'Date'}
-      <svg width="8" height="4" viewBox="0 0 8 4" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ transition: '.1 ease-in-out' }}>
-        <path d="M6.96012 0.0900269H3.84512H1.04012C0.560118 0.0900269 0.320118 0.670027 0.660118 1.01003L3.25012 3.60003C3.66512 4.01503 4.34012 4.01503 4.75512 3.60003L5.74012 2.61503L7.34512 1.01003C7.68012 0.670027 7.44012 0.0900269 6.96012 0.0900269Z" fill="#292D32"/>
-      </svg>
-    </FilterButton>
-  ));
 
   let mattersWithAppliedFilters = useMemo(() => {
     if (!matters) return [];
@@ -107,19 +77,10 @@ const MattersTable = () => {
             clearField={() => setSearch('')}
           />
           <Buttons>
-            {isFiltered ? (
-              <FilterButton onClick={clearFilters}>
-                Clear filters
-              </FilterButton>
-            ) : ''}
-            <DatePicker
-              startDate={startDay}
-              endDate={endDay}
-              onChange={onDateChange}
-              customInput={<CustomInput />}
-              onClickOutside={toggleIsDatePickerVisible}
-              tabIndex={0}
-              selectsRange
+            <Datepicker
+              isApplied={!!(startDay && endDay)}
+              setDates={submitDates}
+              isForMatters
             />
           </Buttons>
         </Filters>
@@ -129,7 +90,9 @@ const MattersTable = () => {
               <THead>
                 <tr>
                   <FolderCell>
-                    <AiOutlineFolder />
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M16.5 8.25V12.75C16.5 15.75 15.75 16.5 12.75 16.5H5.25C2.25 16.5 1.5 15.75 1.5 12.75V5.25C1.5 2.25 2.25 1.5 5.25 1.5H6.375C7.5 1.5 7.7475 1.83 8.175 2.4L9.3 3.9C9.585 4.275 9.75 4.5 10.5 4.5H12.75C15.75 4.5 16.5 5.25 16.5 8.25Z" stroke="#292D32" strokeWidth="1.5" strokeMiterlimit="10"/>
+                    </svg>
                   </FolderCell>
                   <th>
                     Matter ID
@@ -152,7 +115,9 @@ const MattersTable = () => {
                 {filteredMatters.map((matter, i) => (
                   <TRow key={i} onClick={() => chooseMatter(matter.matter)}>
                     <FolderCell>
-                      <AiOutlineFolder />
+                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16.5 8.25V12.75C16.5 15.75 15.75 16.5 12.75 16.5H5.25C2.25 16.5 1.5 15.75 1.5 12.75V5.25C1.5 2.25 2.25 1.5 5.25 1.5H6.375C7.5 1.5 7.7475 1.83 8.175 2.4L9.3 3.9C9.585 4.275 9.75 4.5 10.5 4.5H12.75C15.75 4.5 16.5 5.25 16.5 8.25Z" stroke="#292D32" strokeWidth="1.5" strokeMiterlimit="10"/>
+                      </svg>
                     </FolderCell>
                     <th>
                       {matter.matter}
@@ -216,38 +181,6 @@ const Buttons = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: center;
-`;
-
-const FilterButton = styled.button<{ isDropdownVisible?: boolean, isApplied?: boolean }>`
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  grid-gap: 6px;
-  padding: 0 19px;
-  height: 38px;
-  border: 1px solid rgba(35, 35, 35, 0.16);
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 500;
-  text-transform: capitalize;
-  white-space: nowrap;
-  background-color: ${({ isApplied }) => isApplied ? 'var(--primary-green-background-color)' : '#fff'};
-
-  :not(:last-child) {
-    margin-right: 8px;
-  }
-
-  :hover {
-    border: 1px solid var(--primary-dark-hover-color);
-  }
-
-  svg {
-    width: 8px;
-    height: 4px;
-    transition: .1s ease-in-out;
-    ${({ isDropdownVisible }) => isDropdownVisible ? 'transform: rotate(180deg)' : ''}
-  }
 `;
 
 const TableWrapper = styled.div`

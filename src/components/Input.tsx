@@ -7,6 +7,7 @@ interface Props extends InputHTMLAttributes<HTMLInputElement> {
   labelMarginBottom?: number,
   labelFontSize?: string,
   labelColor?: string,
+  labelFontWidth?: string,
   isError?: boolean
 }
 
@@ -15,6 +16,7 @@ const Input: React.FC<Props> = ({
   labelMarginBottom = 16,
   labelFontSize = '16px',
   labelColor = '#6C7278',
+  labelFontWidth = '500',
   isError,
   ...props
 }) => {
@@ -23,7 +25,12 @@ const Input: React.FC<Props> = ({
   return (
     <Label onClick={(evt) => evt.stopPropagation()}>
       {label ? (
-        <LabelText fontSize={labelFontSize} color={labelColor} marginBottom={labelMarginBottom}>
+        <LabelText
+          fontSize={labelFontSize}
+          color={labelColor}
+          fontWidth={labelFontWidth}
+          marginBottom={labelMarginBottom}
+        >
           {label}
         </LabelText>
       ) : ''}
@@ -61,10 +68,10 @@ const Label = styled.label`
   font-weight: 600;
 `;
 
-const LabelText = styled.span<{ fontSize: string, color: string, marginBottom: number }>`
+const LabelText = styled.span<{ fontSize: string, color: string, fontWidth: string, marginBottom: number }>`
   margin-bottom: ${({ marginBottom }) => marginBottom}px;
   font-size: ${({ fontSize }) => fontSize};
-  font-weight: 500;
+  font-weight: ${({ fontWidth }) => fontWidth};
   color: ${({ color }) => color};
 `;
 

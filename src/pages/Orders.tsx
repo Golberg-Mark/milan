@@ -31,31 +31,31 @@ const Orders = () => {
 
   return orders && orgUsers ? (
     <OrdersPage>
-      <PageHeader>
-        <div>
-          <PageTitle fontSize={20}>
-            Matters & Orders
-          </PageTitle>
-        </div>
-        <Link to="/new-order">
-          <StyledButton>
-            <svg
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="#fff"
-              strokeWidth="3"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
-            New Order
-          </StyledButton>
-        </Link>
-      </PageHeader>
       <Content>
+        <PageHeader>
+          <div>
+            <PageTitle fontSize={20} marginBottom="0">
+              Matters & Orders
+            </PageTitle>
+          </div>
+          <Link to="/new-order">
+            <StyledButton>
+              <svg
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="#fff"
+                strokeWidth="3"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+              New Order
+            </StyledButton>
+          </Link>
+        </PageHeader>
         <NavWrapper>
           <Nav>
             <StyledNavLink to="/dashboard/" end>All orders</StyledNavLink>
@@ -76,6 +76,17 @@ const OrdersPage = styled.div`
   flex-flow: column;
   min-height: calc(100vh - var(--search-height));
   padding: 32px;
+`;
+
+const Content = styled.div`
+  display: flex;
+  flex-flow: column;
+  flex-grow: 1;
+  min-height: 719px;
+  padding: 32px;
+  border-radius: 12px;
+  background-color: #fff;
+  overflow-x: hidden;
 `;
 
 const PageHeader = styled.div`
@@ -128,16 +139,6 @@ const StyledNavLink = styled(NavLink)`
     color: var(--primary-dark-color);
     border-bottom: 2px solid var(--primary-dark-color);
   }
-`;
-
-const Content = styled.div`
-  display: flex;
-  flex-flow: column;
-  flex-grow: 1;
-  padding: 32px;
-  border-radius: 12px;
-  background-color: #fff;
-  overflow-x: hidden;
 `;
 
 export default Orders;
