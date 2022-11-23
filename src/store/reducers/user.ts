@@ -95,7 +95,8 @@ interface UserState {
   orders: Order[] | null,
   matters: Matters | null,
   orderDetails: OrderDetails | null,
-  priceList: Product[] | null
+  priceList: Product[] | null,
+  selectedMatter: string | null
 }
 
 const InitialState: UserState = {
@@ -105,7 +106,8 @@ const InitialState: UserState = {
   orders: null,
   matters: null,
   orderDetails: null,
-  priceList: null
+  priceList: null,
+  selectedMatter: null
 };
 
 export class UserReducer extends ImmerReducer<UserState> {
@@ -135,6 +137,10 @@ export class UserReducer extends ImmerReducer<UserState> {
 
   public setOrgUsers(value: OrganizationUser[] | null) {
     this.draftState.orgUsers = value;
+  }
+
+  public setSelectedMatter(value: string | null) {
+    this.draftState.selectedMatter = value;
   }
 
   public logout() {

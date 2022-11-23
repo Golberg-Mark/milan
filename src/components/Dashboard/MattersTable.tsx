@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,6 +11,7 @@ import useInput from '@/hooks/useInput';
 import Search from '@/components/Dashboard/Search';
 import Pagination from '@/components/Pagination';
 import Datepicker from '@/components/Datepicker/Datepicker';
+import { userActions } from '@/store/actions/userActions';
 
 const limits = [20, 50, 100];
 
@@ -23,6 +24,7 @@ const MattersTable = () => {
 
   const matters = Object.values(useSelector(selectMatters) || {});
   const navigate = useNavigate();
+  const dispatch = useDispatch<any>();
 
   const submitDates = (start?: Date, end?: Date) => {
     setStartDay(start);
@@ -30,6 +32,7 @@ const MattersTable = () => {
   };
 
   const chooseMatter = (matter: string) => {
+    dispatch(userActions.setSelectedMatter(matter));
     navigate(`/dashboard/matters/${matter}`);
   };
 
@@ -122,15 +125,15 @@ const MattersTable = () => {
                     <th>
                       {matter.matter}
                     </th>
-                    <th>
+                    <DescriptionCell>
                       {matter.description}
-                    </th>
+                    </DescriptionCell>
                     <th>
                       {getNounByForm(matter.ordersAmount, 'order')}
                     </th>
                     <th>
-                      <Status>
-                        {matter.pending}
+                      <Status isPending={!!matter.pending}>
+                        {matter.pending ? `${matter.pending} ORDERED` : 'None'}
                       </Status>
                     </th>
                     <th>
@@ -267,13 +270,21 @@ const TRow = styled.tr`
   }
 `;
 
-const Status = styled.span`
+const DescriptionCell = styled.th`
+  max-width: 500px;
+  white-space: normal;
+`;
+
+const Status = styled.span<{ isPending: boolean }>`
   display: block;
   padding: 6px 12px;
+  width: fit-content;
+  font-size: 12px;
   text-align: center;
-  font-weight: 500;
+  font-weight: 700;
+  color: ${({ isPending }) => isPending ? 'var(--primary-warning-color)' : '#ACB5BB'};
   border-radius: 100px;
-  background-color: rgb(229, 231, 235);
+  background-color: ${({ isPending }) => isPending ? 'var(--primary-warning-background-color)' : 'transparent'};
 `;
 
 export default MattersTable;

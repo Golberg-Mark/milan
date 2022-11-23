@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
 import styled, { css } from 'styled-components';
@@ -18,6 +18,7 @@ import Pagination from '@/components/Pagination';
 import Checkbox from '@/components/Checkbox';
 import Datepicker from '@/components/Datepicker/Datepicker';
 import FilterButton from '@/components/FilterButton';
+import { userActions } from '@/store/actions/userActions';
 
 interface Props {
   orders: Order[],
@@ -31,8 +32,14 @@ export const Wrapper: React.FC = () => {
   const { matterId } = useParams();
   const matters = useSelector(selectMatters);
 
+  const dispatch = useDispatch<any>();
+
   useEffect(() => {
     window.scrollTo(0, 0);
+
+    return () => {
+      dispatch(userActions.setSelectedMatter(null));
+    };
   }, []);
 
   return matterId && matters
@@ -58,6 +65,7 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
   const orgUsers = useSelector(selectOrganizationUsers);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch<any>();
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'smooth'});
@@ -220,7 +228,9 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
                     <th>
                       Date
                     </th>
-                    <MoreCell />
+                    <ActionCell>
+                      Action
+                    </ActionCell>
                   </tr>
                 </THead>
                 <TBody>
@@ -228,7 +238,7 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
                     <TRow
                       key={i}
                       isChecked={!!selectedOrders.find(el => el === order.id)}
-                      onClick={() => navigate(`/orders/${order.id}`)}
+                      onClick={() => navigate(`/dashboard/orders/${order.id}`)}
                     >
                       <CheckboxCell>
                         <Checkbox
@@ -240,7 +250,13 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
                       </CheckboxCell>
                       {!isFromMatter ? (
                         <th>
-                          <MatterLink to={`/matters/${order.matter}`}>
+                          <MatterLink
+                            to={`/dashboard/matters/${order.matter}`}
+                            onClick={(evt) => {
+                              evt.stopPropagation();
+                              dispatch(userActions.setSelectedMatter(order.matter));
+                            }}
+                          >
                             {order.matter}
                           </MatterLink>
                         </th>
@@ -260,24 +276,23 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
                         <User>
                           {getUserAvatar(String(orgUsers!.find((el) => el.id === order.user)?.name), false)}
                         </User>
-                        {orgUsers!.find((el) => el.id === order.user)?.name.split(' ')[0]}
                       </UserCell>
                       <th>
                         {convertTimestamp(order.date)}
                       </th>
-                      <MoreCell onClick={(evt) => evt.stopPropagation()}>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M5 10C3.9 10 3 10.9 3 12C3 13.1 3.9 14 5 14C6.1 14 7 13.1 7 12C7 10.9 6.1 10 5 10Z" stroke="#292D32" strokeWidth="1.5"/>
-                          <path d="M19 10C17.9 10 17 10.9 17 12C17 13.1 17.9 14 19 14C20.1 14 21 13.1 21 12C21 10.9 20.1 10 19 10Z" stroke="#292D32" strokeWidth="1.5"/>
-                          <path d="M12 10C10.9 10 10 10.9 10 12C10 13.1 10.9 14 12 14C13.1 14 14 13.1 14 12C14 10.9 13.1 10 12 10Z" stroke="#292D32" strokeWidth="1.5"/>
-                        </svg>
-                      </MoreCell>
+                      <ActionCell onClick={(evt) => evt.stopPropagation()}>
+                        <Info>
+                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M8.00004 1.33301C4.32004 1.33301 1.33337 4.31967 1.33337 7.99967C1.33337 11.6797 4.32004 14.6663 8.00004 14.6663C11.68 14.6663 14.6667 11.6797 14.6667 7.99967C14.6667 4.31967 11.68 1.33301 8.00004 1.33301ZM8.00004 11.333C7.63337 11.333 7.33337 11.033 7.33337 10.6663V7.99967C7.33337 7.63301 7.63337 7.33301 8.00004 7.33301C8.36671 7.33301 8.66671 7.63301 8.66671 7.99967V10.6663C8.66671 11.033 8.36671 11.333 8.00004 11.333ZM8.66671 5.99967H7.33337V4.66634H8.66671V5.99967Z" fill="#1A1C1E"/>
+                          </svg>
+                        </Info>
+                      </ActionCell>
                     </TRow>
                   ))}
                 </TBody>
               </Table>
             </TableWrapper>
-          ) : ''}
+          ) : <NotFound>Orders wasn't found</NotFound>}
         </div>
         {filteredOrders.length ? (
           <Pagination
@@ -434,16 +449,29 @@ const UserCell = styled.th`
   grid-gap: 16px;
 `;
 
-const MoreCell = styled.th`
-  padding-right: 18px;
-  width: 24px;
+const ActionCell = styled.th`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 12px 10px 12px 0 !important;
+`;
+
+const Info = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  background-color: #F1EFE9;
   
+  :hover {
+    background-color: #E1DFD9;
+  }
+
   svg {
-    width: 24px;
-    
-    :hover * {
-      stroke: var(--primary-green-color);
-    }
+    width: 16px;
+    height: 16px;
   }
 `;
 
@@ -461,7 +489,6 @@ const TRow = styled.tr<{ isChecked: boolean }>`
   cursor: pointer;
   
   th {
-    padding: 14px 35px 14px 0;
     background-color: ${({ isChecked }) => isChecked ? '#E8F6FA' : '#fff'};
     
     :first-child {
@@ -485,10 +512,13 @@ const TRow = styled.tr<{ isChecked: boolean }>`
 `;
 
 const MatterLink = styled(Link)`
+  display: flex;
+  align-items: center;
+  height: 100%;
   transition: .1s ease-in-out;
   
   :hover {
-    color: rgba(36, 99, 235, .8);
+    color: var(--primary-green-color);
   }
 `;
 
@@ -498,19 +528,24 @@ const Status = styled.span<{ orderStatus: OrderStatusEnum }>`
   width: fit-content;
   border-radius: 4px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
+  color: #6C7278;
   text-align: center;
   text-transform: uppercase;
-  background-color: rgb(229, 231, 235);
+  background-color: #EDF1F3;
   
   ${({ orderStatus }) => {
     if (orderStatus === OrderStatusEnum.ERROR) return css`
-      background-color: #DD5757;
-      color: #fff;
+      background-color: var(--primary-red-background-color);
+      color: var(--primary-red-color);
     `;
     if (orderStatus === OrderStatusEnum.COMPLETE) return css`
-      background-color: var(--primary-green-color);
-      color: #fff;
+      background-color: var(--primary-green-background-color);
+      color: var(--primary-green-color);
+    `;
+    if (orderStatus === OrderStatusEnum.IN_PROGRESS) return css`
+      background-color: var(--primary-warning-background-color);
+      color: var(--primary-warning-color);
     `;
   }}
 `;
@@ -521,8 +556,16 @@ const User = styled.span`
   align-items: center;
   width: 2.25rem;
   height: 2.25rem;
+  font-weight: 500;
   border-radius: 50%;
   background-color: rgb(229, 231, 235);
+`;
+
+const NotFound = styled.div`
+  text-align: center;
+  padding-top: 206px;
+  font-size: 18px;
+  font-weight: 500;
 `;
 
 const PopUp = styled.div`

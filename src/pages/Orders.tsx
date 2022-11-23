@@ -1,21 +1,25 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, Routes, Route, NavLink } from 'react-router-dom';
+import { Link, Routes, Route, NavLink, useNavigate } from 'react-router-dom';
 
 import { getOrdersAction, getUsersByOrganizationAction, userActions } from '@/store/actions/userActions';
-import { selectOrders, selectOrganizationUsers } from '@/store/selectors/userSelectors';
+import { selectOrders, selectOrganizationUsers, selectSelectedMatter } from '@/store/selectors/userSelectors';
 
 import PageTitle from '@/components/PageTitle';
 import Loader from '@/components/Loader';
 import OrdersTable from '@/components/Dashboard/OrdersTable';
 import Matters from '@/components/Dashboard/Matters';
 import Button from '@/components/Button';
+import ArrowBackIcon from '@/assets/icons/ArrowBackIcon';
+import RightArrowIcon from '@/assets/icons/RightArrowIcon';
 
 const Orders = () => {
   const orders = useSelector(selectOrders);
   const orgUsers = useSelector(selectOrganizationUsers);
+  const selectedMatter = useSelector(selectSelectedMatter);
 
+  const navigate = useNavigate();
   const dispatch = useDispatch<any>();
 
   useEffect(() => {
@@ -33,11 +37,22 @@ const Orders = () => {
     <OrdersPage>
       <Content>
         <PageHeader>
-          <div>
-            <PageTitle fontSize={20} marginBottom="0">
-              Matters & Orders
-            </PageTitle>
-          </div>
+          <LineNavigationWrapper>
+            {selectedMatter ? (
+              <>
+                <StyledBackIcon onClick={() => navigate(-1)} />
+                <LineNavigation>
+                  <span>Matters</span>
+                  <RightArrowIcon />
+                  <span>{selectedMatter}</span>
+                </LineNavigation>
+              </>
+            ) : (
+              <PageTitle fontSize={20} marginBottom="0">
+                Matters & Orders
+              </PageTitle>
+            )}
+          </LineNavigationWrapper>
           <Link to="/new-order">
             <StyledButton>
               <svg
@@ -82,7 +97,7 @@ const Content = styled.div`
   display: flex;
   flex-flow: column;
   flex-grow: 1;
-  min-height: 719px;
+  min-height: 729px;
   padding: 32px;
   border-radius: 12px;
   background-color: #fff;
@@ -100,6 +115,31 @@ const PageHeader = styled.div`
     flex-direction: row;
     align-items: center;
   }
+`;
+
+const LineNavigationWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  grid-gap: 12px;
+  
+  span:first-child {
+    color: #ACB5BB;
+    font-weight: 500;
+  }
+  
+  span:last-child {
+    font-weight: 600;
+  }
+`;
+
+const StyledBackIcon = styled(ArrowBackIcon)`
+  cursor: pointer;
+`;
+
+const LineNavigation = styled.div`
+  display: flex;
+  align-items: center;
+  grid-gap: 8px;
 `;
 
 const StyledButton = styled(Button)`

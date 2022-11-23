@@ -39,3 +39,8 @@ export const selectOrganizationUsers: Selector<State, OrganizationUser[] | null>
   userState,
   ({ orgUsers }) => orgUsers
 );
+
+export const selectSelectedMatter: Selector<State, string | null> = createSelector(
+  userState,
+  ({ selectedMatter }) => selectedMatter
+);

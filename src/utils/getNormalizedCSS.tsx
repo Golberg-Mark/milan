@@ -42,8 +42,11 @@ const GlobalStyle = createGlobalStyle`
     --primary-dark-hover-color: rgba(26, 28, 30, 0.8);
     --primary-green-color: #27A376;
     --primary-green-hover-color: rgba(39, 163, 118, 0.8);
-    --primary-red-color: #DD5757;
     --primary-green-background-color: rgba(39, 163, 118, 0.1);
+    --primary-red-color: #DD5757;
+    --primary-red-background-color: #F2E7E7;
+    --primary-warning-color: #DBAA00;
+    --primary-warning-background-color: #FBF4E4;
 
     box-sizing: border-box;
     font-family: 'Inter', sans-serif;
