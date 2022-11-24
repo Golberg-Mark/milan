@@ -14,28 +14,22 @@ const PricesTable: React.FC<Props> = ({ priceList }) => {
         <THead>
           <tr>
             <th>
-              Collection
-            </th>
-            <th>
               Supplier
-            </th>
-            <th>
-              Search Type
-            </th>
-            <th>
-              Description
             </th>
             <th>
               Product Code
             </th>
             <th>
-              Price ex GST
+              Service
+            </th>
+            <th>
+              TOTAL (ex. GST)
             </th>
             <th>
               GST
             </th>
             <th>
-              Price incl GST
+              TOTAL (inc. GST)
             </th>
           </tr>
         </THead>
@@ -43,28 +37,22 @@ const PricesTable: React.FC<Props> = ({ priceList }) => {
           {priceList.map((item) => (
             <TRow key={item['productCode']}>
               <th>
-                {item['collection']}
+                {item.supplier}
               </th>
               <th>
-                {item['supplier']}
-              </th>
-              <td>
-                {item['searchType']}
-              </td>
-              <td>
-                {item['description']}
-              </td>
-              <td>
-                {item['productCode']}
-              </td>
-              <th>
-                ${item['priceExGST']}
+                {item.productCode}
               </th>
               <th>
-                ${item['GST']}
+                {item.searchType}
               </th>
               <th>
-                ${item['priceInclGST']}
+                ${item.priceExGST}
+              </th>
+              <th>
+                ${item.GST}
+              </th>
+              <th>
+                ${item.priceInclGST}
               </th>
             </TRow>
           ))}
@@ -91,82 +79,62 @@ const Table = styled.table`
 `;
 
 const THead = styled.thead`
-  background-color: rgb(249, 250, 251);
-  
+  background-color: #F9F9F9;
+
   th {
-    padding: 14px 24px;
-    font-size: 14px;
-    font-weight: 600;
+    padding: 12px 35px 12px 0;
+    font-size: 12px;
+    font-weight: 400;
+    color: rgba(17, 24, 39, 0.5);
+    text-transform: uppercase;
     text-align: left;
-    border-top: 1px solid rgb(229, 231, 235);
-    
+
     :first-child {
-      border-left: 1px solid rgb(229, 231, 235);
-      border-top-left-radius: 8px;
+      padding-left: 18px;
+      border-top-left-radius: 4px;
     }
-    
+
     :last-child {
-      border-right: 1px solid rgb(229, 231, 235);
-      border-top-right-radius: 8px;
+      border-top-right-radius: 4px;
     }
   }
 `;
 
 const TBody = styled.tbody`
-  th, td {
-    padding: 12px 24px;
-    height: 70px;
-    line-height: 1.25rem;
-    background-color: #fff;
-  }
-  
   th {
+    height: 64px;
+    background-color: #fff;
     font-size: 14px;
+    font-weight: 500;
     text-align: left;
-    border-top: 1px solid rgb(229, 231, 235);
-
-    :first-child {
-      display: flex;
-      align-items: center;
-      border-left: 1px solid rgb(229, 231, 235);
-    }
-
-    :last-child {
-      border-right: 1px solid rgb(229, 231, 235);
-    }
-    
-    svg {
-      width: .875rem;
-      height: .875rem;
-    }
-  }
-
-  td {
-    font-size: 14px;
-    text-align: left;
-    color: #6B7280;
-    border-top: 1px solid rgb(229, 231, 235);
   }
 `;
 
 const TRow = styled.tr`
-  :hover td, :hover th {
-    background-color: rgba(229, 231, 235, .01);
-  }
-  
-  :last-child {
-    th, td {
-      border-bottom: 1px solid rgb(229, 231, 235);
-    }
+  cursor: pointer;
 
+  th {
+    padding-right: 25px;
+    max-width: 300px;
+    background-color: #fff;
+    white-space: normal;
+
+    :first-child {
+      padding-left: 18px;
+    }
+  }
+
+  :hover th {
+    background-color: #F9F9F9;
+  }
+
+  :last-child {
     th:first-child {
-      border-left: 1px solid rgb(229, 231, 235);
-      border-bottom-left-radius: 8px;
+      border-bottom-left-radius: 4px;
     }
 
     th:last-child {
-      border-right: 1px solid rgb(229, 231, 235);
-      border-bottom-right-radius: 8px;
+      border-bottom-right-radius: 4px;
     }
   }
 `;
