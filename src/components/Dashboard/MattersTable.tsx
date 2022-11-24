@@ -8,10 +8,9 @@ import { selectMatters } from '@/store/selectors/userSelectors';
 import Loader from '@/components/Loader';
 import getNounByForm from '@/utils/getNounByForm';
 import useInput from '@/hooks/useInput';
-import Search from '@/components/Dashboard/Search';
 import Pagination from '@/components/Pagination';
-import Datepicker from '@/components/Datepicker/Datepicker';
 import { userActions } from '@/store/actions/userActions';
+import Filters from '@/components/Table/Filters';
 
 const limits = [20, 50, 100];
 
@@ -69,24 +68,23 @@ const MattersTable = () => {
   return matters ? (
     <StyledWrapper>
       <div>
-        <Filters>
-          <Search
-            value={search}
-            onChange={(evt) => {
+        <Filters
+          search={{
+            searchValue: search,
+            placeholder: 'Search matters & orders',
+            setSearchValue: (evt) => {
               setSearch(evt.target.value);
               setOffset(0);
-            }}
-            placeholder="Search matters"
-            clearField={() => setSearch('')}
-          />
-          <Buttons>
-            <Datepicker
-              isApplied={!!(startDay && endDay)}
-              setDates={submitDates}
-              isForMatters
-            />
-          </Buttons>
-        </Filters>
+            },
+            clear: () => setSearch('')
+          }}
+          datepicker={{
+            startDate: startDay,
+            endDate: endDay,
+            isForMatters: true,
+            setDates: submitDates
+          }}
+        />
         {filteredMatters.length ? (
           <TableWrapper>
             <Table>
@@ -166,24 +164,6 @@ const StyledWrapper = styled.div`
   flex-flow: column;
   justify-content: space-between;
   flex: 1;
-`;
-
-const Filters = styled.div`
-  display: flex;
-  justify-content: space-between;
-  grid-gap: 1rem;
-  align-items: center;
-  margin-bottom: 1rem;
-
-  .react-datepicker-wrapper {
-    width: auto;
-  }
-`;
-
-const Buttons = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
 `;
 
 const TableWrapper = styled.div`

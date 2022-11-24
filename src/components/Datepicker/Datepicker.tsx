@@ -3,7 +3,7 @@ import styled, { css } from 'styled-components';
 import { DayPicker } from 'react-day-picker';
 import InputMask from 'react-input-mask';
 
-import FilterButton from '@/components/FilterButton';
+import FilterButton from '@/components/Table/FilterButton';
 import Caption from '@/components/Datepicker/Caption';
 import useOnClickOutside from '@/hooks/useOnClickOutside';
 import Button from '@/components/Button';
@@ -12,10 +12,12 @@ import checkDate from '@/utils/checkDate';
 
 import 'react-day-picker/dist/style.css';
 
+export type setDates = (start?: Date, end?: Date) => void;
+
 interface Props {
   isApplied: boolean,
   isForMatters?: boolean,
-  setDates: (start?: Date, end?: Date) => void
+  setDates: setDates
 }
 
 const Datepicker: React.FC<Props> = ({ isApplied, isForMatters = false, setDates }) => {
@@ -55,13 +57,13 @@ const Datepicker: React.FC<Props> = ({ isApplied, isForMatters = false, setDates
   return (
     <StyledFilterButton
       ref={ref}
+      value="Date"
       onClick={() => toggleIsVisible(!isVisible)}
       isApplied={isApplied}
       isDropdownVisible={isVisible}
       isVisible={isVisible}
       style={{ marginRight: isForMatters ? '0' : '8px' }}
     >
-      Date
       {isVisible ? (
         <StyledDatepicker
           isForMatters={isForMatters}

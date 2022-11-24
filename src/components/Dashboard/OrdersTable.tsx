@@ -10,15 +10,13 @@ import { selectMatters, selectOrganizationUsers } from '@/store/selectors/userSe
 import Loader from '@/components/Loader';
 import useOnClickOutside from '@/hooks/useOnClickOutside';
 import useInput from '@/hooks/useInput';
-import Search from '@/components/Dashboard/Search';
 import useToggle from '@/hooks/useToggle';
 import getNounByForm from '@/utils/getNounByForm';
 import getUserAvatar from '@/utils/getUserAvatar';
 import Pagination from '@/components/Pagination';
 import Checkbox from '@/components/Checkbox';
-import Datepicker from '@/components/Datepicker/Datepicker';
-import FilterButton from '@/components/FilterButton';
 import { userActions } from '@/store/actions/userActions';
+import Filters from '@/components/Table/Filters';
 
 interface Props {
   orders: Order[],
@@ -140,62 +138,46 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
     <>
       <StyledWrapper>
         <div>
-          <Filters>
-            <Search
-              value={search}
-              onChange={(evt) => {
+          <Filters
+            search={{
+              searchValue: search,
+              placeholder: 'Search matters & orders',
+              setSearchValue: (evt) => {
                 setSearch(evt.target.value);
                 setOffset(0);
-              }}
-              placeholder="Search matters & orders"
-              clearField={() => setSearch('')}
-            />
-            <Buttons>
-              <Datepicker isApplied={!!(startDay && endDay)} setDates={submitDates} />
-              <FilterButton
-                ref={statusRef}
-                isApplied={!!status}
-                isDropdownVisible={isStatusVisible}
-                onClick={toggleIsStatusVisible}
-              >
-                {status?.toLowerCase().replaceAll('_', ' ') || 'Status'}
-                {isStatusVisible ? (
-                  <List>
-                    {statuses.map((el) => (
-                      <ListItem
-                        key={el}
-                        isSelected={el === status}
-                        onClick={() => selectStatus(el)}
-                      >
-                        {el.toLowerCase().replaceAll('_', ' ')}
-                      </ListItem>
-                    ))}
-                  </List>
-                ) : ''}
-              </FilterButton>
-              <FilterButton
-                ref={usersRef}
-                isApplied={!!selectedUser}
-                isDropdownVisible={isUsersVisible}
-                onClick={toggleIsUsersVisible}
-              >
-                {selectedUser?.name || 'User'}
-                {isUsersVisible ? (
-                  <List>
-                    {orgUsers.map((el) => (
-                      <ListItem
-                        key={el.email}
-                        isSelected={el.id === selectedUser?.id}
-                        onClick={() => selectOrgUser(el)}
-                      >
-                        {el.name}
-                      </ListItem>
-                    ))}
-                  </List>
-                ) : ''}
-              </FilterButton>
-            </Buttons>
-          </Filters>
+              },
+              clear: () => setSearch('')
+            }}
+            datepicker={{
+              startDate: startDay,
+              endDate: endDay,
+              setDates: submitDates
+            }}
+            filters={[
+              {
+                ref: statusRef,
+                name: 'Status',
+                value: status,
+                setValue: selectStatus,
+                values: statuses,
+                isApplied: !!status,
+                isDropdownVisible: isStatusVisible,
+                toggleIsVisible: toggleIsStatusVisible,
+                normalizeValue: (v: string) => v.replaceAll('_', ' ').toLowerCase()
+              },
+              {
+                ref: usersRef,
+                name: 'User',
+                value: selectedUser?.name || '',
+                setValue: selectOrgUser,
+                values: orgUsers,
+                keyForValue: 'name',
+                isApplied: !!selectedUser,
+                isDropdownVisible: isUsersVisible,
+                toggleIsVisible: toggleIsUsersVisible
+              }
+            ]}
+          />
           {filteredOrders.length ? (
             <TableWrapper>
               <Table>
@@ -367,43 +349,6 @@ const StyledWrapper = styled.div`
   flex: 1;
 `;
 
-const Filters = styled.div`
-  display: flex;
-  grid-gap: 16px;
-  align-items: center;
-  margin-bottom: 1rem;
-`;
-
-const Buttons = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-`;
-
-const List = styled.ul`
-  position: absolute;
-  top: calc(100% + 24px);
-  left: 50%;
-  padding: .5rem 0;
-  border-radius: 6px;
-  background-color: #fff;
-  transform: translateX(-50%);
-  box-shadow: 0 0 4px 0 rgba(0, 0, 0, .25);
-`;
-
-const ListItem = styled.li<{ isSelected: boolean }>`
-  padding: .25rem 1rem;
-  text-align: left;
-  white-space: nowrap;
-  color: ${({ isSelected }) => isSelected ? 'var(--primary-blue-color)' : 'inherit'};
-  text-transform: capitalize;
-  cursor: pointer;
-  
-  :hover {
-    background-color: rgba(0, 0, 0, .05);
-  }
-`;
-
 const TableWrapper = styled.div`
   margin-bottom: 1rem;
   overflow-x: auto;
@@ -493,6 +438,7 @@ const TRow = styled.tr<{ isChecked: boolean }>`
   cursor: pointer;
   
   th {
+    padding-right: 25px;
     background-color: ${({ isChecked }) => isChecked ? '#E8F6FA' : '#fff'};
     
     :first-child {
