@@ -13,6 +13,7 @@ import Matters from '@/components/Dashboard/Matters';
 import Button from '@/components/Button';
 import ArrowBackIcon from '@/assets/icons/ArrowBackIcon';
 import RightArrowIcon from '@/assets/icons/RightArrowIcon';
+import PageContainer from '@/components/PageContainer';
 
 const Orders = () => {
   const orders = useSelector(selectOrders);
@@ -34,75 +35,55 @@ const Orders = () => {
   }, []);
 
   return orders && orgUsers ? (
-    <OrdersPage>
-      <Content>
-        <PageHeader>
-          <LineNavigationWrapper>
-            {selectedMatter ? (
-              <>
-                <StyledBackIcon onClick={() => navigate(-1)} />
-                <LineNavigation>
-                  <span>Matters</span>
-                  <RightArrowIcon />
-                  <span>{selectedMatter}</span>
-                </LineNavigation>
-              </>
-            ) : (
-              <PageTitle fontSize={20} marginBottom="0">
-                Matters & Orders
-              </PageTitle>
-            )}
-          </LineNavigationWrapper>
-          <Link to="/new-order">
-            <StyledButton>
-              <svg
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="#fff"
-                strokeWidth="3"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
-              New Order
-            </StyledButton>
-          </Link>
-        </PageHeader>
-        <NavWrapper>
-          <Nav>
-            <StyledNavLink to="/dashboard/" end>All orders</StyledNavLink>
-            <StyledNavLink to="/dashboard/matters">All matters</StyledNavLink>
-          </Nav>
-        </NavWrapper>
-        <Routes>
-          <Route path="/" element={<OrdersTable orders={orders} />} />
-          <Route path="/matters/*" element={<Matters />} />
-        </Routes>
-      </Content>
-    </OrdersPage>
+    <PageContainer>
+      <PageHeader>
+        <LineNavigationWrapper>
+          {selectedMatter ? (
+            <>
+              <StyledBackIcon onClick={() => navigate(-1)} />
+              <LineNavigation>
+                <span>Matters</span>
+                <RightArrowIcon />
+                <span>{selectedMatter}</span>
+              </LineNavigation>
+            </>
+          ) : (
+            <PageTitle fontSize={20} marginBottom="0">
+              Matters & Orders
+            </PageTitle>
+          )}
+        </LineNavigationWrapper>
+        <Link to="/new-order">
+          <StyledButton>
+            <svg
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="#fff"
+              strokeWidth="3"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            New Order
+          </StyledButton>
+        </Link>
+      </PageHeader>
+      <NavWrapper>
+        <Nav>
+          <StyledNavLink to="/dashboard/" end>All orders</StyledNavLink>
+          <StyledNavLink to="/dashboard/matters">All matters</StyledNavLink>
+        </Nav>
+      </NavWrapper>
+      <Routes>
+        <Route path="/" element={<OrdersTable orders={orders} />} />
+        <Route path="/matters/*" element={<Matters />} />
+      </Routes>
+    </PageContainer>
   ) : <Loader />;
 };
-
-const OrdersPage = styled.div`
-  display: flex;
-  flex-flow: column;
-  min-height: calc(100vh - var(--search-height));
-  padding: 32px;
-`;
-
-const Content = styled.div`
-  display: flex;
-  flex-flow: column;
-  flex-grow: 1;
-  min-height: 729px;
-  padding: 32px;
-  border-radius: 12px;
-  background-color: #fff;
-  overflow-x: hidden;
-`;
 
 const PageHeader = styled.div`
   display: flex;
