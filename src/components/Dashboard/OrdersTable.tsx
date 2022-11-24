@@ -228,9 +228,11 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
                     <th>
                       Date
                     </th>
-                    <ActionCell>
-                      Action
-                    </ActionCell>
+                    {!isFromMatter ? (
+                      <ActionCell>
+                        Action
+                      </ActionCell>
+                    ) : ''}
                   </tr>
                 </THead>
                 <TBody>
@@ -280,13 +282,15 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
                       <th>
                         {convertTimestamp(order.date)}
                       </th>
-                      <ActionCell onClick={(evt) => evt.stopPropagation()}>
-                        <Info>
-                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M8.00004 1.33301C4.32004 1.33301 1.33337 4.31967 1.33337 7.99967C1.33337 11.6797 4.32004 14.6663 8.00004 14.6663C11.68 14.6663 14.6667 11.6797 14.6667 7.99967C14.6667 4.31967 11.68 1.33301 8.00004 1.33301ZM8.00004 11.333C7.63337 11.333 7.33337 11.033 7.33337 10.6663V7.99967C7.33337 7.63301 7.63337 7.33301 8.00004 7.33301C8.36671 7.33301 8.66671 7.63301 8.66671 7.99967V10.6663C8.66671 11.033 8.36671 11.333 8.00004 11.333ZM8.66671 5.99967H7.33337V4.66634H8.66671V5.99967Z" fill="#1A1C1E"/>
-                          </svg>
-                        </Info>
-                      </ActionCell>
+                      {!isFromMatter ? (
+                        <ActionCell onClick={(evt) => evt.stopPropagation()}>
+                          <Info>
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M8.00004 1.33301C4.32004 1.33301 1.33337 4.31967 1.33337 7.99967C1.33337 11.6797 4.32004 14.6663 8.00004 14.6663C11.68 14.6663 14.6667 11.6797 14.6667 7.99967C14.6667 4.31967 11.68 1.33301 8.00004 1.33301ZM8.00004 11.333C7.63337 11.333 7.33337 11.033 7.33337 10.6663V7.99967C7.33337 7.63301 7.63337 7.33301 8.00004 7.33301C8.36671 7.33301 8.66671 7.63301 8.66671 7.99967V10.6663C8.66671 11.033 8.36671 11.333 8.00004 11.333ZM8.66671 5.99967H7.33337V4.66634H8.66671V5.99967Z" fill="#1A1C1E"/>
+                            </svg>
+                          </Info>
+                        </ActionCell>
+                      ) : ''}
                     </TRow>
                   ))}
                 </TBody>
