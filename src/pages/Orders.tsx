@@ -48,7 +48,7 @@ const Orders = () => {
               </LineNavigation>
             </>
           ) : (
-            <PageTitle fontSize={20} marginBottom="0">
+            <PageTitle marginBottom="0">
               Matters & Orders
             </PageTitle>
           )}
