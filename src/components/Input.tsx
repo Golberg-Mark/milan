@@ -8,6 +8,9 @@ interface Props extends InputHTMLAttributes<HTMLInputElement> {
   labelFontSize?: string,
   labelColor?: string,
   labelFontWidth?: string,
+  inputHeight?: string,
+  inputPadding?: string,
+  inputFontSize?: string,
   isError?: boolean
 }
 
@@ -17,6 +20,9 @@ const Input: React.FC<Props> = ({
   labelFontSize = '16px',
   labelColor = '#6C7278',
   labelFontWidth = '500',
+  inputHeight = '38px',
+  inputPadding = '13px 16px',
+  inputFontSize = '12px',
   isError,
   ...props
 }) => {
@@ -38,6 +44,9 @@ const Input: React.FC<Props> = ({
         <StyledInput
           isError={isError}
           style={props.type === 'password' ? { paddingRight: '60px' } : {}}
+          padding={inputPadding}
+          iHeight={inputHeight}
+          fontSize={inputFontSize}
           {...props}
           type={isPasswordVisible ? 'text' : props.type}
         />
@@ -88,13 +97,13 @@ const InputWrapper = styled.div`
   }
 `;
 
-const StyledInput = styled.input<{ isError?: boolean }>`
-  padding: 13px 16px;
+const StyledInput = styled.input<{ iHeight: string, padding: string, fontSize: string, isError?: boolean }>`
+  padding: ${({ padding }) => padding};
   width: 100%;
-  height: 38px;
+  height: ${({ iHeight }) => iHeight};
   border: 1px solid ${({ isError }) => isError ? '#ff3333' : 'rgba(35, 35, 35, 0.16)'};
   border-radius: 4px;
-  font-size: 12px;
+  font-size: ${({ fontSize }) => fontSize};
   background-color: #fff;
 
   :focus {

@@ -12,6 +12,7 @@ import AddOrder from '@/pages/AddOrder';
 import OrderDetails from '@/pages/OrderDetails';
 import PriceList from '@/pages/PriceList';
 import ProtectedRouter from '@/components/ProtectedRouter';
+import Settings from '@/pages/Settings';
 
 const App = () => {
   return (
@@ -30,6 +31,7 @@ const App = () => {
                 <Route path="orders/:id" element={<OrderDetails />} />
                 <Route path="/new-order" element={<AddOrder />} />
                 <Route path="/price-list" element={<PriceList />} />
+                <Route path="/settings/*" element={<Settings />} />
               </Routes>
             </ContentContainer>
           </ProtectedRouter>

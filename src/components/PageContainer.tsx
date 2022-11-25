@@ -1,10 +1,14 @@
 import React, { PropsWithChildren } from 'react';
 import styled from 'styled-components';
 
-const PageContainer: React.FC<PropsWithChildren> = ({ children }) => {
+interface Props extends PropsWithChildren {
+  contentPadding?: string
+}
+
+const PageContainer: React.FC<Props> = ({ contentPadding = '32px', children }) => {
   return (
     <Page>
-      <Content>
+      <Content padding={contentPadding}>
         {children}
       </Content>
     </Page>
@@ -18,12 +22,12 @@ const Page = styled.section`
   padding: 32px;
 `;
 
-const Content = styled.div`
+const Content = styled.div<{ padding: string }>`
   display: flex;
   flex-flow: column;
   flex-grow: 1;
   min-height: 729px;
-  padding: 32px;
+  padding: ${({ padding }) => padding};
   border-radius: 12px;
   background-color: #fff;
   overflow-x: hidden;
