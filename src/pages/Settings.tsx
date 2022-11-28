@@ -1,9 +1,9 @@
 import React from 'react';
+import styled from 'styled-components';
+import { NavLink, Route, Routes } from 'react-router-dom';
 
 import PageContainer from '@/components/PageContainer';
-import styled from 'styled-components';
 import PageTitle from '@/components/PageTitle';
-import { NavLink, Route, Routes } from 'react-router-dom';
 import RightArrowIcon from '@/assets/icons/RightArrowIcon';
 import UserIcon from '@/assets/icons/UserIcon';
 import OrganisationsIcon from '@/assets/icons/OrganisationsIcon';
