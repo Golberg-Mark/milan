@@ -10,8 +10,6 @@ import OrganisationsIcon from '@/assets/icons/OrganisationsIcon';
 import SettingsIcon from '@/assets/icons/SettingsIcon';
 import UsersIcon from '@/assets/icons/UsersIcon';
 import BillingIcon from '@/assets/icons/BillingIcon';
-import SettlementIcon from '@/assets/icons/SettlementIcon';
-import PerfectPortalCodeIcon from '@/assets/icons/PerfectPortalCodeIcon';
 import MyDetails from '@/components/Settings/MyDetails/MyDetails';
 
 const Settings = () => {
@@ -60,20 +58,6 @@ const Settings = () => {
             </span>
             <RightArrowIcon />
           </StyledNavLink>
-          <StyledNavLink to="/settings/settlement-settings">
-            <span>
-              <SettlementIcon />
-              Settlement Settings
-            </span>
-            <RightArrowIcon />
-          </StyledNavLink>
-          <StyledNavLink to="/settings/perfect-portal-code">
-            <span>
-              <PerfectPortalCodeIcon />
-              Prefect Portal Code
-            </span>
-            <RightArrowIcon />
-          </StyledNavLink>
         </Navigation>
         <RightSide>
           <Routes>
@@ -82,8 +66,6 @@ const Settings = () => {
             <Route path="/preferences" element={<div>Preferences</div>} />
             <Route path="/users" element={<div>Users</div>} />
             <Route path="/billing" element={<div>Billing</div>} />
-            <Route path="/settlement-settings" element={<div>Settlement Settings</div>} />
-            <Route path="/perfect-portal-code" element={<div>Prefect Portal Code</div>} />
           </Routes>
         </RightSide>
       </Content>
