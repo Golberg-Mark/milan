@@ -117,7 +117,7 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
     return OrderStatusEnum[status] === order.status;
   }).filter((order) => {
     if (!selectedUser) return true;
-    return order.user === selectedUser.id
+    return order.user === selectedUser.id;
   }), [search, startDay, endDay, status, selectedUser]);
 
   const maxPages = Math.ceil(ordersWithAppliedFilters.length / limits[limit]);
@@ -174,7 +174,8 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
                 keyForValue: 'name',
                 isApplied: !!selectedUser,
                 isDropdownVisible: isUsersVisible,
-                toggleIsVisible: toggleIsUsersVisible
+                toggleIsVisible: toggleIsUsersVisible,
+                containLargeValues: true
               }
             ]}
           />

@@ -18,6 +18,11 @@ export interface IOrganisation {
   priceLists: IPriceList[]
 }
 
+interface IEditOrganisation {
+  name: string,
+  isActive: boolean
+}
+
 interface OrganisationsState {
   organisations: IOrganisation[] | null
 }

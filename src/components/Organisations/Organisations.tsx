@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
@@ -12,19 +12,56 @@ import Checkbox from '@/components/Checkbox';
 import convertTimestamp from '@/utils/convertTimestamp';
 import Button from '@/components/Button';
 import useToggle from '@/hooks/useToggle';
+import getNounByForm from '@/utils/getNounByForm';
+import UsersIcon from '@/assets/icons/UsersIcon';
+import Filters from '@/components/Table/Filters';
+import useInput from '@/hooks/useInput';
+import useOnClickOutside from '@/hooks/useOnClickOutside';
+import Pagination from '@/components/Pagination';
+import { IOrganisation } from '@/store/reducers/organisations';
 
-const Organisations = () => {
-  const [isAllCheckboxSelected, toggleIsAllCheckboxSelected] = useToggle();
-  const [selectedOrganisations, setSelectedOrganisations] = useState<number[]>([]);
+const limits = [20, 50, 100];
 
+export const WrapperOrganisations = () => {
   const organisations = useSelector(selectOrganisations);
 
   const dispatch = useDispatch<any>();
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (!organisations) dispatch(getOrganisationsAction());
-  }, []);
+  }, [])
+
+  return organisations ? <Organisations organisations={organisations} /> : <></>;
+};
+
+interface Props {
+  organisations: IOrganisation[]
+}
+
+const Organisations: React.FC<Props> = ({ organisations }) => {
+  const [search, setSearch] = useInput();
+  const [priceList, setPriceList] = useState<string | null>(null);
+  const [priceListRef, isPriceListsVisible, toggleIsPriceListsVisible] = useOnClickOutside<HTMLDivElement>();
+  const [status, setStatus] = useState<'ACTIVE' | 'INACTIVE' | null>(null);
+  const [statusRef, isStatusesVisible, toggleIsStatusesVisible] = useOnClickOutside<HTMLDivElement>();
+  const [orgName, setOrgName] = useState<string | null>(null);
+  const [orgRef, isOrgsVisible, toggleIsOrgsVisible] = useOnClickOutside<HTMLDivElement>();
+  const [isAllCheckboxSelected, toggleIsAllCheckboxSelected] = useToggle();
+  const [selectedOrganisations, setSelectedOrganisations] = useState<number[]>([]);
+  const [offset, setOffset] = useState(0);
+  const [limit, setLimit] = useState(0);
+
+  const navigate = useNavigate();
+
+  const selectAllCheckboxes = (isSelected: boolean) => {
+    if (!isSelected) {
+      setSelectedOrganisations([]);
+      toggleIsAllCheckboxSelected(false);
+    } else {
+      setSelectedOrganisations(organisations!.map((el) => el.id));
+      toggleIsAllCheckboxSelected(true);
+    }
+  };
 
   const onCheckboxClick = (isChecked: boolean, id: number) => {
     setSelectedOrganisations(prevState => {
@@ -34,7 +71,49 @@ const Organisations = () => {
     toggleIsAllCheckboxSelected(false);
   };
 
-  return organisations ? (
+  let priceLists: string[] = [];
+  let organisationsNames: string[] = [];
+
+  organisations?.forEach((org) => {
+    organisationsNames.push(org.name);
+
+    org.priceLists.forEach((el) => {
+      priceLists.push(el.name);
+    });
+  });
+
+  const organisationsWithAppliedFilters = useMemo(() => organisations.filter((org) => {
+    if (!search) return true;
+
+    const regexp = new RegExp(`.*${search.toLowerCase()}.*`);
+    return regexp.test(org.name.toLowerCase());
+  }).filter((org) => {
+    if (!priceList) return true;
+
+    return org.priceLists[0]?.name === priceList || org.priceLists[1]?.name === priceList;
+  }).filter((org) => {
+    if (status === null) return true;
+    return (status === 'ACTIVE' && org.isActive) || (status === 'INACTIVE' && !org.isActive);
+  }).filter((org) => {
+    if (!orgName) return true;
+    return org.name === orgName;
+  }), [organisations, search, priceList, status, orgName]);
+
+  const maxPages = Math.ceil(organisationsWithAppliedFilters.length / limits[limit]);
+  const calculatedOffset = maxPages > 1 ? offset : 0;
+  const filteredOrganisations: IOrganisation[] = [];
+
+  if (maxPages >= 1) {
+    for (let i = calculatedOffset * limits[limit]; i < calculatedOffset * limits[limit] + limits[limit]; i++) {
+      if (organisationsWithAppliedFilters[i]) {
+        filteredOrganisations.push(organisationsWithAppliedFilters[i]);
+      }
+    }
+  }
+
+  const isFiltered = !priceList || status !== null || selectedOrganisations;
+
+  return organisationsWithAppliedFilters ? (
     <>
       <PageHeader>
         <div>
@@ -49,89 +128,173 @@ const Organisations = () => {
         </NewOrganisation>
       </PageHeader>
       <Content>
-        <TableWrapper>
-          <Table>
-            <THead>
-              <tr>
-                <th>
-                  <Checkbox />
-                </th>
-                <th>
-                  ORGANISATION
-                </th>
-                <th>
-                  LAST ORDER
-                </th>
-                <th>
-                  STATUS
-                </th>
-                <th>
-                  PRICE LIST
-                </th>
-                <th>
-                  NEW PRICE LIST
-                </th>
-                <th>
-                  EFFECTIVE FROM DATE
-                </th>
-                <th>
-                  PAYMENT TERMS
-                </th>
-                <th>
-                  ACTIONS
-                </th>
-              </tr>
-            </THead>
-            <TBody>
-              {organisations.map((org) => (
-                <TRow
-                  key={org.name}
-                  isChecked={!!selectedOrganisations.find((el) => el === org.id)}
-                  onClick={() => navigate(`/organisations/${org.id}`)}
-                >
-                  <th>
-                    <Checkbox
-                      type="checkbox"
-                      checked={!!selectedOrganisations.find((el) => el === org.id)}
-                      onChange={({ target }) => onCheckboxClick(target.checked, org.id)}
-                    />
-                  </th>
-                  <th>
-                    {org.name}
-                  </th>
-                  <th>
-                    {org.lastOrderDate ? convertTimestamp(+org.lastOrderDate) : '-'}
-                  </th>
-                  <th>
-                    <StatusCell isActive={org.isActive}>
-                      {org.isActive ? 'ACTIVE' : 'INACTIVE'}
-                    </StatusCell>
-                  </th>
-                  <th>
-                    {org.priceLists[0]?.name.split('.').slice(0, -1).join('.') || '-'}
-                  </th>
-                  <th>
-                    {org.priceLists[1]?.name.split('.').slice(0, -1).join('.') || '-'}
-                  </th>
-                  <th>
-                    {org.priceLists[1]?.effectiveFromDate || '-'}
-                  </th>
-                  <th>
-                    {org.paymentTerms}
-                  </th>
-                  <th onClick={(evt) => evt.stopPropagation()}>
-                    <Action>
-                      <svg width="16" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M13.2602 8.62627C13.2869 8.42627 13.3002 8.21961 13.3002 7.99961C13.3002 7.78628 13.2869 7.57294 13.2536 7.37294L14.6069 6.31961C14.7269 6.22628 14.7602 6.04628 14.6869 5.91294L13.4069 3.69961C13.3269 3.55294 13.1602 3.50628 13.0136 3.55294L11.4202 4.19294C11.0869 3.93961 10.7336 3.72628 10.3402 3.56628L10.1002 1.87294C10.0736 1.71294 9.94024 1.59961 9.78024 1.59961H7.22024C7.06024 1.59961 6.93357 1.71294 6.9069 1.87294L6.6669 3.56628C6.27357 3.72628 5.91357 3.94628 5.5869 4.19294L3.99357 3.55294C3.8469 3.49961 3.68024 3.55294 3.60024 3.69961L2.3269 5.91294C2.2469 6.05294 2.27357 6.22628 2.4069 6.31961L3.76024 7.37294C3.7269 7.57294 3.70024 7.79294 3.70024 7.99961C3.70024 8.20628 3.71357 8.42627 3.7469 8.62627L2.39357 9.67961C2.27357 9.77294 2.24024 9.95294 2.31357 10.0863L3.59357 12.2996C3.67357 12.4463 3.84024 12.4929 3.9869 12.4463L5.58024 11.8063C5.91357 12.0596 6.2669 12.2729 6.66024 12.4329L6.90024 14.1263C6.93357 14.2863 7.06024 14.3996 7.22024 14.3996H9.78024C9.94024 14.3996 10.0736 14.2863 10.0936 14.1263L10.3336 12.4329C10.7269 12.2729 11.0869 12.0596 11.4136 11.8063L13.0069 12.4463C13.1536 12.4996 13.3202 12.4463 13.4002 12.2996L14.6802 10.0863C14.7602 9.93961 14.7269 9.77294 14.6002 9.67961L13.2602 8.62627ZM8.50024 10.3996C7.18024 10.3996 6.10024 9.31961 6.10024 7.99961C6.10024 6.67961 7.18024 5.59961 8.50024 5.59961C9.82024 5.59961 10.9002 6.67961 10.9002 7.99961C10.9002 9.31961 9.82024 10.3996 8.50024 10.3996Z" fill="#1A1C1E"/>
-                      </svg>
-                    </Action>
-                  </th>
-                </TRow>
-              ))}
-            </TBody>
-          </Table>
-        </TableWrapper>
+        <div>
+          <Filters
+            search={{
+              searchValue: search,
+              setSearchValue: setSearch,
+              placeholder: 'Search organisations',
+              clear: () => setSearch('')
+            }}
+            filters={[
+              {
+                name: 'Price List',
+                value: priceList,
+                setValue: setPriceList,
+                values: priceLists,
+                isApplied: !!priceList,
+                ref: priceListRef,
+                isDropdownVisible: isPriceListsVisible,
+                toggleIsVisible: toggleIsPriceListsVisible,
+                containLargeValues: true
+              },
+              {
+                name: 'Status',
+                value: status,
+                setValue: setStatus,
+                values: ['ACTIVE', 'INACTIVE'],
+                isApplied: status !== null,
+                ref: statusRef,
+                isDropdownVisible: isStatusesVisible,
+                toggleIsVisible: toggleIsStatusesVisible
+              },
+              {
+                name: 'Organisation',
+                value: orgName,
+                setValue: setOrgName,
+                values: organisationsNames,
+                isApplied: !!orgName,
+                ref: orgRef,
+                isDropdownVisible: isOrgsVisible,
+                toggleIsVisible: toggleIsOrgsVisible,
+                containLargeValues: true
+              }
+            ]}
+          />
+          {filteredOrganisations.length ? (
+            <TableWrapper>
+              <Table>
+                <THead>
+                  <tr>
+                    <th>
+                      <Checkbox
+                        type="checkbox"
+                        checked={isAllCheckboxSelected}
+                        onChange={({ target }) => selectAllCheckboxes(target.checked)}
+                      />
+                    </th>
+                    <th>
+                      ORGANISATION
+                    </th>
+                    <th>
+                      LAST ORDER
+                    </th>
+                    <th>
+                      STATUS
+                    </th>
+                    <th>
+                      PRICE LIST
+                    </th>
+                    <th>
+                      NEW PRICE LIST
+                    </th>
+                    <th>
+                      EFFECTIVE FROM DATE
+                    </th>
+                    <th>
+                      PAYMENT TERMS
+                    </th>
+                    <th>
+                      ACTIONS
+                    </th>
+                  </tr>
+                </THead>
+                <TBody>
+                  {filteredOrganisations.map((org) => (
+                    <TRow
+                      key={org.name}
+                      isChecked={!!selectedOrganisations.find((el) => el === org.id)}
+                      onClick={() => navigate(`/organisations/${org.id}`)}
+                    >
+                      <th>
+                        <Checkbox
+                          type="checkbox"
+                          checked={!!selectedOrganisations.find((el) => el === org.id)}
+                          onChange={({ target }) => onCheckboxClick(target.checked, org.id)}
+                        />
+                      </th>
+                      <th>
+                        {org.name}
+                      </th>
+                      <th>
+                        {org.lastOrderDate ? convertTimestamp(+org.lastOrderDate) : '-'}
+                      </th>
+                      <th>
+                        <StatusCell isActive={org.isActive}>
+                          {org.isActive ? 'ACTIVE' : 'INACTIVE'}
+                        </StatusCell>
+                      </th>
+                      <th>
+                        {org.priceLists[0]?.name.split('.').slice(0, -1).join('.') || '-'}
+                      </th>
+                      <th>
+                        {org.priceLists[1]?.name.split('.').slice(0, -1).join('.') || '-'}
+                      </th>
+                      <th>
+                        {org.priceLists[1]?.effectiveFromDate || '-'}
+                      </th>
+                      <th>
+                        {org.paymentTerms}
+                      </th>
+                      <th onClick={(evt) => evt.stopPropagation()}>
+                        <Action>
+                          <svg width="16" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M13.2602 8.62627C13.2869 8.42627 13.3002 8.21961 13.3002 7.99961C13.3002 7.78628 13.2869 7.57294 13.2536 7.37294L14.6069 6.31961C14.7269 6.22628 14.7602 6.04628 14.6869 5.91294L13.4069 3.69961C13.3269 3.55294 13.1602 3.50628 13.0136 3.55294L11.4202 4.19294C11.0869 3.93961 10.7336 3.72628 10.3402 3.56628L10.1002 1.87294C10.0736 1.71294 9.94024 1.59961 9.78024 1.59961H7.22024C7.06024 1.59961 6.93357 1.71294 6.9069 1.87294L6.6669 3.56628C6.27357 3.72628 5.91357 3.94628 5.5869 4.19294L3.99357 3.55294C3.8469 3.49961 3.68024 3.55294 3.60024 3.69961L2.3269 5.91294C2.2469 6.05294 2.27357 6.22628 2.4069 6.31961L3.76024 7.37294C3.7269 7.57294 3.70024 7.79294 3.70024 7.99961C3.70024 8.20628 3.71357 8.42627 3.7469 8.62627L2.39357 9.67961C2.27357 9.77294 2.24024 9.95294 2.31357 10.0863L3.59357 12.2996C3.67357 12.4463 3.84024 12.4929 3.9869 12.4463L5.58024 11.8063C5.91357 12.0596 6.2669 12.2729 6.66024 12.4329L6.90024 14.1263C6.93357 14.2863 7.06024 14.3996 7.22024 14.3996H9.78024C9.94024 14.3996 10.0736 14.2863 10.0936 14.1263L10.3336 12.4329C10.7269 12.2729 11.0869 12.0596 11.4136 11.8063L13.0069 12.4463C13.1536 12.4996 13.3202 12.4463 13.4002 12.2996L14.6802 10.0863C14.7602 9.93961 14.7269 9.77294 14.6002 9.67961L13.2602 8.62627ZM8.50024 10.3996C7.18024 10.3996 6.10024 9.31961 6.10024 7.99961C6.10024 6.67961 7.18024 5.59961 8.50024 5.59961C9.82024 5.59961 10.9002 6.67961 10.9002 7.99961C10.9002 9.31961 9.82024 10.3996 8.50024 10.3996Z" fill="#1A1C1E"/>
+                          </svg>
+                        </Action>
+                      </th>
+                    </TRow>
+                  ))}
+                </TBody>
+              </Table>
+            </TableWrapper>
+          ) : ''}
+        </div>
+        {filteredOrganisations.length ? (
+          <Pagination
+            changePage={setOffset}
+            currentPage={calculatedOffset}
+            maxPages={maxPages}
+            maxElements={search || isFiltered ? organisationsWithAppliedFilters.length : organisations.length}
+            limits={limits}
+            limit={limit}
+            setLimit={setLimit}
+          />
+        ) : ''}
       </Content>
+      {selectedOrganisations.length ? (
+        <PopUp>
+          <OrganisationsCount>
+            <UsersIcon />
+            {`${getNounByForm(selectedOrganisations.length, 'organisation')} selected`}
+          </OrganisationsCount>
+          <Actions>
+            <li>
+              <Button>Deactivate</Button>
+            </li>
+            <li>
+              <Button>Assign Price List</Button>
+            </li>
+            <CloseIcon
+              width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+              onClick={() => selectAllCheckboxes(false)}
+            >
+              <path d="M5.00098 5L19 18.9991" stroke="#292D32" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M4.99996 18.9991L18.999 5" stroke="#292D32" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </CloseIcon>
+          </Actions>
+        </PopUp>
+      ) : ''}
     </>
   ) : <Loader />;
 };
@@ -155,6 +318,10 @@ const NewOrganisation = styled(Button)`
 `;
 
 const Content = styled.div`
+  display: flex;
+  flex-flow: column;
+  flex: 1;
+  justify-content: space-between;
   padding: 0 32px;
 `;
 
@@ -260,6 +427,42 @@ const Action = styled.div`
   :hover {
     background-color: #E1DFD9;
   }
+`;
+
+const PopUp = styled.div`
+  position: fixed;
+  bottom: 100px;
+  left: calc(50% + 256px / 2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 38px 86px 38px 32px;
+  max-width: 822px;
+  width: 100%;
+  transform: translateX(-50%);
+  background-color: #fff;
+  box-shadow: 0 12px 80px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+`;
+
+const OrganisationsCount = styled.p`
+  display: flex;
+  align-items: center;
+  grid-gap: 13px;
+`;
+
+const Actions = styled.ul`
+  display: flex;
+  align-items: center;
+  grid-gap: 16px;
+`;
+
+const CloseIcon = styled.svg`
+  position: absolute;
+  top: 50%;
+  right: 32px;
+  transform: translateY(-50%);
+  cursor: pointer;
 `;
 
 export default Organisations;

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import Datepicker, { setDates } from '@/components/Datepicker/Datepicker';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import Search from '@/components/Dashboard/Search';
 import FilterButton from '@/components/Table/FilterButton';
 import { HandleToggle } from '@/hooks/useToggle';
@@ -24,6 +24,7 @@ interface IFilter {
   isDropdownVisible: boolean,
   toggleIsVisible: HandleToggle,
   normalizeValue?: (value: string) => string,
+  containLargeValues?: boolean
 }
 
 interface IDatepickerFilter {
@@ -60,7 +61,7 @@ const Filters: React.FC<Props> = ({
             setDates={datepicker.setDates}
           />
         ) : ''}
-        {filters ? filters.map((filter) => {
+        {filters ? filters.map((filter, i) => {
           let value = filter.normalizeValue && filter.value
             ? filter.normalizeValue(filter.value)
             : filter.value || filter.name;
@@ -75,7 +76,7 @@ const Filters: React.FC<Props> = ({
               onClick={filter.toggleIsVisible}
             >
               {filter.isDropdownVisible ? (
-                <List>
+                <List isLast={i + 1 === filters.length} containLargeValues={filter.containLargeValues}>
                   {filter.values.map((item, i) => {
                     const itemValue = filter.keyForValue ? item[filter.keyForValue] : item;
 
@@ -112,7 +113,7 @@ const Buttons = styled.div`
   align-items: center;
 `;
 
-const List = styled.ul`
+const List = styled.ul<{ isLast: boolean, containLargeValues?: boolean }>`
   position: absolute;
   top: calc(100% + 24px);
   left: 50%;
@@ -121,12 +122,28 @@ const List = styled.ul`
   background-color: #fff;
   transform: translateX(-50%);
   box-shadow: 0 0 4px 0 rgba(0, 0, 0, .25);
+  
+  ${({ isLast, containLargeValues }) => {
+    if (isLast) return containLargeValues ? css`
+      right: 0;
+      left: unset;
+      transform: unset;
+      max-width: 300%;
+      
+      li {
+        white-space: unset;
+        word-break: unset;
+      }
+    ` : 'max-width: 100%';
+    return containLargeValues ? 'width: 200px' : 'width: 100%';
+  }};
 `;
 
 const ListItem = styled.li<{ isSelected: boolean }>`
   padding: .25rem 1rem;
   text-align: left;
-  white-space: nowrap;
+  white-space: normal;
+  word-break: break-all;
   color: ${({ isSelected }) => isSelected ? 'var(--primary-green-color)' : 'inherit'};
   text-transform: capitalize;
   cursor: pointer;
