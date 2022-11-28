@@ -1,7 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Routes, Route } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import { Navigate } from 'react-router';
+import { useSelector } from 'react-redux';
 
 import GlobalStyle from '@/utils/getNormalizedCSS';
 import Orders from '@/pages/Orders';
@@ -13,8 +14,13 @@ import OrderDetails from '@/pages/OrderDetails';
 import PriceList from '@/pages/PriceList';
 import ProtectedRouter from '@/components/ProtectedRouter';
 import Settings from '@/pages/Settings';
+import { selectUser } from '@/store/selectors/userSelectors';
+import Organisations from '@/pages/Organisations';
+import { Roles } from '@/store/reducers/user';
 
 const App = () => {
+  const user = useSelector(selectUser);
+
   return (
     <GlobalContainer>
       <GlobalStyle />
@@ -32,6 +38,9 @@ const App = () => {
                 <Route path="/new-order" element={<AddOrder />} />
                 <Route path="/price-list" element={<PriceList />} />
                 <Route path="/settings/*" element={<Settings />} />
+                {user?.role === Roles.SYSTEM_ADMIN ? (
+                  <Route path="/organisations/*" element={<Organisations />} />
+                ) : ''}
               </Routes>
             </ContentContainer>
           </ProtectedRouter>

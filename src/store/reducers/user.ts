@@ -1,9 +1,15 @@
 import { ImmerReducer, createReducerFunction } from 'immer-reducer';
 
+export enum Roles {
+  SYSTEM_ADMIN = 'system_admin',
+  CUSTOMER = 'customer',
+}
+
 export interface User {
   id: number,
   name: string,
   email: string,
+  role: Roles,
   organisations: {
     roleWithinOrganisation: string,
     id: number,

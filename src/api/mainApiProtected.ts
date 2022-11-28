@@ -2,6 +2,7 @@ import { HttpClientProtected } from '@/api/httpClientProtected';
 import { PlaceOrder, PlaceOrderProduct } from '@/store/reducers/order';
 import { OrderDetails, OrganizationUser, User, Product } from '@/store/reducers/user';
 import { Product as OrderProduct } from '@/store/reducers/order';
+import { IOrganisation } from '@/store/reducers/organisations';
 
 export class MainApiProtected extends HttpClientProtected {
   private static instanceCached: MainApiProtected;
@@ -38,5 +39,9 @@ export class MainApiProtected extends HttpClientProtected {
 
   public getOrganisationProducts = (orgId: number) => (
     this.instance.get<OrderProduct[]>(`organisations/products/${orgId}`)
+  );
+
+  public getOrganisations = () => (
+    this.instance.get<IOrganisation[]>(`/organisations`)
   );
 }
