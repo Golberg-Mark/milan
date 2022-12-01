@@ -41,6 +41,7 @@ const List = styled.ul`
   display: flex;
   flex-direction: column;
   grid-gap: 14px;
+  margin-bottom: 32px;
 `;
 
 const ListItem = styled.li<{ isValid: boolean }>`

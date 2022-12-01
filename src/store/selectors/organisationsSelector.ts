@@ -9,3 +9,8 @@ export const selectOrganisations: Selector<State, IOrganisation[] | null> = crea
   userState,
   ({ organisations }) => organisations
 );
+
+export const selectIsLoading: Selector<State, boolean> = createSelector(
+  userState,
+  ({ isLoading }) => isLoading
+);

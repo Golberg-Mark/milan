@@ -1,8 +1,8 @@
 import React, { InputHTMLAttributes } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
-import EmptyCheckbox from '@/assets/icons/EmptyCheckbox.svg';
-import SelectedCheckbox from '@/assets/icons/SelectedCheckbox.svg';
+import EmptyCheckbox from '@/assets/icons/EmptyCheckbox';
+import SelectedCheckbox from '@/assets/icons/SelectedCheckbox';
 
 interface Props extends InputHTMLAttributes<HTMLInputElement> {
 
@@ -15,6 +15,11 @@ const Checkbox: React.FC<Props> = ({ ...props }) => {
       isDisabled={!!props.disabled}
       onClick={(evt) => evt.stopPropagation()}
     >
+      {!!props.checked ? (
+        <SelectedCheckbox />
+      ) : (
+        <EmptyCheckbox />
+      )}
       <StyledCheckbox {...props} />
     </Label>
   );
@@ -25,7 +30,12 @@ const Label = styled.label<{ isChecked: boolean, isDisabled: boolean }>`
   width: 18px;
   height: 18px;
   cursor: ${({ isDisabled }) => isDisabled ? 'default' : 'pointer'};
-  background-image: url("${({ isChecked }) => isChecked ? SelectedCheckbox : EmptyCheckbox}");
+  
+  ${({ isChecked, isDisabled }) => !isChecked && isDisabled ? css`
+    svg {
+      fill: rgba(0, 0, 0, .2);
+    }
+  ` : ''}
 `;
 
 const StyledCheckbox = styled.input`

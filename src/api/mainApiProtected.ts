@@ -2,7 +2,7 @@ import { HttpClientProtected } from '@/api/httpClientProtected';
 import { PlaceOrder, PlaceOrderProduct } from '@/store/reducers/order';
 import { OrderDetails, OrganizationUser, User, Product } from '@/store/reducers/user';
 import { Product as OrderProduct } from '@/store/reducers/order';
-import { IOrganisation } from '@/store/reducers/organisations';
+import { ICreateOrganisation, IEditOrganisation, IOrganisation } from '@/store/reducers/organisations';
 
 export class MainApiProtected extends HttpClientProtected {
   private static instanceCached: MainApiProtected;
@@ -43,5 +43,20 @@ export class MainApiProtected extends HttpClientProtected {
 
   public getOrganisations = () => (
     this.instance.get<IOrganisation[]>(`/organisations`)
+  );
+
+  public editOrganisation = (id: number, body: Omit<IEditOrganisation, 'id'>) => (
+    this.instance.patch<Omit<IEditOrganisation, 'id'>, IOrganisation>(`/organisations/${id}`, body)
+  );
+
+  public createOrganisation = (body: ICreateOrganisation) => (
+    this.instance.post<IOrganisation>(`/organisations`, body)
+  );
+
+  public testEmail = (str: string, sendTo: string) => (
+    this.instance.post<IOrganisation>(`/mock/test-email`, {
+      emailString: str,
+      sendTo: sendTo
+    })
   );
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import Select from '@/components/AddOrder/Select';
+import Select from '@/components/Select';
 
 interface Props {
   changePage: React.Dispatch<React.SetStateAction<number>>,

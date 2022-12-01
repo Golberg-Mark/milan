@@ -37,7 +37,8 @@ const Auth = () => {
     if (email && password && !isEmailError && !isPasswordError) {
       try {
         toggleIsLoading(true);
-        await dispatch(loginAction(email, password, rememberMe, () => navigate('/dashboard')));
+        await dispatch(loginAction(email, password, rememberMe));
+        navigate('/dashboard');
       } finally {
         toggleIsLoading(false);
       }
@@ -107,6 +108,10 @@ const Auth = () => {
           >
             {isLoading ? <Loader size={24} thickness={2} color="#fff" /> : 'Login'}
           </StyledButton>
+          <ToRegistration>
+            Don’t have an account?
+            <Link to="/sign-up"> Register Here</Link>
+          </ToRegistration>
         </AuthWrapper>
       </SideWrapper>
     </StyledAuth>
@@ -206,7 +211,24 @@ const StyledLink = styled(Link)`
 `;
 
 const StyledButton = styled(Button)`
+  margin-bottom: 32px;
   width: 100%;
+`;
+
+const ToRegistration = styled.p`
+  color: #6C7278;
+  font-weight: 500;
+  text-align: center;
+  
+  a {
+    color: var(--primary-green-color);
+    font-weight: 500;
+    transition: .1s ease-in-out;
+    
+    :hover {
+      color: var(--primary-green-hover-color);
+    }
+  }
 `;
 
 export default Auth;

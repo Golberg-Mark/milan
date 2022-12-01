@@ -88,9 +88,13 @@ const PageHeader = () => {
           {user ? (
             <>
               <Avatar>{getUserAvatar(user.name)}</Avatar>
-              <UserInfo>
+              <UserInfo withOrgName={!!user.organisations.length}>
                 <User>{user.name}</User>
-                <Organisation>{user.organisations[0].name}</Organisation>
+                {user.organisations.length ? (
+                  <Organisation>
+                    {user.organisations[0].name}
+                  </Organisation>
+                ) : ''}
               </UserInfo>
               <ArrowDown
                 width="12" height="12" viewBox="0 0 12 12"
@@ -130,7 +134,7 @@ const PageHeader = () => {
               <Divider />
               <li onClick={() => {
                 dispatch(logoutAction());
-                navigate('/auth');
+                navigate('/sign-in');
               }}>
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M13.08 10.965L15 9.045L13.08 7.125" stroke="#DC2D2D" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
@@ -247,10 +251,11 @@ const Avatar = styled.div`
   background-color: #F4F4F4;
 `;
 
-const UserInfo = styled.div`
+const UserInfo = styled.div<{ withOrgName: boolean }>`
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: ${({ withOrgName }) => withOrgName ? 'space-between' : 'center'};
+  grid-gap: 4px;
   margin-right: 18px;
   height: 100%;
 `;

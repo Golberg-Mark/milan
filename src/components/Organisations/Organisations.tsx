@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
 import { selectOrganisations } from '@/store/selectors/organisationsSelector';
-import { getOrganisationsAction } from '@/store/actions/organisationsActions';
+import { editOrganisationsAction, getOrganisationsAction } from '@/store/actions/organisationsActions';
 import Loader from '@/components/Loader';
 import PageTitle from '@/components/PageTitle';
 import AddIcon from '@/assets/icons/AddIcon';
@@ -19,6 +19,8 @@ import useInput from '@/hooks/useInput';
 import useOnClickOutside from '@/hooks/useOnClickOutside';
 import Pagination from '@/components/Pagination';
 import { IOrganisation } from '@/store/reducers/organisations';
+import CreateOrganisation from '@/components/Organisations/CreateOrganisation';
+import CloseIcon from '@/assets/icons/CloseIcon';
 
 const limits = [20, 50, 100];
 
@@ -31,7 +33,7 @@ export const WrapperOrganisations = () => {
     if (!organisations) dispatch(getOrganisationsAction());
   }, [])
 
-  return organisations ? <Organisations organisations={organisations} /> : <></>;
+  return organisations ? <Organisations organisations={organisations} /> : <Loader />;
 };
 
 interface Props {
@@ -50,25 +52,39 @@ const Organisations: React.FC<Props> = ({ organisations }) => {
   const [selectedOrganisations, setSelectedOrganisations] = useState<number[]>([]);
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(0);
+  const [isLoading, toggleIsLoading] = useToggle();
+  const [isNewOrgVisible, toggleIsNewOrgVisible] = useToggle();
 
   const navigate = useNavigate();
+  const dispatch = useDispatch<any>();
 
   const selectAllCheckboxes = (isSelected: boolean) => {
     if (!isSelected) {
       setSelectedOrganisations([]);
       toggleIsAllCheckboxSelected(false);
     } else {
-      setSelectedOrganisations(organisations!.map((el) => el.id));
+      setSelectedOrganisations(organisations!.filter((el) => el.isActive).map((el) => el.id));
       toggleIsAllCheckboxSelected(true);
     }
   };
 
   const onCheckboxClick = (isChecked: boolean, id: number) => {
     setSelectedOrganisations(prevState => {
-      if (!isChecked) return prevState.filter(el => el !== id);
+      if (!isChecked) return prevState.filter((el) => el !== id);
       return [...prevState, id];
     });
     toggleIsAllCheckboxSelected(false);
+  };
+
+  const changeStatus = async () => {
+    try {
+      toggleIsLoading(true);
+      await dispatch(editOrganisationsAction(selectedOrganisations));
+    } finally {
+      setSelectedOrganisations([]);
+      toggleIsAllCheckboxSelected(false);
+      toggleIsLoading(false);
+    }
   };
 
   let priceLists: string[] = [];
@@ -77,7 +93,7 @@ const Organisations: React.FC<Props> = ({ organisations }) => {
   organisations?.forEach((org) => {
     organisationsNames.push(org.name);
 
-    org.priceLists.forEach((el) => {
+    org.priceLists?.forEach((el) => {
       priceLists.push(el.name);
     });
   });
@@ -113,7 +129,9 @@ const Organisations: React.FC<Props> = ({ organisations }) => {
 
   const isFiltered = !priceList || status !== null || selectedOrganisations;
 
-  return organisationsWithAppliedFilters ? (
+  const isActiveMod = organisations.find((el) => el.id === selectedOrganisations[0])?.isActive;
+
+  return organisationsWithAppliedFilters && !isLoading ? (
     <>
       <PageHeader>
         <div>
@@ -122,7 +140,7 @@ const Organisations: React.FC<Props> = ({ organisations }) => {
           </PageTitle>
           <p>Manage Organisations in this page</p>
         </div>
-        <NewOrganisation>
+        <NewOrganisation onClick={toggleIsNewOrgVisible}>
           <AddIcon />
           New Organisation
         </NewOrganisation>
@@ -210,15 +228,16 @@ const Organisations: React.FC<Props> = ({ organisations }) => {
                   </tr>
                 </THead>
                 <TBody>
-                  {filteredOrganisations.map((org) => (
+                  {filteredOrganisations.map((org, i) => (
                     <TRow
-                      key={org.name}
+                      key={org.name + i}
                       isChecked={!!selectedOrganisations.find((el) => el === org.id)}
                       onClick={() => navigate(`/organisations/${org.id}`)}
                     >
                       <th>
                         <Checkbox
                           type="checkbox"
+                          disabled={isActiveMod !== undefined ? isActiveMod !== org.isActive : false}
                           checked={!!selectedOrganisations.find((el) => el === org.id)}
                           onChange={({ target }) => onCheckboxClick(target.checked, org.id)}
                         />
@@ -280,20 +299,24 @@ const Organisations: React.FC<Props> = ({ organisations }) => {
           </OrganisationsCount>
           <Actions>
             <li>
-              <Button>Deactivate</Button>
+              <Button
+                onClick={changeStatus}
+                isRedButton={isActiveMod}
+              >
+                { isActiveMod ? 'Deactivate' : 'Activate' }
+              </Button>
             </li>
             <li>
               <Button>Assign Price List</Button>
             </li>
-            <CloseIcon
-              width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-              onClick={() => selectAllCheckboxes(false)}
-            >
-              <path d="M5.00098 5L19 18.9991" stroke="#292D32" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M4.99996 18.9991L18.999 5" stroke="#292D32" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </CloseIcon>
+            <StyledCloseIcon
+              handler={() => selectAllCheckboxes(false)}
+            />
           </Actions>
         </PopUp>
+      ) : ''}
+      {isNewOrgVisible ? (
+        <CreateOrganisation close={toggleIsNewOrgVisible} />
       ) : ''}
     </>
   ) : <Loader />;
@@ -457,7 +480,7 @@ const Actions = styled.ul`
   grid-gap: 16px;
 `;
 
-const CloseIcon = styled.svg`
+const StyledCloseIcon = styled(CloseIcon)`
   position: absolute;
   top: 50%;
   right: 32px;

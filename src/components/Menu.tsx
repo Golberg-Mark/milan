@@ -50,7 +50,7 @@ const Menu = () => {
             Notices
           </NavItem>
           {user.role === Roles.SYSTEM_ADMIN ? (
-            <NavItem to="/organisations" end>
+            <NavItem to="/organisations">
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M13.5001 5.37C13.4551 5.3625 13.4026 5.3625 13.3576 5.37C12.3226 5.3325 11.4976 4.485 11.4976 3.435C11.4976 2.3625 12.3601 1.5 13.4326 1.5C14.5051 1.5 15.3676 2.37 15.3676 3.435C15.3601 4.485 14.5351 5.3325 13.5001 5.37Z" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M12.7276 10.83C13.7551 11.0025 14.8876 10.8225 15.6826 10.29C16.7401 9.585 16.7401 8.43 15.6826 7.725C14.8801 7.1925 13.7326 7.01249 12.7051 7.19249" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>

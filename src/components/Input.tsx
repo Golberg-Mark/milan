@@ -9,6 +9,7 @@ interface Props extends InputHTMLAttributes<HTMLInputElement> {
   labelColor?: string,
   labelFontWidth?: string,
   inputHeight?: string,
+  inputMarginBottom?: string,
   inputPadding?: string,
   inputFontSize?: string,
   isError?: boolean
@@ -21,6 +22,7 @@ const Input: React.FC<Props> = ({
   labelColor = '#6C7278',
   labelFontWidth = '500',
   inputHeight = '38px',
+  inputMarginBottom = '13px',
   inputPadding = '13px 16px',
   inputFontSize = '12px',
   isError,
@@ -40,7 +42,7 @@ const Input: React.FC<Props> = ({
           {label}
         </LabelText>
       ) : ''}
-      <InputWrapper>
+      <InputWrapper marginBottom={inputMarginBottom}>
         <StyledInput
           isError={isError}
           style={props.type === 'password' ? { paddingRight: '60px' } : {}}
@@ -84,9 +86,9 @@ const LabelText = styled.span<{ fontSize: string, color: string, fontWidth: stri
   color: ${({ color }) => color};
 `;
 
-const InputWrapper = styled.div`
+const InputWrapper = styled.div<{ marginBottom: string }>`
   position: relative;
-  margin-bottom: 13px;
+  margin-bottom: ${({ marginBottom }) => marginBottom};
   
   svg {
     position: absolute;

@@ -8,7 +8,7 @@ import {
   initializeOrderAction,
   orderActions
 } from '@/store/actions/orderActions';
-import Select from '@/components/AddOrder/Select';
+import Select from '@/components/Select';
 import Input from '@/components/Input';
 import ServiceButton from '@/components/AddOrder/ServiceButton';
 

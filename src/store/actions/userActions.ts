@@ -16,11 +16,44 @@ export type UserActions = ReturnType<typeof userActions.setOrders>
   | ReturnType<typeof userActions.setSelectedMatter>
   | ReturnType<typeof userActions.logout>;
 
+export const registerAction = (
+  email: string,
+  password: string
+): AsyncAction => async (
+  dispatch,
+  _,
+  { mainApi }
+) => {
+  try {
+    await mainApi.register(email, password);
+  } catch (error: any) {
+    console.log(error);
+  }
+};
+
+export const validateOtpAction = (
+  email: string,
+  otp: string
+): AsyncAction => async (
+  dispatch,
+  _,
+  { mainApi }
+) => {
+  try {
+    const { access_token, refresh_token } = await mainApi.validateOtp(email, otp);
+
+    localStorage.setItem('accessToken', access_token);
+    localStorage.setItem('refreshToken', refresh_token);
+  } catch (error: any) {
+    console.log(error);
+    return
+  }
+};
+
 export const loginAction = (
   email: string,
   password: string,
-  rememberMe: boolean,
-  callback: () => void
+  rememberMe: boolean
 ): AsyncAction => async (
   dispatch,
   _,
@@ -36,7 +69,6 @@ export const loginAction = (
       sessionStorage.setItem('token', accessToken);
       sessionStorage.setItem('refreshToken', refreshToken);
     }
-    callback();
   } catch (error: any) {
     console.log(error);
   }
@@ -66,7 +98,7 @@ export const getPriceListAction = (): AsyncAction => async (
   { mainApiProtected }
 ) => {
   try {
-    const orgId = getState().user.user!.id;
+    const orgId = getState().user.user!.organisations[0].id;
     const priceList = await mainApiProtected.getPriceList(orgId);
 
     dispatch(userActions.setPriceList(priceList));

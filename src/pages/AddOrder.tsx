@@ -10,7 +10,7 @@ import {
   orderActions, placeOrderAction
 } from '@/store/actions/orderActions';
 import {
-  selectDescription, selectIsProductsLoading,
+  selectDescription,
   selectMatter, selectOrderId,
   selectProducts,
   selectProductsPrice,
@@ -25,7 +25,6 @@ import Footer from '@/components/AddOrder/Footer';
 
 import useToggle from '@/hooks/useToggle';
 import getRegionsData from '@/utils/getRegionsData';
-import parseCSV from '@/utils/parseCSV';
 
 const mockedData = getRegionsData();
 
@@ -42,7 +41,6 @@ const AddOrder = () => {
   const products = useSelector(selectProducts);
   const productsPrice = useSelector(selectProductsPrice);
   const totalItemsAmount = useSelector(selectTotalItemsAmount);
-  const isProductsLoading = useSelector(selectIsProductsLoading);
   const orderId = useSelector(selectOrderId);
 
   const dispatch = useDispatch<any>();
@@ -78,7 +76,7 @@ const AddOrder = () => {
     dispatch(orderActions.cleanCurrentOrder());
   }, []);
 
-  const selectItem = (productIndex: number, i: number) => {
+  /*const selectItem = (productIndex: number, i: number) => {
     const copiedState = JSON.parse(JSON.stringify(products));
     const isChosen = copiedState[productIndex].items[i].isChosen;
     copiedState[productIndex].items[i].isChosen = !isChosen;
@@ -92,7 +90,7 @@ const AddOrder = () => {
     dispatch(orderActions.setProductsPrice(newPrice));
     dispatch(orderActions.setTotalItemsAmount(newTotalItemsAmount));
     dispatch(orderActions.setProducts(copiedState));
-  };
+  };*/
 
   const placeOrder = async () => {
     if (isMatterError || isDescriptionError) return;
@@ -110,7 +108,7 @@ const AddOrder = () => {
   const regionProducts = useMemo(() => {
     return products?.filter((el) => new RegExp(`${mockedData[selectedRegion].region}`).test(el.collection)).map((el, i) => (
       <OrderItem
-        key={el.searchType}
+        key={el.productId}
         name={el.searchType}
         index={i}
         price={el.priceInclGST}
@@ -200,20 +198,6 @@ const AddOrder = () => {
           <Description>
             Expand a product and select the references you want to purchase within it.
           </Description>
-          {/*mockedProducts?.length ? (
-            <ul>
-              {mockedProducts.map((item, i) => (
-                <OrderItem
-                  key={item.name}
-                  name={item.name}
-                  index={i}
-                  price={item.price}
-                  subItems={item.items}
-                  setSubItems={selectItem}
-                />
-              ))}
-            </ul>
-          ) : isProductsLoading ? <Loader/> : ''*/}
           <ul>
             {regionProducts}
           </ul>

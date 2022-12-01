@@ -10,7 +10,7 @@ import useToggle from '@/hooks/useToggle';
 const ProtectedRouter: React.FC<any> = ({ children }) => {
   const token = localStorage.getItem('token') || sessionStorage.getItem('token');
   const refreshToken = localStorage.getItem('refreshToken') || sessionStorage.getItem('refreshToken');
-  if (!token && !refreshToken) return <Navigate to="/auth" />;
+  if (!token && !refreshToken) return <Navigate to="/sign-in" />;
 
   const [isFinished, toggleIsFinished] = useToggle(false);
   const dispatch = useDispatch<any>();
@@ -23,7 +23,7 @@ const ProtectedRouter: React.FC<any> = ({ children }) => {
 
   if (isLoading && !isFinished) return <div style={{ minHeight: '100vh' }}><Loader /></div>;
 
-  if (!isLoading && isFinished && !user) return <Navigate to="/auth" />;
+  if (!isLoading && isFinished && !user) return <Navigate to="/sign-in" />;
 
   return user ? <>{children}</> : <div style={{ minHeight: '100vh' }}><Loader /></div>;
 };

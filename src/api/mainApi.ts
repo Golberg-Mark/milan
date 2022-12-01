@@ -15,6 +15,20 @@ class MainApi extends HttpClient {
     return MainApi.instanceCached;
   }
 
+  public register = (email: string, password: string) => (
+    this.instance.post('/registration', {
+      email,
+      password
+    })
+  );
+
+  public validateOtp = (email: string, otp: string) => (
+    this.instance.post<{ access_token: string, refresh_token: string }>('/registration/validate', {
+      email,
+      otp
+    })
+  );
+
   public login = (email: string, password: string) => (
     this.instance.post<{ accessToken: string, refreshToken: string }>('/login', {
       email,

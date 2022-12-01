@@ -18,22 +18,33 @@ export interface IOrganisation {
   priceLists: IPriceList[]
 }
 
-interface IEditOrganisation {
+export interface IEditOrganisation {
+  id: number,
   name: string,
   isActive: boolean
 }
 
+export interface ICreateOrganisation {
+  name: string
+}
+
 interface OrganisationsState {
-  organisations: IOrganisation[] | null
+  organisations: IOrganisation[] | null,
+  isLoading: boolean
 }
 
 const InitialState: OrganisationsState = {
-  organisations: null
+  organisations: null,
+  isLoading: false
 };
 
 export class OrganisationsReducer extends ImmerReducer<OrganisationsState> {
   public setOrganisations(value: IOrganisation[] | null) {
     this.draftState.organisations = value;
+  }
+
+  public setIsLoading(value: boolean) {
+    this.draftState.isLoading = value;
   }
 }
 

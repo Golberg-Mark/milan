@@ -17,6 +17,8 @@ import Settings from '@/pages/Settings';
 import { selectUser } from '@/store/selectors/userSelectors';
 import Organisations from '@/pages/Organisations';
 import { Roles } from '@/store/reducers/user';
+import Registration from '@/pages/Registration';
+import LoginNow from '@/pages/LoginNow';
 
 const App = () => {
   const user = useSelector(selectUser);
@@ -26,7 +28,9 @@ const App = () => {
       <GlobalStyle />
       <Routes>
         <Route path="/" element={<ProtectedRouter><Navigate to="/dashboard" /></ProtectedRouter>} />
-        <Route path="/auth" element={<Auth />} />
+        <Route path="/sign-in" element={<Auth />} />
+        <Route path="/sign-up" element={<Registration />} />
+        <Route path="/login-now/*" element={<LoginNow />} />
         <Route path="/*" element={(
           <ProtectedRouter>
             <Menu />
