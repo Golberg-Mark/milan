@@ -105,7 +105,7 @@ const Auth = () => {
             disabled={isEmailError || isPasswordError || !isEmailChanged || !isPasswordChanged}
             onClick={sendData}
           >
-            {isLoading ? <Loader size={24} thickness={2} color="#fff" /> : 'Log In'}
+            {isLoading ? <Loader size={24} thickness={2} color="#fff" /> : 'Login'}
           </StyledButton>
         </AuthWrapper>
       </SideWrapper>
