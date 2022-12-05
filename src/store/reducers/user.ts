@@ -5,10 +5,33 @@ export enum Roles {
   CUSTOMER = 'customer',
 }
 
+export enum PopupTypes {
+  SUCCESS = 'success',
+  ERROR = 'error'
+}
+
+export enum OrderStatusEnum {
+  OPEN = 'open',
+  COMPLETE = 'complete',
+  ERROR = 'error',
+  IN_PROGRESS = 'in progress',
+  REFUNDED = 'refunded',
+  WAITING = 'waiting',
+  DRAFT = 'draft',
+  ARCHIVED = 'archived',
+  CANCELED = 'canceled',
+}
+
 export interface IUpdatePasswordBody {
   otp: string,
   email: string,
   newPassword: string
+}
+
+export interface IPopupMessage {
+  type: PopupTypes,
+  mainText: string,
+  additionalText: string
 }
 
 export interface User {
@@ -23,18 +46,6 @@ export interface User {
     isActive: boolean,
     creditLimit: number
   }[]
-}
-
-export enum OrderStatusEnum {
-  OPEN = 'open',
-  COMPLETE = 'complete',
-  ERROR = 'error',
-  IN_PROGRESS = 'in progress',
-  REFUNDED = 'refunded',
-  WAITING = 'waiting',
-  DRAFT = 'draft',
-  ARCHIVED = 'archived',
-  CANCELED = 'canceled',
 }
 
 export interface Order {
@@ -108,7 +119,8 @@ interface UserState {
   matters: Matters | null,
   orderDetails: OrderDetails | null,
   priceList: Product[] | null,
-  selectedMatter: string | null
+  selectedMatter: string | null,
+  popup: IPopupMessage | null
 }
 
 const InitialState: UserState = {
@@ -119,7 +131,8 @@ const InitialState: UserState = {
   matters: null,
   orderDetails: null,
   priceList: null,
-  selectedMatter: null
+  selectedMatter: null,
+  popup: null
 };
 
 export class UserReducer extends ImmerReducer<UserState> {
@@ -153,6 +166,10 @@ export class UserReducer extends ImmerReducer<UserState> {
 
   public setSelectedMatter(value: string | null) {
     this.draftState.selectedMatter = value;
+  }
+
+  public setPopup(value: IPopupMessage | null) {
+    this.draftState.popup = value;
   }
 
   public logout() {

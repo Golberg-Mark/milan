@@ -1,32 +1,40 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import styled, { css } from 'styled-components';
-import { HandleToggle } from '@/hooks/useToggle';
+
 import CloseIcon from '@/assets/icons/CloseIcon';
 import SuccessIcon from '@/assets/icons/SuccessIcon';
-
-export enum PopupTypes {
-  SUCCESS = 'success',
-  ERROR = 'error'
-}
+import { PopupTypes } from '@/store/reducers/user';
+import { userActions } from '@/store/actions/userActions';
+import ErrorIcon from '@/assets/icons/ErrorIcon';
 
 interface Props {
   type: PopupTypes,
   mainText: string,
-  additionalText: string,
-  close: HandleToggle
+  additionalText: string
 }
 
-const Popup: React.FC<Props> = ({ type, mainText, additionalText, close }) => {
+const Popup: React.FC<Props> = ({ type, mainText, additionalText }) => {
+  const dispatch = useDispatch<any>();
+
+  const getIcon = () => {
+    switch (type) {
+      case PopupTypes.SUCCESS: return <StyledSuccessIcon />;
+      case PopupTypes.ERROR: return <StyledErrorIcon />;
+      default: return <StyledSuccessIcon />;
+    }
+  }
+
   return (
-    <Div type={type}>
-      <StyledSuccessIcon />
-      <div>
+    <Div type={type} onClick={(evt) => evt.stopPropagation()}>
+      {getIcon()}
+      <TextContent>
         <Header>
           <MainText>{mainText}</MainText>
-          <CloseIcon handler={close} />
+          <CloseIcon onClick={() => dispatch(userActions.setPopup(null))} />
         </Header>
         <AdditionalText>{additionalText}</AdditionalText>
-      </div>
+      </TextContent>
     </Div>
   );
 };
@@ -42,26 +50,44 @@ const Div = styled.div<{ type: PopupTypes }>`
   width: 100%;
   max-width: 330px;
   border-radius: 4px;
+  z-index: 10000;
   
   ${({ type }) => {
     if (type === PopupTypes.SUCCESS) {
       return css`
         border-left: 3px solid var(--primary-green-color);
         background-color: #ECF8F0;
+        
+        * {
+          color: var(--primary-green-color);
+        }
       `;
     }
     if (type === PopupTypes.ERROR) {
       return css`
         border-left: 3px solid var(--primary-red-color);
-        background-color: var(--primary-red-background-color);
+        background-color: #F8ECEC;
+
+        * {
+          color: var(--primary-red-color);
+        }
       `;
     }
   }}
 `;
 
+const TextContent = styled.div`
+  width: 100%;
+`;
+
 const StyledSuccessIcon = styled(SuccessIcon)`
-  width: 28px;
-  height: 28px;
+  min-width: 28px;
+  min-height: 28px;
+`;
+
+const StyledErrorIcon = styled(ErrorIcon)`
+  min-width: 28px;
+  min-height: 28px;
 `;
 
 const Header = styled.div`
@@ -72,8 +98,10 @@ const Header = styled.div`
   width: 100%;
   
   svg {
-    width: 18px;
-    height: 18px;
+    min-width: 18px;
+    min-height: 18px;
+    max-width: 18px;
+    max-height: 18px;
     cursor: pointer;
     
     * {
@@ -86,13 +114,11 @@ const MainText = styled.p`
   margin-bottom: 4px;
   font-size: 14px;
   font-weight: 600;
-  color: var(--primary-green-color);
 `;
 
 const AdditionalText = styled.p`
   padding-right: 34px;
   font-size: 12px;
-  color: var(--primary-green-color);
 `;
 
 export default Popup;

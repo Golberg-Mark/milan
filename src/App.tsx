@@ -14,7 +14,7 @@ import OrderDetails from '@/pages/OrderDetails';
 import PriceList from '@/pages/PriceList';
 import ProtectedRouter from '@/components/ProtectedRouter';
 import Settings from '@/pages/Settings';
-import { selectUser } from '@/store/selectors/userSelectors';
+import { selectPopup, selectUser } from '@/store/selectors/userSelectors';
 import Organisations from '@/pages/Organisations';
 import { Roles } from '@/store/reducers/user';
 import Registration from '@/pages/Registration';
@@ -22,9 +22,11 @@ import LoginNow from '@/components/Auth/LoginNow';
 import Notices from '@/pages/Notices';
 import ResetPassword from '@/components/Auth/GetResetLink';
 import UpdatePassword from '@/components/Auth/UpdatePassword';
+import Popup from '@/components/Popup';
 
 const App = () => {
   const user = useSelector(selectUser);
+  const popup = useSelector(selectPopup);
 
   return (
     <GlobalContainer>
@@ -58,6 +60,13 @@ const App = () => {
           </ProtectedRouter>
         )} />
       </Routes>
+      {popup ? (
+        <Popup
+          type={popup.type}
+          mainText={popup.mainText}
+          additionalText={popup.additionalText}
+        />
+      ) : ''}
     </GlobalContainer>
   )
 };

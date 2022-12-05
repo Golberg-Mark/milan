@@ -31,7 +31,8 @@ interface IDatepickerFilter {
   startDate: Date | undefined,
   endDate: Date | undefined,
   isForMatters?: boolean,
-  setDates: setDates
+  setDates: setDates,
+  makeItLast?: boolean
 }
 
 interface Props {
@@ -53,7 +54,7 @@ const Filters: React.FC<Props> = ({
         placeholder={search.placeholder}
         clearField={search.clear}
       />
-      <Buttons>
+      <Buttons withOrder={!!datepicker?.makeItLast}>
         {datepicker ? (
           <Datepicker
             isForMatters={datepicker.isForMatters}
@@ -107,10 +108,20 @@ const StyledFilters = styled.div`
   margin-bottom: 1rem;
 `;
 
-const Buttons = styled.div`
+const Buttons = styled.div<{ withOrder: boolean }>`
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  grid-gap: 8px;
+  
+  ${({ withOrder }) => withOrder ? css`
+    flex-direction: row-reverse;
+    
+    div:first-child > div {
+      right: 0;
+      transform: unset;
+    }
+  ` : ''}
 `;
 
 const List = styled.ul<{ isLast: boolean, containLargeValues?: boolean }>`
@@ -135,7 +146,7 @@ const List = styled.ul<{ isLast: boolean, containLargeValues?: boolean }>`
         word-break: unset;
       }
     ` : 'max-width: 100%';
-    return containLargeValues ? 'width: 200px' : 'width: 100%';
+    return containLargeValues ? 'width: max-content' : 'width: 100%';
   }};
 `;
 

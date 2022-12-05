@@ -7,20 +7,19 @@ import Logo from '@/assets/logo.png';
 import PageTitle from '@/components/PageTitle';
 import Footer from '@/components/Footer';
 import Button from '@/components/Button';
-import { getResetLinkAction } from '@/store/actions/userActions';
+import { getResetLinkAction, userActions } from '@/store/actions/userActions';
 import useToggle from '@/hooks/useToggle';
 import Loader from '@/components/Loader';
 import useInput from '@/hooks/useInput';
 import checkEmail from '@/utils/checkEmail';
 import Input from '@/components/Input';
 import useIsFirstRender from '@/hooks/useIsFirstRender';
-import Popup, { PopupTypes } from '@/components/Popup';
+import { PopupTypes } from '@/store/reducers/user';
 
 const GetResetLink = () => {
   const [email, setEmail] = useInput();
   const [isEmailChanged, toggleIsEmailChanged] = useToggle();
   const [isLoading, toggleIsLoading] = useToggle();
-  const [isPopupVisible, toggleIsPopupVisible] = useToggle(false);
   const isFirstRender = useIsFirstRender();
 
   const dispatch = useDispatch<any>();
@@ -36,10 +35,11 @@ const GetResetLink = () => {
         toggleIsLoading(true);
         await dispatch(getResetLinkAction(email));
         toggleIsLoading(false);
-        toggleIsPopupVisible(true);
-        setTimeout(() => {
-          toggleIsPopupVisible(false);
-        }, 10000);
+        dispatch(userActions.setPopup({
+          type: PopupTypes.SUCCESS,
+          mainText: 'Email was sent',
+          additionalText: 'Please check your and create new password'
+        }))
       } catch (e) {
         toggleIsLoading(false);
       }
@@ -96,14 +96,6 @@ const GetResetLink = () => {
         </Form>
       </Content>
       <Footer />
-      {isPopupVisible ? (
-        <Popup
-          type={PopupTypes.SUCCESS}
-          mainText="Email was sent"
-          additionalText="Please check your and create new password"
-          close={toggleIsPopupVisible}
-        />
-      ) : ''}
     </Page>
   );
 };

@@ -163,7 +163,8 @@ const OrdersTable: React.FC<Props> = ({ orders, isFromMatter = false }) => {
                 isApplied: !!status,
                 isDropdownVisible: isStatusVisible,
                 toggleIsVisible: toggleIsStatusVisible,
-                normalizeValue: (v: string) => v.replaceAll('_', ' ').toLowerCase()
+                normalizeValue: (v: string) => v.replaceAll('_', ' ').toLowerCase(),
+                containLargeValues: true
               },
               {
                 ref: usersRef,

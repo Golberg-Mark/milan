@@ -1,7 +1,7 @@
 import { createSelector, Selector } from 'reselect';
 
 import { State } from '@/store';
-import { Matters, Order, OrderDetails, OrganizationUser, Product, User } from '@/store/reducers/user';
+import { IPopupMessage, Matters, Order, OrderDetails, OrganizationUser, Product, User } from '@/store/reducers/user';
 
 const userState = (state: State) => state.user;
 
@@ -43,4 +43,9 @@ export const selectOrganizationUsers: Selector<State, OrganizationUser[] | null>
 export const selectSelectedMatter: Selector<State, string | null> = createSelector(
   userState,
   ({ selectedMatter }) => selectedMatter
+);
+
+export const selectPopup: Selector<State, IPopupMessage | null> = createSelector(
+  userState,
+  ({ popup }) => popup
 );

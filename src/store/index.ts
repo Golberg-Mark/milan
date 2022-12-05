@@ -9,16 +9,19 @@ import thunk from 'redux-thunk';
 import UserReducer from '@/store/reducers/user';
 import OrderReducer from '@/store/reducers/order';
 import OrganisationsReducer from '@/store/reducers/organisations';
+import NoticesReducer from '@/store/reducers/notices';
 import MainApi from '@/api/mainApi';
 import { MainApiProtected } from '@/api/mainApiProtected';
 import { UserActions } from '@/store/actions/userActions';
 import { OrderActions } from '@/store/actions/orderActions';
 import { OrganisationsActions } from '@/store/actions/organisationsActions';
+import { NoticesActions } from '@/store/actions/noticesActions';
 
 const rootReducer = combineReducers({
   user: UserReducer,
   order: OrderReducer,
-  organisations: OrganisationsReducer
+  organisations: OrganisationsReducer,
+  notices: NoticesReducer
 });
 
 export const api = {
@@ -36,6 +39,9 @@ const store = createStore(rootReducer, enhancer);
 
 export type State = ReturnType<typeof rootReducer>;
 
-export type Actions = UserActions | OrderActions | OrganisationsActions;
+export type Actions = UserActions
+  | OrderActions
+  | OrganisationsActions
+  | NoticesActions;
 
 export default store;

@@ -2,7 +2,7 @@ import React, { SVGAttributes } from 'react';
 import { HandleToggle } from '@/hooks/useToggle';
 
 interface Props extends SVGAttributes<HTMLOrSVGElement> {
-  handler: HandleToggle
+  handler?: HandleToggle
 }
 
 const CloseIcon: React.FC<Props> = ({ handler, ...props }) => {

@@ -5,7 +5,7 @@ export type Event = React.SyntheticEvent;
 export type Ref = HTMLDivElement | HTMLUListElement | HTMLButtonElement;
 type returnType<TYPE extends Ref> = [React.RefObject<TYPE>, boolean, HandleToggle];
 
-const useOnClickOutside = <T extends Ref>(initialVisible: boolean = false): returnType<T> => {
+const useOnClickOutside = <T extends Ref>(initialVisible: boolean = false, elRef?: HTMLDivElement): returnType<T> => {
   const [isVisible, toggleIsVisible] = useToggle(initialVisible);
   const containerRef = React.useRef<T>(null);
 
@@ -16,10 +16,14 @@ const useOnClickOutside = <T extends Ref>(initialVisible: boolean = false): retu
       }
     };
 
-    document.body.addEventListener('click', listener as any);
+    if (elRef) {
+      elRef.addEventListener('click', listener as  any);
+    } else document.body.addEventListener('click', listener as any);
 
     return () => {
-      document.body.addEventListener('click', listener as any);
+      if (elRef) {
+        elRef.removeEventListener('click', listener as  any);
+      } else document.body.removeEventListener('click', listener as any);
     };
   }, []);
 

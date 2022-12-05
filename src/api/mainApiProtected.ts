@@ -63,6 +63,10 @@ export class MainApiProtected extends HttpClientProtected {
   );
 
   public getNotices = () => (
-    this.instance.get<IOrganisation>(`/notice`)
+    this.instance.get<INotice[]>(`/notice`)
+  );
+
+  public deleteNotice = (id: number) => (
+    this.instance.delete<INotice>(`/notice/${id}`)
   );
 }

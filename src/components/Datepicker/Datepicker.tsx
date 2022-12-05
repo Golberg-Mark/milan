@@ -62,7 +62,6 @@ const Datepicker: React.FC<Props> = ({ isApplied, isForMatters = false, setDates
       isApplied={isApplied}
       isDropdownVisible={isVisible}
       isVisible={isVisible}
-      style={{ marginRight: isForMatters ? '0' : '8px' }}
     >
       {isVisible ? (
         <StyledDatepicker

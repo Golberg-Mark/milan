@@ -14,6 +14,7 @@ export type UserActions = ReturnType<typeof userActions.setOrders>
   | ReturnType<typeof userActions.setPriceList>
   | ReturnType<typeof userActions.setOrgUsers>
   | ReturnType<typeof userActions.setSelectedMatter>
+  | ReturnType<typeof userActions.setPopup>
   | ReturnType<typeof userActions.logout>;
 
 export const registerAction = (
