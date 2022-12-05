@@ -46,15 +46,6 @@ const Auth = () => {
   };
 
   const isEmailError = isEmailChanged && !checkEmail(email);
-  /*const passwordValidation: IPasswordValidation = useMemo(() => ({
-    eightCharacters: password.length >= 8,
-    upperCaseLetter: new RegExp(/^.*[A-Z].*$/).test(password),
-    lowerCaseLetter: new RegExp(/^.*[a-z].*$/).test(password),
-    oneDigit: new RegExp(/^.*[0-9].*$/).test(password)
-  }), [password]);
-  const isPasswordError = useMemo(() => (
-    isPasswordChanged && Object.values(passwordValidation).some((el) => el === false)
-  ), [isPasswordChanged, password]);*/
   const isPasswordError = isPasswordChanged && password.length < 8;
 
   return (

@@ -71,6 +71,7 @@ export const loginAction = (
     }
   } catch (error: any) {
     console.log(error);
+    return Promise.reject(error);
   }
 };
 

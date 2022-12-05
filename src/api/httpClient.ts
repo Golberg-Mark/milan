@@ -69,7 +69,10 @@ class HttpClient {
           message: error.response.data?.message || ''
         });
       }
-    } return error.response;
+    } else return Promise.reject({
+      code: status,
+      message: error.response.data?.message || ''
+    });
   };
 }
 
