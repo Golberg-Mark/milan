@@ -5,6 +5,12 @@ export enum Roles {
   CUSTOMER = 'customer',
 }
 
+export interface IUpdatePasswordBody {
+  otp: string,
+  email: string,
+  newPassword: string
+}
+
 export interface User {
   id: number,
   name: string,

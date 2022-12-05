@@ -1,8 +1,9 @@
 import { HttpClientProtected } from '@/api/httpClientProtected';
 import { PlaceOrder, PlaceOrderProduct } from '@/store/reducers/order';
-import { OrderDetails, OrganizationUser, User, Product } from '@/store/reducers/user';
+import { OrderDetails, OrganizationUser, User, Product, IUpdatePasswordBody } from '@/store/reducers/user';
 import { Product as OrderProduct } from '@/store/reducers/order';
 import { ICreateOrganisation, IEditOrganisation, IOrganisation } from '@/store/reducers/organisations';
+import { ICreateNotice, INotice } from '@/store/reducers/notices';
 
 export class MainApiProtected extends HttpClientProtected {
   private static instanceCached: MainApiProtected;
@@ -16,6 +17,10 @@ export class MainApiProtected extends HttpClientProtected {
 
     return MainApiProtected.instanceCached;
   }
+
+  public updatePassword = (body: IUpdatePasswordBody) => (
+    this.instance.post('/login/change-password', body)
+  )
 
   public getMe = () => this.instance.get<User>('/users/profile');
 
@@ -53,10 +58,11 @@ export class MainApiProtected extends HttpClientProtected {
     this.instance.post<IOrganisation>(`/organisations`, body)
   );
 
-  public testEmail = (str: string, sendTo: string) => (
-    this.instance.post<IOrganisation>(`/mock/test-email`, {
-      emailString: str,
-      sendTo: sendTo
-    })
+  public createNotice = (body: ICreateNotice) => (
+    this.instance.post<INotice>(`/notice`, body)
+  );
+
+  public getNotices = () => (
+    this.instance.get<IOrganisation>(`/notice`)
   );
 }

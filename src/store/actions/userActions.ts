@@ -1,6 +1,6 @@
 import { createActionCreators } from 'immer-reducer';
 
-import { UserReducer } from '@/store/reducers/user';
+import { IUpdatePasswordBody, UserReducer } from '@/store/reducers/user';
 import { AsyncAction } from '@/store/actions/common';
 import { HandleToggle } from '@/hooks/useToggle';
 
@@ -46,7 +46,7 @@ export const validateOtpAction = (
     localStorage.setItem('refreshToken', refresh_token);
   } catch (error: any) {
     console.log(error);
-    return
+    return Promise.reject(error);
   }
 };
 
@@ -71,6 +71,35 @@ export const loginAction = (
     }
   } catch (error: any) {
     console.log(error);
+  }
+};
+
+export const getResetLinkAction = (
+  email: string
+): AsyncAction => async (
+  dispatch,
+  _,
+  { mainApi }
+) => {
+  try {
+    await mainApi.forgotPassword(email);
+  } catch (error: any) {
+    console.log(error);
+  }
+};
+
+export const updatePasswordAction = (
+  body: IUpdatePasswordBody
+): AsyncAction => async (
+  dispatch,
+  _,
+  { mainApiProtected }
+) => {
+  try {
+    await mainApiProtected.updatePassword(body);
+  } catch (error: any) {
+    console.log(error);
+    return Promise.reject(error);
   }
 };
 

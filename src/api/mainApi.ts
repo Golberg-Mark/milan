@@ -36,6 +36,10 @@ class MainApi extends HttpClient {
     })
   );
 
+  public forgotPassword = (email: string) => (
+    this.instance.post('/login/reset-password', { email })
+  )
+
   public refreshAccessToken = (refreshToken: string) => this.instance.post('/login/refresh', { refreshToken });
 
   public getOrders = () => this.instance.get<Order[]>('/orders');

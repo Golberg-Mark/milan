@@ -69,7 +69,7 @@ class HttpClient {
           message: error.response.data?.message || ''
         });
       }
-    }
+    } return error.response;
   };
 }
 

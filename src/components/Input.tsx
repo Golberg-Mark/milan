@@ -38,6 +38,7 @@ const Input: React.FC<Props> = ({
           color={labelColor}
           fontWidth={labelFontWidth}
           marginBottom={labelMarginBottom}
+          isError={isError}
         >
           {label}
         </LabelText>
@@ -79,11 +80,11 @@ const Label = styled.label`
   font-weight: 600;
 `;
 
-const LabelText = styled.span<{ fontSize: string, color: string, fontWidth: string, marginBottom: number }>`
+const LabelText = styled.span<{ fontSize: string, color: string, fontWidth: string, marginBottom: number, isError?: boolean }>`
   margin-bottom: ${({ marginBottom }) => marginBottom}px;
   font-size: ${({ fontSize }) => fontSize};
   font-weight: ${({ fontWidth }) => fontWidth};
-  color: ${({ color }) => color};
+  color: ${({ color, isError }) => isError ? 'var(--primary-red-color)' : color};
 `;
 
 const InputWrapper = styled.div<{ marginBottom: string }>`

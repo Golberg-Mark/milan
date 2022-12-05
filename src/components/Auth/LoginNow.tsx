@@ -82,7 +82,7 @@ const Page = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 60px 60px 30px;
-  height: 100vh;
+  min-height: 100vh;
 `;
 
 const LogoWrapper = styled.div`

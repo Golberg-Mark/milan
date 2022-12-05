@@ -9,7 +9,8 @@ interface Props {
   selectedItem: number,
   setSelectedItem: Function,
   items: string[] | number[],
-  openToTop?: boolean
+  openToTop?: boolean,
+  modalRef?: HTMLDivElement
 }
 
 const Select: React.FC<Props> = ({
@@ -17,9 +18,10 @@ const Select: React.FC<Props> = ({
   selectedItem,
   setSelectedItem,
   items,
-  openToTop = false
+  openToTop = false,
+  modalRef
 }) => {
-  const [ref, isItemsVisible, toggleIsItemsVisible] = useOnClickOutside<HTMLDivElement>();
+  const [ref, isItemsVisible, toggleIsItemsVisible] = useOnClickOutside<HTMLDivElement>(false, modalRef);
 
   return (
     <Wrapper ref={ref}>

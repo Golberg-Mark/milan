@@ -100,7 +100,7 @@ const Auth = () => {
               )}
               Remember me
             </CheckboxLabel>
-            <StyledLink to="#">Forgot Password</StyledLink>
+            <StyledLink to="/forgot-password">Forgot Password</StyledLink>
           </Additional>
           <StyledButton
             disabled={isEmailError || isPasswordError || !isEmailChanged || !isPasswordChanged}

@@ -18,7 +18,10 @@ import { selectUser } from '@/store/selectors/userSelectors';
 import Organisations from '@/pages/Organisations';
 import { Roles } from '@/store/reducers/user';
 import Registration from '@/pages/Registration';
-import LoginNow from '@/pages/LoginNow';
+import LoginNow from '@/components/Auth/LoginNow';
+import Notices from '@/pages/Notices';
+import ResetPassword from '@/components/Auth/GetResetLink';
+import UpdatePassword from '@/components/Auth/UpdatePassword';
 
 const App = () => {
   const user = useSelector(selectUser);
@@ -31,6 +34,8 @@ const App = () => {
         <Route path="/sign-in" element={<Auth />} />
         <Route path="/sign-up" element={<Registration />} />
         <Route path="/login-now/*" element={<LoginNow />} />
+        <Route path="/forgot-password" element={<ResetPassword />} />
+        <Route path="/update-password/*" element={<UpdatePassword />} />
         <Route path="/*" element={(
           <ProtectedRouter>
             <Menu />
@@ -44,6 +49,9 @@ const App = () => {
                 <Route path="/settings/*" element={<Settings />} />
                 {user?.role === Roles.SYSTEM_ADMIN ? (
                   <Route path="/organisations/*" element={<Organisations />} />
+                ) : ''}
+                {user?.role === Roles.SYSTEM_ADMIN ? (
+                  <Route path="/notices" element={<Notices />} />
                 ) : ''}
               </Routes>
             </ContentContainer>
