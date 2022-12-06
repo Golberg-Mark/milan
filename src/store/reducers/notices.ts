@@ -8,6 +8,12 @@ export interface ICreateNotice {
   isActive: boolean
 }
 
+export interface IUpdateNotice {
+  subject: string,
+  message: string,
+  isActive: boolean
+}
+
 export interface INotice extends ICreateNotice {
   id: number,
   createdAt: string

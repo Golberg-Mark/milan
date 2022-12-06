@@ -2,29 +2,45 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { DayPicker, SelectSingleEventHandler } from 'react-day-picker';
 
-import { hoursList, minutesList, tod, getCurrentTime } from '@/utils/times';
+import { hoursList, minutesList, tod, getCurrentTime, ITime } from '@/utils/times';
 import FilterButton from '@/components/Table/FilterButton';
 import useOnClickOutside from '@/hooks/useOnClickOutside';
 import Select from '@/components/Select';
 import Caption from '@/components/Datepicker/Caption';
 import CloseIcon from '@/assets/icons/CloseIcon';
 
+interface IInitialTime extends ITime {
+  timestamp: number
+}
+
 interface Props {
   label: string,
   setFunc: Function,
   modalRef: HTMLDivElement,
+  initialTime?: IInitialTime,
   isEnd?: boolean
 }
 
 const { hours, minutes, timesOfDay: initialTimesOfDay } = getCurrentTime();
 
-const DatepickerWithTime: React.FC<Props> = ({ label, setFunc, modalRef, isEnd = false }) => {
+const DatepickerWithTime: React.FC<Props> = ({
+  label,
+  setFunc,
+  modalRef,
+  initialTime,
+  isEnd = false
+}) => {
+  const h = initialTime?.hours || hours;
+  const m = initialTime?.minutes || minutes;
+  const initialTod = initialTime?.timesOfDay || initialTimesOfDay;
   const [hour, setHour] = useState(isEnd
-    ? +hours === 12 ? 0 : +hours
-    : +hours - 1);
-  const [minute, setMinute] = useState(+minutes);
-  const [timesOfDay, setTimesOfDay] = useState(initialTimesOfDay);
-  const [date, setDate] = useState<Date | undefined>(new Date());
+    ? +h === 12 ? 0 : +h
+    : +h - 1);
+  const initialDate = initialTime?.timestamp ? new Date(+initialTime.timestamp) : new Date();
+
+  const [minute, setMinute] = useState(+m);
+  const [timesOfDay, setTimesOfDay] = useState(initialTod);
+  const [date, setDate] = useState<Date | undefined>(initialDate);
   const [ref, isVisible, toggleIsVisible] = useOnClickOutside<HTMLDivElement>(false, modalRef);
   const [pickerModalRef, setPickerModalRef] = useState<HTMLDivElement | null>(null);
 

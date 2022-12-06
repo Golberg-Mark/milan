@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 
 import Background from '@/components/Background';
-import useToggle, { HandleToggle } from '@/hooks/useToggle';
+import useToggle from '@/hooks/useToggle';
 import DatepickerWithTime from '@/components/Datepicker/DatepickerWithTime';
 import useModalWindow from '@/hooks/useModalWindow';
 import Input from '@/components/Input';
@@ -10,20 +10,23 @@ import useInput from '@/hooks/useInput';
 import CloseIcon from '@/assets/icons/CloseIcon';
 import Button from '@/components/Button';
 import { useDispatch } from 'react-redux';
-import { createNoticeAction } from '@/store/actions/noticesActions';
+import { createNoticeAction, updateNoticeAction } from '@/store/actions/noticesActions';
 import { userActions } from '@/store/actions/userActions';
 import { PopupTypes } from '@/store/reducers/user';
 import Loader from '@/components/Loader';
+import { INotice } from '@/store/reducers/notices';
+import { getCurrentTime } from '@/utils/times';
 
 interface Props {
-  close: HandleToggle
+  close: Function,
+  notice?: INotice
 }
 
-const NoticeModalWindow: React.FC<Props> = ({ close }) => {
-  const [subject, setSubject] = useInput();
+const NoticeModalWindow: React.FC<Props> = ({ close, notice }) => {
+  const [subject, setSubject] = useInput(notice?.subject);
   const [startDate, setStartDate] = useState<number>();
   const [endDate, setEndDate] = useState<number>();
-  const [message, setMessage] = useInput();
+  const [message, setMessage] = useInput(notice?.message);
   const [modalRef, setModalRef] = useState<HTMLDivElement | null>(null);
   const [isLoading, toggleIsLoading] = useToggle();
 
@@ -35,40 +38,52 @@ const NoticeModalWindow: React.FC<Props> = ({ close }) => {
       try {
         toggleIsLoading(true);
         /*TODO: add manually selecting for isActive property*/
-        await dispatch(createNoticeAction({
-          subject,
-          startDate,
-          endDate,
-          message,
-          isActive: true
-        }));
+        if (notice?.id) {
+          await dispatch(updateNoticeAction(notice.id, {
+            subject,
+            message,
+            isActive: true
+          }));
+        } else {
+          await dispatch(createNoticeAction({
+            subject,
+            startDate,
+            endDate,
+            message,
+            isActive: true
+          }));
+        }
         toggleIsLoading(false);
         dispatch(userActions.setPopup({
           type: PopupTypes.SUCCESS,
-          mainText: 'Success add new Notice',
-          additionalText: 'New notice has been added'
+          mainText: notice?.id ? 'Success update Notice' : 'Success add new Notice',
+          additionalText: notice?.id ? 'Notice has been updated' : 'New notice has been added'
         }));
         close(false);
       } catch (e: any) {
+        const message = notice?.id ? 'Failed to update notice' : 'Failed to add new notice';
+
         toggleIsLoading(false);
         dispatch(userActions.setPopup({
           type: PopupTypes.ERROR,
           mainText: 'Error',
-          additionalText: `Failed to add new notice. Error message: ${e.message}`
+          additionalText: `${message}. Error message: ${e.message}`
         }));
       }
     }
   };
 
   return (
-    <Background close={close}>
+    <Background close={() => close()}>
       <ModalWindow
         ref={(ref) => setModalRef(ref)}
         onClick={(evt) => evt.stopPropagation()}
       >
         <Header>
-          <Title>Add New Notice</Title>
-          <CloseIcon handler={close} />
+          <Title>
+            {notice?.id ? 'Update Notice' : 'Add New Notice'}
+          </Title>
+          <CloseIcon onClick={() => close()} />
         </Header>
         <Input
           value={subject}
@@ -86,11 +101,19 @@ const NoticeModalWindow: React.FC<Props> = ({ close }) => {
               label="Start Time"
               setFunc={setStartDate}
               modalRef={modalRef}
+              initialTime={notice?.startDate ? {
+                ...getCurrentTime(notice.startDate),
+                timestamp: notice.startDate
+              } : undefined}
             />
             <DatepickerWithTime
               label="End Time"
               setFunc={setEndDate}
               modalRef={modalRef}
+              initialTime={notice?.endDate ? {
+                ...getCurrentTime(notice.endDate),
+                timestamp: notice.endDate
+              } : undefined}
               isEnd
             />
           </>
@@ -106,7 +129,7 @@ const NoticeModalWindow: React.FC<Props> = ({ close }) => {
         <Buttons>
           <StyledButton
             isCancel
-            onClick={close}
+            onClick={() => close()}
           >
             Cancel
           </StyledButton>
@@ -114,7 +137,9 @@ const NoticeModalWindow: React.FC<Props> = ({ close }) => {
             onClick={createNotice}
             disabled={!subject || !startDate || !endDate || !message}
           >
-            {isLoading ? <Loader size={24} thickness={2} color="#fff" /> : 'Send'}
+            {isLoading
+              ? <Loader size={24} thickness={2} color="#fff" />
+              : notice?.id ? 'Save' : 'Send'}
           </StyledButton>
         </Buttons>
       </ModalWindow>

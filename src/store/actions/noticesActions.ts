@@ -1,11 +1,26 @@
 import { createActionCreators } from 'immer-reducer';
 
 import { AsyncAction } from '@/store/actions/common';
-import { ICreateNotice, NoticesReducer } from '@/store/reducers/notices';
+import { ICreateNotice, IUpdateNotice, NoticesReducer } from '@/store/reducers/notices';
 
 export const noticesActions = createActionCreators(NoticesReducer);
 
 export type NoticesActions = ReturnType<typeof noticesActions.setNotices>;
+
+export const getNoticesAction = (): AsyncAction => async (
+  dispatch,
+  getState,
+  { mainApiProtected }
+) => {
+  try {
+    const notices = await mainApiProtected.getNotices();
+
+    dispatch(noticesActions.setNotices(notices));
+  } catch (error: any) {
+    console.log(error);
+    return Promise.reject(error);
+  }
+};
 
 export const createNoticeAction = (body: ICreateNotice): AsyncAction => async (
   dispatch,
@@ -23,15 +38,18 @@ export const createNoticeAction = (body: ICreateNotice): AsyncAction => async (
   }
 };
 
-export const getNoticesAction = (): AsyncAction => async (
+export const updateNoticeAction = (id: number, body: IUpdateNotice): AsyncAction => async (
   dispatch,
   getState,
   { mainApiProtected }
 ) => {
   try {
-    const notices = await mainApiProtected.getNotices();
+    const notices = getState().notices.notices!;
+    const notice = await mainApiProtected.updateNotice(id, body);
 
-    dispatch(noticesActions.setNotices(notices));
+    dispatch(noticesActions.setNotices(notices.map((el) => {
+      return el.id === id ? notice : el;
+    })));
   } catch (error: any) {
     console.log(error);
     return Promise.reject(error);

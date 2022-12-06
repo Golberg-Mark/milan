@@ -3,7 +3,7 @@ import { PlaceOrder, PlaceOrderProduct } from '@/store/reducers/order';
 import { OrderDetails, OrganizationUser, User, Product, IUpdatePasswordBody } from '@/store/reducers/user';
 import { Product as OrderProduct } from '@/store/reducers/order';
 import { ICreateOrganisation, IEditOrganisation, IOrganisation } from '@/store/reducers/organisations';
-import { ICreateNotice, INotice } from '@/store/reducers/notices';
+import { ICreateNotice, INotice, IUpdateNotice } from '@/store/reducers/notices';
 
 export class MainApiProtected extends HttpClientProtected {
   private static instanceCached: MainApiProtected;
@@ -58,12 +58,16 @@ export class MainApiProtected extends HttpClientProtected {
     this.instance.post<IOrganisation>(`/organisations`, body)
   );
 
+  public getNotices = () => (
+    this.instance.get<INotice[]>(`/notice`)
+  );
+
   public createNotice = (body: ICreateNotice) => (
     this.instance.post<INotice>(`/notice`, body)
   );
 
-  public getNotices = () => (
-    this.instance.get<INotice[]>(`/notice`)
+  public updateNotice = (id: number, body: IUpdateNotice) => (
+    this.instance.patch<INotice>(`/notice/${id}`, body)
   );
 
   public deleteNotice = (id: number) => (

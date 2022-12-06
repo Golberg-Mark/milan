@@ -27,6 +27,7 @@ const limits = [20, 50, 100];
 
 const Notices = () => {
   const [isNewNoticeVisible, toggleIsNewNoticeVisible] = useToggle();
+  const [editableNotice, setEditableNotice] = useState<INotice | undefined>();
   const [search, setSearch] = useInput();
   const [startDate, setStartDate] = useState<Date>();
   const [endDate, setEndDate] = useState<Date>();
@@ -188,7 +189,10 @@ const Notices = () => {
                           {notice.isActive ? 'Active' : 'Not Active'}
                         </th>
                         <ActionsCell>
-                          <ActionWrapper>
+                          <ActionWrapper onClick={(() => {
+                            toggleIsNewNoticeVisible(true);
+                            setEditableNotice(notice);
+                          })}>
                             <EditIcon />
                           </ActionWrapper>
                           <ActionWrapper onClick={() => deleteNotice(notice.id)}>
@@ -200,7 +204,7 @@ const Notices = () => {
                   </TBody>
                 </Table>
               </TableWrapper>
-            ) : <NotFound>Orders wasn't found</NotFound>}
+            ) : <NotFound>Notices wasn't found</NotFound>}
           </div>
           {filteredNotices.length ? (
             <Pagination
@@ -216,7 +220,13 @@ const Notices = () => {
         </Content>
       ) : <Loader />}
       {isNewNoticeVisible ? (
-        <NoticeModalWindow close={toggleIsNewNoticeVisible} />
+        <NoticeModalWindow
+          close={() => {
+            toggleIsNewNoticeVisible(false);
+            setEditableNotice(undefined);
+          }}
+          notice={editableNotice}
+        />
       ) : ''}
     </PageContainer>
   );
