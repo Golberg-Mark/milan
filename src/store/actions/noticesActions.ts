@@ -5,7 +5,8 @@ import { ICreateNotice, IUpdateNotice, NoticesReducer } from '@/store/reducers/n
 
 export const noticesActions = createActionCreators(NoticesReducer);
 
-export type NoticesActions = ReturnType<typeof noticesActions.setNotices>;
+export type NoticesActions = ReturnType<typeof noticesActions.setNotices>
+  | ReturnType<typeof noticesActions.setActiveNotices>;
 
 export const getNoticesAction = (): AsyncAction => async (
   dispatch,
@@ -16,6 +17,21 @@ export const getNoticesAction = (): AsyncAction => async (
     const notices = await mainApiProtected.getNotices();
 
     dispatch(noticesActions.setNotices(notices));
+  } catch (error: any) {
+    console.log(error);
+    return Promise.reject(error);
+  }
+};
+
+export const getActiveNoticesAction = (): AsyncAction => async (
+  dispatch,
+  _,
+  { mainApi }
+) => {
+  try {
+    const notices = await mainApi.getActiveNotices();
+
+    dispatch(noticesActions.setActiveNotices(notices));
   } catch (error: any) {
     console.log(error);
     return Promise.reject(error);

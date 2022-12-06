@@ -20,16 +20,22 @@ export interface INotice extends ICreateNotice {
 }
 
 interface NoticesState {
-  notices: INotice[] | null
+  notices: INotice[] | null,
+  activeNotices: INotice[] | null
 }
 
 const InitialState: NoticesState = {
-  notices: null
+  notices: null,
+  activeNotices: null
 };
 
 export class NoticesReducer extends ImmerReducer<NoticesState> {
   public setNotices(value: INotice[] | null) {
     this.draftState.notices = value;
+  }
+
+  public setActiveNotices(value: INotice[] | null) {
+    this.draftState.activeNotices = value;
   }
 }
 

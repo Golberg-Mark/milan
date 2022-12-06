@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { Route, Routes } from 'react-router-dom';
 import { Navigate } from 'react-router';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import GlobalStyle from '@/utils/getNormalizedCSS';
 import Orders from '@/pages/Orders';
@@ -23,10 +23,18 @@ import Notices from '@/pages/Notices';
 import ResetPassword from '@/components/Auth/GetResetLink';
 import UpdatePassword from '@/components/Auth/UpdatePassword';
 import Popup from '@/components/Popup';
+import { getActiveNoticesAction } from '@/store/actions/noticesActions';
+import Notice from '@/components/Notices/Notice';
 
 const App = () => {
   const user = useSelector(selectUser);
   const popup = useSelector(selectPopup);
+
+  const dispatch = useDispatch<any>();
+
+  useEffect(() => {
+    dispatch(getActiveNoticesAction());
+  }, []);
 
   return (
     <GlobalContainer>
@@ -43,6 +51,7 @@ const App = () => {
             <Menu />
             <ContentContainer>
               <PageHeader />
+              <Notice />
               <Routes>
                 <Route path="/dashboard/*" element={<Orders />}/>
                 <Route path="orders/:id" element={<OrderDetails />} />

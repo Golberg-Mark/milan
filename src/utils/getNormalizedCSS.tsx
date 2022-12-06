@@ -43,6 +43,9 @@ const GlobalStyle = createGlobalStyle`
     --primary-green-color: #27A376;
     --primary-green-hover-color: rgba(39, 163, 118, 0.8);
     --primary-green-background-color: rgba(39, 163, 118, 0.1);
+    --primary-yellow-color: #FFF099;
+    --primary-yellow-dark-color: #B78B00;
+    --primary-yellow-background-color: #FFFBDB;
     --primary-red-color: #DD5757;
     --primary-red-hover-color: rgba(221, 87, 87, 0.8);
     --primary-red-background-color: #F2E7E7;

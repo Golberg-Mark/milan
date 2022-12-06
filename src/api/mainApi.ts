@@ -1,6 +1,7 @@
 import HttpClient from '@/api/httpClient';
 import { Order } from '@/store/reducers/user';
 import { Product } from '@/store/reducers/order';
+import { INotice } from '@/store/reducers/notices';
 
 class MainApi extends HttpClient {
   private static instanceCached: MainApi;
@@ -43,6 +44,8 @@ class MainApi extends HttpClient {
   public refreshAccessToken = (refreshToken: string) => this.instance.post('/login/refresh', { refreshToken });
 
   public getOrders = () => this.instance.get<Order[]>('/orders');
+
+  public getActiveNotices = () => this.instance.get<INotice[]>('/notice/active');
 
   public getOrderItems = (region: string, service: string) => (
     //this.instance.get<Product[]>(`/mock/${region}/${service}`)

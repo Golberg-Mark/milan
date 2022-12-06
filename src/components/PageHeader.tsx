@@ -176,7 +176,7 @@ const StyledPageHeader = styled.div`
   position: fixed;
   top: 0;
   right: 0;
-  left: 256px;
+  left: var(--sidebar-width);
   display: flex;
   justify-content: space-between;
   grid-gap: 24px;

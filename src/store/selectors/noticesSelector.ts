@@ -9,3 +9,8 @@ export const selectNotices: Selector<State, INotice[] | null> = createSelector(
   userState,
   ({ notices }) => notices
 );
+
+export const selectActiveNotices: Selector<State, INotice[] | null> = createSelector(
+  userState,
+  ({ activeNotices }) => activeNotices
+);
