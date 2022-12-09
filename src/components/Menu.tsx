@@ -89,7 +89,7 @@ const StyledMenu = styled.menu`
   position: fixed;
   left: 0;
   margin: 0;
-  padding: 22px 0 16px;
+  padding: 18px 0 16px;
   min-width: 256px;
   max-width: 256px;
   height: 100vh;
@@ -99,7 +99,7 @@ const StyledMenu = styled.menu`
 
 const LogoWrapper = styled.div`
   margin-bottom: 32px;
-  padding: 0 20px 20px;
+  padding: 0 20px 14px;
   border-bottom: 1px solid rgba(255, 255, 255, .16);
   text-align: center;
 `;
