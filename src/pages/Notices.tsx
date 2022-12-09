@@ -70,7 +70,7 @@ const Notices = () => {
     }
   };
 
-  const ordersWithAppliedFilters = useMemo(() => notices.filter((notice) => {
+  const noticesWithAppliedFilters = useMemo(() => notices.filter((notice) => {
     if (!search) return true;
 
     const regexp = new RegExp(`.*${search.toLowerCase()}.*`);
@@ -88,14 +88,14 @@ const Notices = () => {
     return isActive === status;
   }), [search, startDate, endDate, status, notices]);
 
-  const maxPages = Math.ceil(ordersWithAppliedFilters.length / limits[limit]);
+  const maxPages = Math.ceil(noticesWithAppliedFilters.length / limits[limit]);
   const calculatedOffset = maxPages > 1 ? offset : 0;
   const filteredNotices: INotice[] = [];
 
   if (maxPages >= 1) {
     for (let i = calculatedOffset * limits[limit]; i < calculatedOffset * limits[limit] + limits[limit]; i++) {
-      if (ordersWithAppliedFilters[i]) {
-        filteredNotices.push(ordersWithAppliedFilters[i]);
+      if (noticesWithAppliedFilters[i]) {
+        filteredNotices.push(noticesWithAppliedFilters[i]);
       }
     }
   }
@@ -211,7 +211,7 @@ const Notices = () => {
               changePage={setOffset}
               currentPage={calculatedOffset}
               maxPages={maxPages}
-              maxElements={search || isFiltered ? ordersWithAppliedFilters.length : notices.length}
+              maxElements={search || isFiltered ? noticesWithAppliedFilters.length : notices.length}
               limits={limits}
               limit={limit}
               setLimit={setLimit}
