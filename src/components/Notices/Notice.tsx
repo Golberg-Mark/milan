@@ -12,7 +12,7 @@ const Notice = () => {
 
   const dispatch = useDispatch<any>();
 
-  return notices ? (
+  return notices && notices.length ? (
     <Wrapper>
       <Div>
         <Content isCentered={ notices.length === 1 }>
