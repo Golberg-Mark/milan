@@ -18,6 +18,7 @@ class MainApi extends HttpClient {
 
   public register = (email: string, password: string) => (
     this.instance.post('/registration', {
+      baseUrl: process.env.NODE_ENV === 'production' ? 'https://milan-orpin.vercel.app' : 'localhost:3000',
       email,
       password
     })
