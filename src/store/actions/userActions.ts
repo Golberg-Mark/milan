@@ -43,7 +43,7 @@ export const validateOtpAction = (
   try {
     const { access_token, refresh_token } = await mainApi.validateOtp(email, otp);
 
-    localStorage.setItem('accessToken', access_token);
+    localStorage.setItem('token', access_token);
     localStorage.setItem('refreshToken', refresh_token);
   } catch (error: any) {
     console.log(error);
