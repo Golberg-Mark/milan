@@ -39,7 +39,10 @@ class MainApi extends HttpClient {
   );
 
   public forgotPassword = (email: string) => (
-    this.instance.post('/login/reset-password', { email })
+    this.instance.post('/login/reset-password', {
+      email,
+      baseUrl: process.env.NODE_ENV === 'production' ? 'https://milan-orpin.vercel.app' : 'http://localhost:3000'
+    })
   )
 
   public refreshAccessToken = (refreshToken: string) => this.instance.post('/login/refresh', { refreshToken });
