@@ -13,6 +13,7 @@ import { registerAction } from '@/store/actions/userActions';
 import Loader from '@/components/Loader';
 import Logo from '@/assets/logo.png';
 import PasswordValidation, { IPasswordValidation } from '@/components/Auth/PasswordValidation';
+import Footer from '@/components/Footer';
 
 const Auth = () => {
   const [email, setEmail] = useInput();
@@ -116,40 +117,43 @@ const Auth = () => {
         </LeftSideTextBlock>
       </LeftSide>
       <SideWrapper>
-        <AuthWrapper>
-          <PageTitle>
-            Register to your account
-          </PageTitle>
-          <StyledInput
-            type="email"
-            value={email}
-            onChange={setEmail}
-            label="Email"
-            labelMarginBottom={12}
-            inputMarginBottom="32px"
-            placeholder="Enter username"
-          />
-          <StyledInput
-            type="password"
-            value={password}
-            onChange={setPassword}
-            label="Password"
-            labelMarginBottom={12}
-            inputMarginBottom="12px"
-            placeholder="Enter password"
-          />
-          <PasswordValidation validationConfig={passwordValidation} />
-          <StyledButton
-            disabled={isEmailError || isPasswordError || !isEmailChanged || !isPasswordChanged}
-            onClick={sendData}
-          >
-            {isLoading ? <Loader size={24} thickness={2} color="#fff" /> : 'Register'}
-          </StyledButton>
-          <ToLogin>
-            Already have an account?
-            <Link to="/sign-in"> Login here</Link>
-          </ToLogin>
-        </AuthWrapper>
+        <div>
+          <AuthWrapper>
+            <PageTitle>
+              Register to your account
+            </PageTitle>
+            <StyledInput
+              type="email"
+              value={email}
+              onChange={setEmail}
+              label="Email"
+              labelMarginBottom={12}
+              inputMarginBottom="32px"
+              placeholder="Enter username"
+            />
+            <StyledInput
+              type="password"
+              value={password}
+              onChange={setPassword}
+              label="Password"
+              labelMarginBottom={12}
+              inputMarginBottom="12px"
+              placeholder="Enter password"
+            />
+            <PasswordValidation validationConfig={passwordValidation} />
+            <StyledButton
+              disabled={isEmailError || isPasswordError || !isEmailChanged || !isPasswordChanged}
+              onClick={sendData}
+            >
+              {isLoading ? <Loader size={24} thickness={2} color="#fff" /> : 'Register'}
+            </StyledButton>
+            <ToLogin>
+              Already have an account?
+              <Link to="/sign-in"> Login here</Link>
+            </ToLogin>
+          </AuthWrapper>
+        </div>
+        <Footer />
       </SideWrapper>
     </StyledAuth>
   );
@@ -157,19 +161,21 @@ const Auth = () => {
 
 const StyledAuth = styled.div`
   display: grid;
-  grid-template-columns: calc(50% + 30px) auto;
+  grid-template-columns: 44% auto;
   min-height: inherit;
 `;
 
 const SideWrapper = styled.div`
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  grid-gap: 20px;
   padding: 20px;
 `;
 
 const LeftSide = styled(SideWrapper)`
-  padding: 20px;
+  padding: 20px 100px;
   background-color: var(--primary-dark-color);
   
   * {
