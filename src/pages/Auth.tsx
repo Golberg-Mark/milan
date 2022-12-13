@@ -12,6 +12,7 @@ import useIsFirstRender from '@/hooks/useIsFirstRender';
 import { loginAction } from '@/store/actions/userActions';
 import Loader from '@/components/Loader';
 import Logo from '@/assets/logo.png';
+import Footer from '@/components/Footer';
 
 const Auth = () => {
   const [email, setEmail] = useInput();
@@ -58,52 +59,55 @@ const Auth = () => {
         </LeftSideTextBlock>
       </LeftSide>
       <SideWrapper>
-        <AuthWrapper>
-          <PageTitle>
-            Login to your account
-          </PageTitle>
-          <StyledInput
-            type="email"
-            value={email}
-            onChange={setEmail}
-            label="Email"
-            labelMarginBottom={12}
-            placeholder="Enter username"
-          />
-          <StyledInput
-            type="password"
-            value={password}
-            onChange={setPassword}
-            label="Password"
-            labelMarginBottom={12}
-            placeholder="Enter password"
-          />
-          <Additional>
-            <CheckboxLabel onClick={toggleRememberMe}>
-              {rememberMe ? (
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M14.25 2.25H3.75C2.9175 2.25 2.25 2.925 2.25 3.75V14.25C2.25 15.075 2.9175 15.75 3.75 15.75H14.25C15.0825 15.75 15.75 15.075 15.75 14.25V3.75C15.75 2.925 15.0825 2.25 14.25 2.25ZM7.5 12.75L3.75 9L4.8075 7.9425L7.5 10.6275L13.1925 4.935L14.25 6L7.5 12.75Z" fill="#27A376"/>
-                </svg>
-              ) : (
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="#fff" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M14.25 2.25H3.75C2.9175 2.25 2.25 2.925 2.25 3.75V14.25C2.25 15.075 2.9175 15.75 3.75 15.75H14.25C15.0825 15.75 15.75 15.075 15.75 14.25V3.75C15.75 2.925 15.0825 2.25 14.25 2.25ZM7.5 1" stroke="#27A376"/>
-                </svg>
-              )}
-              Remember me
-            </CheckboxLabel>
-            <StyledLink to="/forgot-password">Forgot Password</StyledLink>
-          </Additional>
-          <StyledButton
-            disabled={isEmailError || isPasswordError || !isEmailChanged || !isPasswordChanged}
-            onClick={sendData}
-          >
-            {isLoading ? <Loader size={24} thickness={2} color="#fff" /> : 'Login'}
-          </StyledButton>
-          <ToRegistration>
-            Don’t have an account?
-            <Link to="/sign-up"> Register Here</Link>
-          </ToRegistration>
-        </AuthWrapper>
+        <FormWrapper>
+          <AuthWrapper>
+            <PageTitle>
+              Login to your account
+            </PageTitle>
+            <StyledInput
+              type="email"
+              value={email}
+              onChange={setEmail}
+              label="Email"
+              labelMarginBottom={12}
+              placeholder="Enter username"
+            />
+            <StyledInput
+              type="password"
+              value={password}
+              onChange={setPassword}
+              label="Password"
+              labelMarginBottom={12}
+              placeholder="Enter password"
+            />
+            <Additional>
+              <CheckboxLabel onClick={toggleRememberMe}>
+                {rememberMe ? (
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14.25 2.25H3.75C2.9175 2.25 2.25 2.925 2.25 3.75V14.25C2.25 15.075 2.9175 15.75 3.75 15.75H14.25C15.0825 15.75 15.75 15.075 15.75 14.25V3.75C15.75 2.925 15.0825 2.25 14.25 2.25ZM7.5 12.75L3.75 9L4.8075 7.9425L7.5 10.6275L13.1925 4.935L14.25 6L7.5 12.75Z" fill="#27A376"/>
+                  </svg>
+                ) : (
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="#fff" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14.25 2.25H3.75C2.9175 2.25 2.25 2.925 2.25 3.75V14.25C2.25 15.075 2.9175 15.75 3.75 15.75H14.25C15.0825 15.75 15.75 15.075 15.75 14.25V3.75C15.75 2.925 15.0825 2.25 14.25 2.25ZM7.5 1" stroke="#27A376"/>
+                  </svg>
+                )}
+                Remember me
+              </CheckboxLabel>
+              <StyledLink to="/forgot-password">Forgot Password</StyledLink>
+            </Additional>
+            <StyledButton
+              disabled={isEmailError || isPasswordError || !isEmailChanged || !isPasswordChanged}
+              onClick={sendData}
+            >
+              {isLoading ? <Loader size={24} thickness={2} color="#fff" /> : 'Login'}
+            </StyledButton>
+            <ToRegistration>
+              Don’t have an account?
+              <Link to="/sign-up"> Register Here</Link>
+            </ToRegistration>
+          </AuthWrapper>
+        </FormWrapper>
+        <Footer />
       </SideWrapper>
     </StyledAuth>
   );
@@ -117,13 +121,26 @@ const StyledAuth = styled.div`
 
 const SideWrapper = styled.div`
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
+  grid-gap: 20px;
   padding: 20px;
 `;
 
+const FormWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+`;
+
 const LeftSide = styled(SideWrapper)`
-  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 60px;
   background-color: var(--primary-dark-color);
   
   * {
