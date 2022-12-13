@@ -73,7 +73,7 @@ const Auth = () => {
                 <path d="M18 21H14" stroke="#6C7278" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M10 21H6" stroke="#6C7278" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              InfoTrack solutions are cloud-based, meaning you can access your matters anywhere, anytime.
+              ALTS Corp solutions are cloud-based, meaning you can access your matters anywhere, anytime.
             </ListItem>
             <ListItem>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -103,7 +103,7 @@ const Auth = () => {
                 <path d="M14 6H18" stroke="#6C7278" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M14 18H18" stroke="#6C7278" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              InfoTrack integrates with over 30 Practice Management Systems, streamlining your matters.
+              ALTS Corp integrates with over 30 Practice Management Systems, streamlining your matters.
             </ListItem>
             <ListItem>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
