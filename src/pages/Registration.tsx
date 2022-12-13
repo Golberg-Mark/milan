@@ -117,7 +117,7 @@ const Auth = () => {
         </LeftSideTextBlock>
       </LeftSide>
       <SideWrapper>
-        <div>
+        <FormWrapper>
           <AuthWrapper>
             <PageTitle>
               Register to your account
@@ -152,7 +152,7 @@ const Auth = () => {
               <Link to="/sign-in"> Login here</Link>
             </ToLogin>
           </AuthWrapper>
-        </div>
+        </FormWrapper>
         <Footer />
       </SideWrapper>
     </StyledAuth>
@@ -168,14 +168,25 @@ const StyledAuth = styled.div`
 const SideWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   grid-gap: 20px;
   padding: 20px;
 `;
 
+const FormWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+`;
+
 const LeftSide = styled(SideWrapper)`
-  padding: 20px 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 60px;
   background-color: var(--primary-dark-color);
   
   * {
