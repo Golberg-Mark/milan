@@ -4,6 +4,8 @@ import { OrderDetails, OrganizationUser, User, Product, IUpdatePasswordBody } fr
 import { Product as OrderProduct } from '@/store/reducers/order';
 import { ICreateOrganisation, IEditOrganisation, IOrganisation } from '@/store/reducers/organisations';
 import { ICreateNotice, INotice, IUpdateNotice } from '@/store/reducers/notices';
+import { IAssignPriceList, IPriceList } from '@/store/reducers/priceList';
+import { IOrganisationUser } from '@/store/reducers/users';
 
 export class MainApiProtected extends HttpClientProtected {
   private static instanceCached: MainApiProtected;
@@ -24,7 +26,9 @@ export class MainApiProtected extends HttpClientProtected {
 
   public getMe = () => this.instance.get<User>('/users/profile');
 
-  public getPriceList = (orgId: number) => this.instance.get<Product[]>(`organisations/price-list/${orgId}`);
+  public getPriceLists = () => this.instance.get<IPriceList[]>(`/price-lists`);
+
+  public getPriceList = (orgId: number) => this.instance.get<Product[]>(`/organisations/price-list/${orgId}`);
 
   public placeOrder = (order: PlaceOrder) => (
     this.instance.post<{ orderId: string, products: PlaceOrderProduct[] }>('/orders', order)
@@ -58,6 +62,10 @@ export class MainApiProtected extends HttpClientProtected {
     this.instance.post<IOrganisation>(`/organisations`, body)
   );
 
+  public assignPriceListToOrganisation = (id: number, priceListId: number, body: IAssignPriceList) => (
+    this.instance.patch<IOrganisation>(`/organisations/price-list/${id}/${priceListId}`, body)
+  );
+
   public getNotices = () => (
     this.instance.get<INotice[]>(`/notice`)
   );
@@ -72,5 +80,9 @@ export class MainApiProtected extends HttpClientProtected {
 
   public deleteNotice = (id: number) => (
     this.instance.delete<INotice>(`/notice/${id}`)
+  );
+
+  public getUsers = () => (
+    this.instance.get<IOrganisationUser[]>(`/users`)
   );
 }

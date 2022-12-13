@@ -2,7 +2,8 @@ import { ImmerReducer, createReducerFunction } from 'immer-reducer';
 
 export enum Roles {
   SYSTEM_ADMIN = 'system_admin',
-  CUSTOMER = 'customer',
+  CUSTOMER_ADMIN = 'admin_customer',
+  CUSTOMER = 'customer'
 }
 
 export enum PopupTypes {

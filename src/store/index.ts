@@ -10,18 +10,24 @@ import UserReducer from '@/store/reducers/user';
 import OrderReducer from '@/store/reducers/order';
 import OrganisationsReducer from '@/store/reducers/organisations';
 import NoticesReducer from '@/store/reducers/notices';
+import PriceListReducer from '@/store/reducers/priceList';
+import UsersReducer from '@/store/reducers/users';
 import MainApi from '@/api/mainApi';
 import { MainApiProtected } from '@/api/mainApiProtected';
 import { UserActions } from '@/store/actions/userActions';
 import { OrderActions } from '@/store/actions/orderActions';
 import { OrganisationsActions } from '@/store/actions/organisationsActions';
 import { NoticesActions } from '@/store/actions/noticesActions';
+import { PriceListActions } from '@/store/actions/priceListActions';
+import { UsersActions } from '@/store/actions/usersActions';
 
 const rootReducer = combineReducers({
   user: UserReducer,
   order: OrderReducer,
   organisations: OrganisationsReducer,
-  notices: NoticesReducer
+  notices: NoticesReducer,
+  priceList: PriceListReducer,
+  users: UsersReducer
 });
 
 export const api = {
@@ -42,6 +48,8 @@ export type State = ReturnType<typeof rootReducer>;
 export type Actions = UserActions
   | OrderActions
   | OrganisationsActions
-  | NoticesActions;
+  | NoticesActions
+  | PriceListActions
+  | UsersActions;
 
 export default store;

@@ -26,6 +26,7 @@ import Popup from '@/components/Popup';
 import { getActiveNoticesAction } from '@/store/actions/noticesActions';
 import Notice from '@/components/Notices/Notice';
 import UserNotices from '@/pages/UserNotices';
+import Users from '@/pages/Users';
 
 const App = () => {
   const user = useSelector(selectUser);
@@ -61,6 +62,9 @@ const App = () => {
                 <Route path="/settings/*" element={<Settings />} />
                 {user?.role === Roles.SYSTEM_ADMIN ? (
                   <Route path="/organisations/*" element={<Organisations />} />
+                ) : ''}
+                {user?.role === Roles.SYSTEM_ADMIN ? (
+                  <Route path="/users" element={<Users />} />
                 ) : ''}
                 <Route path="/notices" element={
                   user?.role === Roles.SYSTEM_ADMIN ? <Notices /> : <UserNotices />
