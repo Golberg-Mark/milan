@@ -75,6 +75,7 @@ export interface Product {
   'collection': string
   'productCode': string,
   'supplier': string,
+  'region': string,
   'description': string,
   'searchType': string,
   'priceExGST': string,

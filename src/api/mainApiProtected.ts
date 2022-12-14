@@ -87,6 +87,6 @@ export class MainApiProtected extends HttpClientProtected {
   );
 
   public getProducts = () => (
-    this.instance.get<IOrganisationUser[]>(`/products`)
+    this.instance.get<Product[]>(`/products`)
   );
 }
