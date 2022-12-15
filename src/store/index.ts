@@ -10,7 +10,8 @@ import UserReducer from '@/store/reducers/user';
 import OrderReducer from '@/store/reducers/order';
 import OrganisationsReducer from '@/store/reducers/organisations';
 import NoticesReducer from '@/store/reducers/notices';
-import PriceListReducer from '@/store/reducers/priceList';
+import ServicesReducer from '@/store/reducers/services';
+// import PriceListReducer from '@/store/reducers/priceList';
 import UsersReducer from '@/store/reducers/users';
 import MainApi from '@/api/mainApi';
 import { MainApiProtected } from '@/api/mainApiProtected';
@@ -18,15 +19,17 @@ import { UserActions } from '@/store/actions/userActions';
 import { OrderActions } from '@/store/actions/orderActions';
 import { OrganisationsActions } from '@/store/actions/organisationsActions';
 import { NoticesActions } from '@/store/actions/noticesActions';
-import { PriceListActions } from '@/store/actions/priceListActions';
+// import { PriceListActions } from '@/store/actions/priceListActions';
 import { UsersActions } from '@/store/actions/usersActions';
+import { ServicesActions } from '@/store/actions/servicesActions';
 
 const rootReducer = combineReducers({
   user: UserReducer,
   order: OrderReducer,
   organisations: OrganisationsReducer,
   notices: NoticesReducer,
-  priceList: PriceListReducer,
+  services: ServicesReducer,
+  // priceList: PriceListReducer,
   users: UsersReducer
 });
 
@@ -43,13 +46,16 @@ export const enhancer = composeEnhancer(
 
 const store = createStore(rootReducer, enhancer);
 
+export type AppDispatch = typeof store.dispatch;
+
 export type State = ReturnType<typeof rootReducer>;
 
 export type Actions = UserActions
   | OrderActions
   | OrganisationsActions
   | NoticesActions
-  | PriceListActions
+  | ServicesActions
+  // | PriceListActions
   | UsersActions;
 
 export default store;

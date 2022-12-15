@@ -202,6 +202,7 @@ const THead = styled.thead`
     :last-child {
       border-top-right-radius: 4px;
     }
+  }
 `;
 
 const FolderCell = styled.th`

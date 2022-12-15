@@ -2,6 +2,17 @@ import { Service } from '@/components/AddOrder/RegionsServices';
 
 export type existingRegions = 'ALL' | 'WA' | 'QLD' | 'NSW' | 'VIC' | 'SA' | 'ACT' | 'NT' | 'TAS';
 
+export enum ExistingRegions  {
+  NSW = 'NSW',
+  VIC = 'VIC',
+  QLD = 'QLD',
+  ACT = 'ACT',
+  SA = 'SA',
+  WA = 'WA',
+  NT = 'NT',
+  TAS = 'TAS',
+}
+
 export const municipality = [
   'Alpine',
   'Ararat',
