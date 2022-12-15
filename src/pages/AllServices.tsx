@@ -68,7 +68,10 @@ const AllServices: React.FC = () => {
   }
 
   const handleOnClickService = (serviceId: string, region: ExistingRegions) => {
-    navigate(`/new-order/${region}/${serviceId}`)
+    navigate(`/new-order`, {state: {
+      region,
+      productId: serviceId,
+    }})
     handleCloseModal()
   }
 

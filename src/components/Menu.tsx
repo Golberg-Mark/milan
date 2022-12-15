@@ -14,12 +14,13 @@ import {
 } from '@/store/selectors/servicesSelector';
 import { useEffect, useMemo } from 'react';
 import { IService } from '@/store/reducers/services';
-import { Link } from 'react-router-dom';
 import RightArrowIcon from '@/assets/icons/RightArrowIcon';
+import { ExistingRegions } from '@/utils/getRegionsData';
 
 const Menu = () => {
   const dispatch = useDispatch();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const user = useSelector(selectUser)!;
   const servicesModal = useSelector(selectServicesModal);
@@ -52,6 +53,13 @@ const Menu = () => {
 
   const closeModal = () => {
     dispatch(servicesActions.setServicesModal(false));
+  }
+
+  const goToNewOrder = (region: ExistingRegions, productId: string) => () => {
+    navigate('/new-order', { state:{
+      productId,
+      region,
+    }})
   }
 
   return (
@@ -98,7 +106,7 @@ const Menu = () => {
               <RightArrowIcon />
             </IconWrap>
           </Item>
-          <NavItem to="/dashboard" isActiveModal={servicesModal} onClick={closeModal}>
+          <NavItem to="/dashboard" $isActiveModal={servicesModal} onClick={closeModal}>
             <svg
               width="18"
               height="18"
@@ -131,7 +139,7 @@ const Menu = () => {
             </svg>
             Matters & Orders
           </NavItem>
-          <NavItem to="/reporting" end isActiveModal={servicesModal} onClick={closeModal}>
+          <NavItem to="/reporting" end $isActiveModal={servicesModal} onClick={closeModal}>
             <svg
               width="18"
               height="18"
@@ -183,7 +191,7 @@ const Menu = () => {
         <Heading>SYSTEM SETTINGS</Heading>
         <Nav>
           {user.role === Roles.SYSTEM_ADMIN ? (
-            <NavItem to="/notices" end isActiveModal={servicesModal} onClick={closeModal}>
+            <NavItem to="/notices" end $isActiveModal={servicesModal} onClick={closeModal}>
               <svg
                 width="18"
                 height="18"
@@ -219,7 +227,7 @@ const Menu = () => {
             ''
           )}
           {user.role === Roles.SYSTEM_ADMIN ? (
-            <NavItem to="/organisations" isActiveModal={servicesModal} onClick={closeModal}>
+            <NavItem to="/organisations" $isActiveModal={servicesModal} onClick={closeModal}>
               <svg
                 width="18"
                 height="18"
@@ -275,7 +283,7 @@ const Menu = () => {
           ) : (
             ''
           )}
-          <NavItem to="/users" end isActiveModal={servicesModal} onClick={closeModal}>
+          <NavItem to="/users" end $isActiveModal={servicesModal} onClick={closeModal}>
             <svg
               width="18"
               height="18"
@@ -321,7 +329,7 @@ const Menu = () => {
         <Services>
           {services.map(({ productId, searchType, region }) => (
             <Service
-              to={`/new-order/${region}/${productId}`}
+              onClick={goToNewOrder(region, productId)}
               key={productId}
             >
               {searchType}
@@ -364,7 +372,7 @@ const MenuWrap = styled.div`
 `;
 
 
-const Service = styled(Link)`
+const Service = styled.div`
   font-weight: 600;
   font-size: 14px;
   letter-spacing: -0.01em;
@@ -453,7 +461,7 @@ const Item = styled.div<{ isActive: boolean }>`
   `}
 `;
 
-const NavItem = styled(NavLink)<{isActiveModal: boolean}>`
+const NavItem = styled(NavLink)<{$isActiveModal: boolean}>`
   display: flex;
   align-items: center;
   grid-gap: 16px;
@@ -468,7 +476,7 @@ const NavItem = styled(NavLink)<{isActiveModal: boolean}>`
       stroke: rgba(255, 255, 255, 0.5);
     }
 
-  ${({isActiveModal}) => !isActiveModal && css`
+  ${({$isActiveModal}) => !$isActiveModal && css`
     &.active {
       color: #fff;
       background-color: rgba(255, 255, 255, 0.1);
