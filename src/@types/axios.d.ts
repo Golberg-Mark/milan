@@ -2,5 +2,5 @@
 import axios from 'axios';
 
 declare module 'axios' {
-  interface AxiosResponse<T = any> extends Promise<T> {}
+  interface AxiosResponse<T> extends Promise<T> {}
 }

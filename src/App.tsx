@@ -27,10 +27,13 @@ import { getActiveNoticesAction } from '@/store/actions/noticesActions';
 import Notice from '@/components/Notices/Notice';
 import UserNotices from '@/pages/UserNotices';
 import Users from '@/pages/Users';
+import AllServices from './pages/AllServices';
+import { selectServicesModal } from './store/selectors/servicesSelector';
 
 const App = () => {
   const user = useSelector(selectUser);
   const popup = useSelector(selectPopup);
+  const servicesModal = useSelector(selectServicesModal);
 
   const dispatch = useDispatch<any>();
 
@@ -52,6 +55,7 @@ const App = () => {
           <ProtectedRouter>
             <Menu />
             <ContentContainer>
+              { servicesModal && <AllServices />}
               <PageHeader />
               <Notice />
               <Routes>
