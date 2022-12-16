@@ -231,9 +231,9 @@ const Organisations = () => {
                       <th>
                         PAYMENT TERMS
                       </th>
-                      <th>
+                      <ActionCell>
                         ACTIONS
-                      </th>
+                      </ActionCell>
                     </tr>
                   </THead>
                   <TBody>
@@ -274,7 +274,7 @@ const Organisations = () => {
                         <th>
                           {org.paymentTerms}
                         </th>
-                        <th onClick={(evt) => evt.stopPropagation()}>
+                        <ActionCell onClick={(evt) => evt.stopPropagation()}>
                           <Action>
                             <svg width="16" height="16" viewBox="0 0 17 16" fill="none"
                                  xmlns="http://www.w3.org/2000/svg">
@@ -283,7 +283,7 @@ const Organisations = () => {
                                 fill="#1A1C1E"/>
                             </svg>
                           </Action>
-                        </th>
+                        </ActionCell>
                       </TRow>
                     ))}
                   </TBody>
@@ -464,6 +464,10 @@ const StatusCell = styled.span<{ isActive: boolean }>`
   text-align: center;
   background-color: ${({ isActive }) => isActive ? 'var(--primary-green-background-color)' : 'var(--primary-red-background-color)'};
   color: ${({ isActive }) => isActive ? 'var(--primary-green-color)' : 'var(--primary-red-color)'};
+`;
+
+const ActionCell = styled.th`
+  padding-right: 16px !important;
 `;
 
 const Action = styled.div`
