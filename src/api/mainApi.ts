@@ -1,7 +1,19 @@
 import HttpClient from '@/api/httpClient';
 import { Order } from '@/store/reducers/user';
-import { Product } from '@/store/reducers/order';
 import { INotice } from '@/store/reducers/notices';
+import { ExistingRegions } from '@/utils/getRegionsData';
+
+export interface ISignUpBody {
+  firstName: string,
+  lastName: string,
+  email: string,
+  phone: string,
+  organisation: string,
+  state: ExistingRegions,
+  abn: string,
+  typeOfBusiness: string,
+  password: string
+}
 
 class MainApi extends HttpClient {
   private static instanceCached: MainApi;
@@ -16,11 +28,10 @@ class MainApi extends HttpClient {
     return MainApi.instanceCached;
   }
 
-  public register = (email: string, password: string) => (
+  public register = (body: ISignUpBody) => (
     this.instance.post('/registration', {
       baseUrl: process.env.NODE_ENV === 'production' ? 'https://milan-orpin.vercel.app' : 'http://localhost:3000',
-      email,
-      password
+      ...body,
     })
   );
 
