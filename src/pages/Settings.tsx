@@ -11,6 +11,7 @@ import SettingsIcon from '@/assets/icons/SettingsIcon';
 import UsersIcon from '@/assets/icons/UsersIcon';
 import BillingIcon from '@/assets/icons/BillingIcon';
 import MyDetails from '@/components/Settings/MyDetails/MyDetails';
+import { Navigate } from 'react-router';
 
 const Settings = () => {
   return (
@@ -61,6 +62,7 @@ const Settings = () => {
         </Navigation>
         <RightSide>
           <Routes>
+            <Route path="/" element={<Navigate to="/settings/my-details" />} />
             <Route path="/my-details" element={<MyDetails />} />
             <Route path="/organisations-details" element={<div>Organisations Details</div>} />
             <Route path="/preferences" element={<div>Preferences</div>} />
@@ -106,8 +108,8 @@ const StyledNavLink = styled(NavLink)`
     font-weight: 500;
     
     svg {
-      width: 20px;
-      height: 20px;
+      min-width: 20px;
+      min-height: 20px;
       
       * {
         stroke: #6C7278;
@@ -116,8 +118,8 @@ const StyledNavLink = styled(NavLink)`
   }
   
   & > svg {
-    width: 24px;
-    height: 24px;
+    min-width: 24px;
+    min-height: 24px;
   }
 
   :hover {

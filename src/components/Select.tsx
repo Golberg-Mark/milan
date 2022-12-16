@@ -11,7 +11,10 @@ interface Props {
   items: string[] | number[],
   openToTop?: boolean,
   modalRef?: HTMLDivElement
-  placeholder?: string
+  placeholder?: string,
+  height?: string,
+  fontSize?: string,
+  padding?: string
 }
 
 const Select: React.FC<Props> = ({
@@ -21,13 +24,22 @@ const Select: React.FC<Props> = ({
   items,
   openToTop = false,
   modalRef,
-  placeholder = ''
+  placeholder = '',
+  height = '38px',
+  fontSize = '12px',
+  padding = '13px 16px'
 }) => {
   const [ref, isItemsVisible, toggleIsItemsVisible] = useOnClickOutside<HTMLDivElement>(false, modalRef);
-  
+
   return (
     <Wrapper ref={ref}>
-      <StyledSelect isPlaceholder={selectedItem === undefined} onClick={toggleIsItemsVisible}>
+      <StyledSelect
+        isPlaceholder={selectedItem === undefined}
+        onClick={toggleIsItemsVisible}
+        height={height}
+        fontSize={fontSize}
+        padding={padding}
+      >
         {`${prefix} ${selectedItem !== undefined ? items[selectedItem] : placeholder}`}
         <BsChevronDown style={{ transform: isItemsVisible ? 'rotate(180deg)' : '' }}/>
       </StyledSelect>
@@ -54,16 +66,23 @@ const Wrapper = styled.div`
   position: relative;
 `;
 
-const StyledSelect = styled.button<{ isPlaceholder: boolean }>`
+interface IStyledSelect {
+  isPlaceholder: boolean,
+  height: string,
+  fontSize: string,
+  padding: string
+}
+
+const StyledSelect = styled.button<IStyledSelect>`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 13px 16px;
+  padding: ${({ padding }) => padding};
   width: 100%;
-  height: 38px;
+  height: ${({ height }) => height};
   border: 1px solid rgba(35, 35, 35, 0.16);
   border-radius: 4px;
-  font-size: 12px;
+  font-size: ${({ fontSize }) => fontSize};
   text-align: left;
   background-color: #fff;
 

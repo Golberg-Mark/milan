@@ -1,15 +1,45 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import Button from '@/components/Button';
 import EditableInput from '@/components/EditableInput';
 import useToggle from '@/hooks/useToggle';
 import useInput from '@/hooks/useInput';
+import { useSelector } from 'react-redux';
+import { selectUser } from '@/store/selectors/userSelectors';
+import roleToText from '@/utils/roleToText';
+import { ExistingRegions } from '@/utils/getRegionsData';
+
+const regions = Object.values(ExistingRegions);
 
 const MyDetails = () => {
   const [name, setName] = useInput();
   const [surname, setSurname] = useInput();
+  const [email, setEmail] = useInput();
+  const [phone, setPhone] = useInput();
+  const [region, setRegion] = useState<number>();
   const [isEditMode, toggleIsEditMode] = useToggle();
+
+  const user = useSelector(selectUser);
+
+  useEffect(() => {
+    setDefaultData();
+  }, [user]);
+
+  const setDefaultData = () => {
+    if (user) {
+      const regionIndex = regions.findIndex((el) => el.toLowerCase() === user.state.toLowerCase());
+
+      setName(user.firstName || '');
+      setSurname(user.lastName || '');
+      setEmail(user.email || '');
+      setPhone(user.phone || '');
+      setRegion(regionIndex);
+      toggleIsEditMode(false);
+    }
+  };
+
+  const role = user ? roleToText(user.role) : '';
 
   return (
     <Page>
@@ -30,14 +60,60 @@ const MyDetails = () => {
             setValue={setSurname}
             placeholder="Smith"
           />
+          <EditableInput
+            isEditMode={isEditMode}
+            label="Email"
+            value={email}
+            setValue={setSurname}
+            placeholder="john@gmail.com"
+          />
+          <EditableInput
+            isEditMode={isEditMode}
+            label="Phone"
+            value={phone}
+            setValue={setSurname}
+            placeholder="123456789"
+          />
+          {region !== undefined ? (
+            <EditableInput
+              isEditMode={isEditMode}
+              label="State"
+              value={regions[region]}
+              selector={{
+                value: region,
+                values: regions,
+                setValue: setRegion
+              }}
+            />
+          ) : ''}
+          <EditableInput
+            isEditMode={isEditMode}
+            label="User Type"
+            value={role}
+            isLocked
+          />
         </Grid>
       </div>
-      <Buttons>
-        <Button onClick={toggleIsEditMode}>
-          Edit Details
-        </Button>
-        <Button>Change Password</Button>
-      </Buttons>
+      {isEditMode ? (
+        <Buttons>
+          <Button
+            isCancel
+            onClick={setDefaultData}
+          >
+            Cancel
+          </Button>
+          <Button>
+            Save Changes
+          </Button>
+        </Buttons>
+      ) : (
+        <Buttons>
+          <Button onClick={toggleIsEditMode}>
+            Edit Details
+          </Button>
+          <Button>Change Password</Button>
+        </Buttons>
+      )}
     </Page>
   );
 };
