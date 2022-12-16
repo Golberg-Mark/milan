@@ -2,14 +2,16 @@ import { createActionCreators } from 'immer-reducer';
 
 import {
   ICreateOrganisation,
-  IOrganisation,
   OrganisationsReducer
 } from '@/store/reducers/organisations';
 import { AsyncAction } from '@/store/actions/common';
+import { userActions } from '@/store/actions/userActions';
+import { PopupTypes } from '@/store/reducers/user';
 
 export const organisationsActions = createActionCreators(OrganisationsReducer);
 
-export type OrganisationsActions = ReturnType<typeof organisationsActions.setOrganisations>;
+export type OrganisationsActions = ReturnType<typeof organisationsActions.setOrganisations>
+ | ReturnType<typeof organisationsActions.setIsLoading>;
 
 export const getOrganisationsAction = (): AsyncAction => async (
   dispatch,
@@ -17,20 +19,19 @@ export const getOrganisationsAction = (): AsyncAction => async (
   { mainApiProtected }
 ) => {
   try {
+    dispatch(organisationsActions.setIsLoading(true));
     const organisations = await mainApiProtected.getOrganisations();
 
-    organisations.map((org) => {
-      const priceLists = [org.priceLists.find(el => el.isActive)];
-
-      return {
-        ...org,
-        priceLists
-      };
-    })
-
     dispatch(organisationsActions.setOrganisations(organisations));
+    dispatch(organisationsActions.setIsLoading(false));
   } catch (error: any) {
     console.log(error);
+    dispatch(userActions.setPopup({
+      mainText: 'Error',
+      additionalText: error.message,
+      type: PopupTypes.ERROR
+    }));
+    dispatch(organisationsActions.setIsLoading(false));
   }
 };
 
@@ -40,10 +41,14 @@ export const editOrganisationsAction = (ids: number[]): AsyncAction => async (
   { mainApiProtected }
 ) => {
   try {
-    const { organisations } = getState().organisations;
+    dispatch(organisationsActions.setIsLoading(true));
 
-    if (organisations) {
-      const orgs = organisations
+    const organisations = getState().organisations.organisations || [];
+    dispatch(organisationsActions.setOrganisations(null));
+    const tempOrganisation = [...organisations];
+
+    if (tempOrganisation) {
+      const orgs = tempOrganisation
         .filter((el) => ids.find((id) => id === el.id))
         .map((el) => ({
           id: el.id,
@@ -51,34 +56,34 @@ export const editOrganisationsAction = (ids: number[]): AsyncAction => async (
           isActive: !el.isActive
         }));
 
-      const results: IOrganisation[] = [];
-
       for (const { id, name, isActive } of orgs) {
-        const organisation = await mainApiProtected.editOrganisation(id, { name, isActive });
-        results.push(organisation);
+        await mainApiProtected.editOrganisation(id, { name, isActive });
       }
 
-      dispatch(organisationsActions.setOrganisations(organisations!.map((el) => {
-        const founded = results.find((org) => org.id === el.id);
-        return founded ? founded : el;
-      })));
+      await dispatch(getOrganisationsAction());
+      dispatch(organisationsActions.setIsLoading(false));
     }
   } catch (error: any) {
     console.log(error);
+    dispatch(organisationsActions.setIsLoading(false));
+    return Promise.reject(error);
   }
 };
 
 export const createOrganisationAction = (body: ICreateOrganisation): AsyncAction => async (
   dispatch,
-  getState,
+  _,
   { mainApiProtected }
 ) => {
   try {
-    const added = await mainApiProtected.createOrganisation(body);
+    dispatch(organisationsActions.setIsLoading(true));
+    await mainApiProtected.createOrganisation(body);
+    await dispatch(getOrganisationsAction());
 
-    const organisations = getState().organisations.organisations || [];
-    dispatch(organisationsActions.setOrganisations([...organisations, added]));
+    dispatch(organisationsActions.setIsLoading(false));
   } catch (error: any) {
     console.log(error);
+    dispatch(organisationsActions.setIsLoading(false));
+    return Promise.reject(error);
   }
 };

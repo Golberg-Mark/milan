@@ -12,10 +12,11 @@ export interface IOrganisation {
   id: number,
   name: string,
   isActive: boolean,
-  lastOrderDate: string,
+  lastOrderDate?: string,
   creditLimit: number,
   paymentTerms: string,
-  priceLists: IPriceList[]
+  currentPriceList: IPriceList,
+  futurePriceList?: IPriceList
 }
 
 export interface IEditOrganisation {

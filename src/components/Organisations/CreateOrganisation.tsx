@@ -56,6 +56,7 @@ const CreateOrganisation: React.FC<Props> = ({ close }) => {
           name
         }));
         close(false);
+        dispatch(organisationsActions.setIsLoading(false));
       } catch {
         dispatch(organisationsActions.setIsLoading(false));
       }

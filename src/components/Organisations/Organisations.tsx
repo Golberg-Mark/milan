@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
-import { selectOrganisations } from '@/store/selectors/organisationsSelector';
+import { selectIsLoading, selectOrganisations } from '@/store/selectors/organisationsSelector';
 import { editOrganisationsAction, getOrganisationsAction } from '@/store/actions/organisationsActions';
 import Loader from '@/components/Loader';
 import PageTitle from '@/components/PageTitle';
@@ -21,26 +21,13 @@ import Pagination from '@/components/Pagination';
 import { IOrganisation } from '@/store/reducers/organisations';
 import CreateOrganisation from '@/components/Organisations/CreateOrganisation';
 import CloseIcon from '@/assets/icons/CloseIcon';
+import AssignPriceList from '@/components/Organisations/AssignPriceList';
+import { userActions } from '@/store/actions/userActions';
+import { PopupTypes } from '@/store/reducers/user';
 
 const limits = [20, 50, 100];
 
-export const WrapperOrganisations = () => {
-  const organisations = useSelector(selectOrganisations);
-
-  const dispatch = useDispatch<any>();
-
-  useEffect(() => {
-    if (!organisations) dispatch(getOrganisationsAction());
-  }, [])
-
-  return organisations ? <Organisations organisations={organisations} /> : <Loader />;
-};
-
-interface Props {
-  organisations: IOrganisation[]
-}
-
-const Organisations: React.FC<Props> = ({ organisations }) => {
+const Organisations = () => {
   const [search, setSearch] = useInput();
   const [priceList, setPriceList] = useState<string | null>(null);
   const [priceListRef, isPriceListsVisible, toggleIsPriceListsVisible] = useOnClickOutside<HTMLDivElement>();
@@ -52,11 +39,19 @@ const Organisations: React.FC<Props> = ({ organisations }) => {
   const [selectedOrganisations, setSelectedOrganisations] = useState<number[]>([]);
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(0);
-  const [isLoading, toggleIsLoading] = useToggle();
   const [isNewOrgVisible, toggleIsNewOrgVisible] = useToggle();
+  const [isAssignPriceListVisible, toggleIsAssignPriceListVisible] = useToggle();
+  const [isChangingStatus, toggleIsChangingStatus] = useToggle();
+
+  const organisations = useSelector(selectOrganisations);
+  const isLoading = useSelector(selectIsLoading);
 
   const navigate = useNavigate();
   const dispatch = useDispatch<any>();
+
+  useEffect(() => {
+    if (!organisations) dispatch(getOrganisationsAction());
+  }, []);
 
   const selectAllCheckboxes = (isSelected: boolean) => {
     if (!isSelected) {
@@ -78,12 +73,18 @@ const Organisations: React.FC<Props> = ({ organisations }) => {
 
   const changeStatus = async () => {
     try {
-      toggleIsLoading(true);
+      toggleIsChangingStatus(true);
       await dispatch(editOrganisationsAction(selectedOrganisations));
-    } finally {
       setSelectedOrganisations([]);
       toggleIsAllCheckboxSelected(false);
-      toggleIsLoading(false);
+      toggleIsChangingStatus(false);
+    } catch (e: any) {
+      dispatch(userActions.setPopup({
+        mainText: 'Error',
+        additionalText: e.message,
+        type: PopupTypes.ERROR
+      }));
+      toggleIsChangingStatus(false);
     }
   };
 
@@ -93,27 +94,34 @@ const Organisations: React.FC<Props> = ({ organisations }) => {
   organisations?.forEach((org) => {
     organisationsNames.push(org.name);
 
-    org.priceLists?.forEach((el) => {
-      priceLists.push(el.name);
-    });
+    const isPriceListAdded = priceLists.find((el) => el === org.currentPriceList.name);
+    if (!isPriceListAdded) priceLists.push(org.currentPriceList.name);
+    const isFuturePriceListAdded = priceLists.find((el) => el === org.futurePriceList?.name);
+    if (org.futurePriceList && !isFuturePriceListAdded) priceLists.push(org.futurePriceList.name);
   });
 
-  const organisationsWithAppliedFilters = useMemo(() => organisations.filter((org) => {
-    if (!search) return true;
+  const organisationsWithAppliedFilters = useMemo(() => {
+    if (organisations) {
+      return organisations.filter((org) => {
+        if (!search) return true;
 
-    const regexp = new RegExp(`.*${search.toLowerCase()}.*`);
-    return regexp.test(org.name.toLowerCase());
-  }).filter((org) => {
-    if (!priceList) return true;
+        const regexp = new RegExp(`.*${search.toLowerCase()}.*`);
+        return regexp.test(org.name.toLowerCase());
+      }).filter((org) => {
+        if (!priceList) return true;
 
-    return org.priceLists[0]?.name === priceList || org.priceLists[1]?.name === priceList;
-  }).filter((org) => {
-    if (status === null) return true;
-    return (status === 'ACTIVE' && org.isActive) || (status === 'INACTIVE' && !org.isActive);
-  }).filter((org) => {
-    if (!orgName) return true;
-    return org.name === orgName;
-  }), [organisations, search, priceList, status, orgName]);
+        return org.currentPriceList.name === priceList || org.futurePriceList?.name === priceList;
+      }).filter((org) => {
+        if (status === null) return true;
+        return (status === 'ACTIVE' && org.isActive) || (status === 'INACTIVE' && !org.isActive);
+      }).filter((org) => {
+        if (!orgName) return true;
+        return org.name === orgName;
+      })
+    }
+
+    return [];
+  }, [organisations, search, priceList, status, orgName]);
 
   const maxPages = Math.ceil(organisationsWithAppliedFilters.length / limits[limit]);
   const calculatedOffset = maxPages > 1 ? offset : 0;
@@ -129,9 +137,9 @@ const Organisations: React.FC<Props> = ({ organisations }) => {
 
   const isFiltered = !priceList || status !== null || selectedOrganisations;
 
-  const isActiveMod = organisations.find((el) => el.id === selectedOrganisations[0])?.isActive;
+  const isActiveMod = organisations && organisations.find((el) => el.id === selectedOrganisations[0])?.isActive;
 
-  return organisationsWithAppliedFilters && !isLoading ? (
+  return (
     <>
       <PageHeader>
         <div>
@@ -141,7 +149,7 @@ const Organisations: React.FC<Props> = ({ organisations }) => {
           <p>Manage Organisations in this page</p>
         </div>
         <NewOrganisation onClick={toggleIsNewOrgVisible}>
-          <AddIcon />
+          <AddIcon/>
           New Organisation
         </NewOrganisation>
       </PageHeader>
@@ -189,102 +197,107 @@ const Organisations: React.FC<Props> = ({ organisations }) => {
               }
             ]}
           />
-          {filteredOrganisations.length ? (
-            <TableWrapper>
-              <Table>
-                <THead>
-                  <tr>
-                    <th>
-                      <Checkbox
-                        type="checkbox"
-                        checked={isAllCheckboxSelected}
-                        onChange={({ target }) => selectAllCheckboxes(target.checked)}
-                      />
-                    </th>
-                    <th>
-                      ORGANISATION
-                    </th>
-                    <th>
-                      LAST ORDER
-                    </th>
-                    <th>
-                      STATUS
-                    </th>
-                    <th>
-                      PRICE LIST
-                    </th>
-                    <th>
-                      NEW PRICE LIST
-                    </th>
-                    <th>
-                      EFFECTIVE FROM DATE
-                    </th>
-                    <th>
-                      PAYMENT TERMS
-                    </th>
-                    <th>
-                      ACTIONS
-                    </th>
-                  </tr>
-                </THead>
-                <TBody>
-                  {filteredOrganisations.map((org, i) => (
-                    <TRow
-                      key={org.name + i}
-                      isChecked={!!selectedOrganisations.find((el) => el === org.id)}
-                      onClick={() => navigate(`/organisations/${org.id}`)}
-                    >
+          {organisations && filteredOrganisations ?
+            filteredOrganisations.length && !isLoading ? (
+              <TableWrapper>
+                <Table>
+                  <THead>
+                    <tr>
                       <th>
                         <Checkbox
                           type="checkbox"
-                          disabled={isActiveMod !== undefined ? isActiveMod !== org.isActive : false}
-                          checked={!!selectedOrganisations.find((el) => el === org.id)}
-                          onChange={({ target }) => onCheckboxClick(target.checked, org.id)}
+                          checked={isAllCheckboxSelected}
+                          onChange={({ target }) => selectAllCheckboxes(target.checked)}
                         />
                       </th>
                       <th>
-                        {org.name}
+                        ORGANISATION
                       </th>
                       <th>
-                        {org.lastOrderDate ? convertTimestamp(+org.lastOrderDate) : '-'}
+                        LAST ORDER
                       </th>
                       <th>
-                        <StatusCell isActive={org.isActive}>
-                          {org.isActive ? 'ACTIVE' : 'INACTIVE'}
-                        </StatusCell>
+                        STATUS
                       </th>
                       <th>
-                        {org.priceLists[0]?.name.split('.').slice(0, -1).join('.') || '-'}
+                        PRICE LIST
                       </th>
                       <th>
-                        {org.priceLists[1]?.name.split('.').slice(0, -1).join('.') || '-'}
+                        NEW PRICE LIST
                       </th>
                       <th>
-                        {org.priceLists[1]?.effectiveFromDate || '-'}
+                        EFFECTIVE FROM DATE
                       </th>
                       <th>
-                        {org.paymentTerms}
+                        PAYMENT TERMS
                       </th>
-                      <th onClick={(evt) => evt.stopPropagation()}>
-                        <Action>
-                          <svg width="16" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M13.2602 8.62627C13.2869 8.42627 13.3002 8.21961 13.3002 7.99961C13.3002 7.78628 13.2869 7.57294 13.2536 7.37294L14.6069 6.31961C14.7269 6.22628 14.7602 6.04628 14.6869 5.91294L13.4069 3.69961C13.3269 3.55294 13.1602 3.50628 13.0136 3.55294L11.4202 4.19294C11.0869 3.93961 10.7336 3.72628 10.3402 3.56628L10.1002 1.87294C10.0736 1.71294 9.94024 1.59961 9.78024 1.59961H7.22024C7.06024 1.59961 6.93357 1.71294 6.9069 1.87294L6.6669 3.56628C6.27357 3.72628 5.91357 3.94628 5.5869 4.19294L3.99357 3.55294C3.8469 3.49961 3.68024 3.55294 3.60024 3.69961L2.3269 5.91294C2.2469 6.05294 2.27357 6.22628 2.4069 6.31961L3.76024 7.37294C3.7269 7.57294 3.70024 7.79294 3.70024 7.99961C3.70024 8.20628 3.71357 8.42627 3.7469 8.62627L2.39357 9.67961C2.27357 9.77294 2.24024 9.95294 2.31357 10.0863L3.59357 12.2996C3.67357 12.4463 3.84024 12.4929 3.9869 12.4463L5.58024 11.8063C5.91357 12.0596 6.2669 12.2729 6.66024 12.4329L6.90024 14.1263C6.93357 14.2863 7.06024 14.3996 7.22024 14.3996H9.78024C9.94024 14.3996 10.0736 14.2863 10.0936 14.1263L10.3336 12.4329C10.7269 12.2729 11.0869 12.0596 11.4136 11.8063L13.0069 12.4463C13.1536 12.4996 13.3202 12.4463 13.4002 12.2996L14.6802 10.0863C14.7602 9.93961 14.7269 9.77294 14.6002 9.67961L13.2602 8.62627ZM8.50024 10.3996C7.18024 10.3996 6.10024 9.31961 6.10024 7.99961C6.10024 6.67961 7.18024 5.59961 8.50024 5.59961C9.82024 5.59961 10.9002 6.67961 10.9002 7.99961C10.9002 9.31961 9.82024 10.3996 8.50024 10.3996Z" fill="#1A1C1E"/>
-                          </svg>
-                        </Action>
+                      <th>
+                        ACTIONS
                       </th>
-                    </TRow>
-                  ))}
-                </TBody>
-              </Table>
-            </TableWrapper>
-          ) : ''}
+                    </tr>
+                  </THead>
+                  <TBody>
+                    {filteredOrganisations.map((org, i) => (
+                      <TRow
+                        key={org.name + i}
+                        isChecked={!!selectedOrganisations.find((el) => el === org.id)}
+                        onClick={() => navigate(`/organisations/${org.id}`)}
+                      >
+                        <th>
+                          <Checkbox
+                            type="checkbox"
+                            disabled={isActiveMod !== undefined ? isActiveMod !== org.isActive : false}
+                            checked={!!selectedOrganisations.find((el) => el === org.id)}
+                            onChange={({ target }) => onCheckboxClick(target.checked, org.id)}
+                          />
+                        </th>
+                        <th>
+                          {org.name}
+                        </th>
+                        <th>
+                          {org.lastOrderDate ? convertTimestamp(+org.lastOrderDate) : '-'}
+                        </th>
+                        <th>
+                          <StatusCell isActive={org.isActive}>
+                            {org.isActive ? 'ACTIVE' : 'INACTIVE'}
+                          </StatusCell>
+                        </th>
+                        <th>
+                          {org.currentPriceList.name.split('.').slice(0, -1).join('.') || '-'}
+                        </th>
+                        <th>
+                          {org.futurePriceList?.name.split('.').slice(0, -1).join('.') || '-'}
+                        </th>
+                        <th>
+                          {org.futurePriceList ? convertTimestamp(+org.futurePriceList.effectiveFromDate) : '-'}
+                        </th>
+                        <th>
+                          {org.paymentTerms}
+                        </th>
+                        <th onClick={(evt) => evt.stopPropagation()}>
+                          <Action>
+                            <svg width="16" height="16" viewBox="0 0 17 16" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                              <path
+                                d="M13.2602 8.62627C13.2869 8.42627 13.3002 8.21961 13.3002 7.99961C13.3002 7.78628 13.2869 7.57294 13.2536 7.37294L14.6069 6.31961C14.7269 6.22628 14.7602 6.04628 14.6869 5.91294L13.4069 3.69961C13.3269 3.55294 13.1602 3.50628 13.0136 3.55294L11.4202 4.19294C11.0869 3.93961 10.7336 3.72628 10.3402 3.56628L10.1002 1.87294C10.0736 1.71294 9.94024 1.59961 9.78024 1.59961H7.22024C7.06024 1.59961 6.93357 1.71294 6.9069 1.87294L6.6669 3.56628C6.27357 3.72628 5.91357 3.94628 5.5869 4.19294L3.99357 3.55294C3.8469 3.49961 3.68024 3.55294 3.60024 3.69961L2.3269 5.91294C2.2469 6.05294 2.27357 6.22628 2.4069 6.31961L3.76024 7.37294C3.7269 7.57294 3.70024 7.79294 3.70024 7.99961C3.70024 8.20628 3.71357 8.42627 3.7469 8.62627L2.39357 9.67961C2.27357 9.77294 2.24024 9.95294 2.31357 10.0863L3.59357 12.2996C3.67357 12.4463 3.84024 12.4929 3.9869 12.4463L5.58024 11.8063C5.91357 12.0596 6.2669 12.2729 6.66024 12.4329L6.90024 14.1263C6.93357 14.2863 7.06024 14.3996 7.22024 14.3996H9.78024C9.94024 14.3996 10.0736 14.2863 10.0936 14.1263L10.3336 12.4329C10.7269 12.2729 11.0869 12.0596 11.4136 11.8063L13.0069 12.4463C13.1536 12.4996 13.3202 12.4463 13.4002 12.2996L14.6802 10.0863C14.7602 9.93961 14.7269 9.77294 14.6002 9.67961L13.2602 8.62627ZM8.50024 10.3996C7.18024 10.3996 6.10024 9.31961 6.10024 7.99961C6.10024 6.67961 7.18024 5.59961 8.50024 5.59961C9.82024 5.59961 10.9002 6.67961 10.9002 7.99961C10.9002 9.31961 9.82024 10.3996 8.50024 10.3996Z"
+                                fill="#1A1C1E"/>
+                            </svg>
+                          </Action>
+                        </th>
+                      </TRow>
+                    ))}
+                  </TBody>
+                </Table>
+              </TableWrapper>
+            ) : <NotFound>Organisations wasn't found</NotFound>
+          : <NotFound><Loader /></NotFound>}
         </div>
         {filteredOrganisations.length ? (
           <Pagination
             changePage={setOffset}
             currentPage={calculatedOffset}
             maxPages={maxPages}
-            maxElements={search || isFiltered ? organisationsWithAppliedFilters.length : organisations.length}
+            maxElements={search || isFiltered ? organisationsWithAppliedFilters.length : organisations!.length}
             limits={limits}
             limit={limit}
             setLimit={setLimit}
@@ -294,20 +307,27 @@ const Organisations: React.FC<Props> = ({ organisations }) => {
       {selectedOrganisations.length ? (
         <PopUp>
           <OrganisationsCount>
-            <UsersIcon />
+            <UsersIcon/>
             {`${getNounByForm(selectedOrganisations.length, 'organisation')} selected`}
           </OrganisationsCount>
           <Actions>
             <li>
               <Button
                 onClick={changeStatus}
-                isRedButton={isActiveMod}
+                isRedButton={!!isActiveMod}
               >
-                { isActiveMod ? 'Deactivate' : 'Activate' }
+                {!isChangingStatus
+                  ? isActiveMod ? 'Deactivate' : 'Activate'
+                  :<Loader size={24} thickness={2} color="#fff" />
+                }
               </Button>
             </li>
             <li>
-              <Button>Assign Price List</Button>
+              <Button
+                onClick={toggleIsAssignPriceListVisible}
+              >
+                Assign Price List
+              </Button>
             </li>
             <StyledCloseIcon
               handler={() => selectAllCheckboxes(false)}
@@ -316,10 +336,19 @@ const Organisations: React.FC<Props> = ({ organisations }) => {
         </PopUp>
       ) : ''}
       {isNewOrgVisible ? (
-        <CreateOrganisation close={toggleIsNewOrgVisible} />
+        <CreateOrganisation close={toggleIsNewOrgVisible}/>
+      ) : ''}
+      {isAssignPriceListVisible ? (
+        <AssignPriceList
+          orgIds={selectedOrganisations}
+          close={() => {
+            toggleIsAssignPriceListVisible(false);
+            setSelectedOrganisations([]);
+          }}
+        />
       ) : ''}
     </>
-  ) : <Loader />;
+  );
 };
 
 const PageHeader = styled.div`
@@ -359,7 +388,7 @@ const Table = styled.table`
   border-spacing: 0;
   -webkit-border-horizontal-spacing: 0;
   -webkit-border-vertical-spacing: 0;
-  
+
   * {
     white-space: nowrap;
   }
@@ -446,7 +475,7 @@ const Action = styled.div`
   height: 28px;
   border-radius: 4px;
   background-color: #F1EFE9;
-  
+
   :hover {
     background-color: #E1DFD9;
   }
@@ -486,6 +515,13 @@ const StyledCloseIcon = styled(CloseIcon)`
   right: 32px;
   transform: translateY(-50%);
   cursor: pointer;
+`;
+
+const NotFound = styled.div`
+  text-align: center;
+  padding-top: 206px;
+  font-size: 18px;
+  font-weight: 500;
 `;
 
 export default Organisations;
