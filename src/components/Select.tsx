@@ -6,11 +6,12 @@ import { BsChevronDown } from 'react-icons/all';
 
 interface Props {
   prefix?: string,
-  selectedItem: number,
+  selectedItem?: number,
   setSelectedItem: Function,
   items: string[] | number[],
   openToTop?: boolean,
   modalRef?: HTMLDivElement
+  placeholder?: string
 }
 
 const Select: React.FC<Props> = ({
@@ -19,14 +20,15 @@ const Select: React.FC<Props> = ({
   setSelectedItem,
   items,
   openToTop = false,
-  modalRef
+  modalRef,
+  placeholder = ''
 }) => {
   const [ref, isItemsVisible, toggleIsItemsVisible] = useOnClickOutside<HTMLDivElement>(false, modalRef);
-
+  
   return (
     <Wrapper ref={ref}>
-      <StyledSelect onClick={toggleIsItemsVisible}>
-        {`${prefix} ${items[selectedItem]}`}
+      <StyledSelect isPlaceholder={selectedItem === undefined} onClick={toggleIsItemsVisible}>
+        {`${prefix} ${selectedItem !== undefined ? items[selectedItem] : placeholder}`}
         <BsChevronDown style={{ transform: isItemsVisible ? 'rotate(180deg)' : '' }}/>
       </StyledSelect>
       {isItemsVisible ? (
@@ -52,7 +54,7 @@ const Wrapper = styled.div`
   position: relative;
 `;
 
-const StyledSelect = styled.button`
+const StyledSelect = styled.button<{ isPlaceholder: boolean }>`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -64,6 +66,10 @@ const StyledSelect = styled.button`
   font-size: 12px;
   text-align: left;
   background-color: #fff;
+
+  ${({ isPlaceholder }) => isPlaceholder && css`
+    color: rgb(117, 117, 117) !important;
+  `}
 
   svg {
     margin-left: .5rem;
