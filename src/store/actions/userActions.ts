@@ -3,6 +3,7 @@ import { createActionCreators } from 'immer-reducer';
 import { IUpdatePasswordBody, UserReducer } from '@/store/reducers/user';
 import { AsyncAction } from '@/store/actions/common';
 import { HandleToggle } from '@/hooks/useToggle';
+import { ISignUpBody } from '@/api/mainApi';
 
 export const userActions = createActionCreators(UserReducer);
 
@@ -17,16 +18,13 @@ export type UserActions = ReturnType<typeof userActions.setOrders>
   | ReturnType<typeof userActions.setPopup>
   | ReturnType<typeof userActions.logout>;
 
-export const registerAction = (
-  email: string,
-  password: string
-): AsyncAction => async (
+export const registerAction = (body: ISignUpBody): AsyncAction => async (
   dispatch,
   _,
   { mainApi }
 ) => {
   try {
-    await mainApi.register(email, password);
+    await mainApi.register(body);
   } catch (error: any) {
     console.log(error);
   }
