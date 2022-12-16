@@ -11,7 +11,7 @@ import OrderReducer from '@/store/reducers/order';
 import OrganisationsReducer from '@/store/reducers/organisations';
 import NoticesReducer from '@/store/reducers/notices';
 import ServicesReducer from '@/store/reducers/services';
-// import PriceListReducer from '@/store/reducers/priceList';
+import PriceListReducer from '@/store/reducers/priceList';
 import UsersReducer from '@/store/reducers/users';
 import MainApi from '@/api/mainApi';
 import { MainApiProtected } from '@/api/mainApiProtected';
@@ -19,7 +19,7 @@ import { UserActions } from '@/store/actions/userActions';
 import { OrderActions } from '@/store/actions/orderActions';
 import { OrganisationsActions } from '@/store/actions/organisationsActions';
 import { NoticesActions } from '@/store/actions/noticesActions';
-// import { PriceListActions } from '@/store/actions/priceListActions';
+import { PriceListActions } from '@/store/actions/priceListActions';
 import { UsersActions } from '@/store/actions/usersActions';
 import { ServicesActions } from '@/store/actions/servicesActions';
 
@@ -29,7 +29,7 @@ const rootReducer = combineReducers({
   organisations: OrganisationsReducer,
   notices: NoticesReducer,
   services: ServicesReducer,
-  // priceList: PriceListReducer,
+  priceList: PriceListReducer,
   users: UsersReducer
 });
 
@@ -55,7 +55,7 @@ export type Actions = UserActions
   | OrganisationsActions
   | NoticesActions
   | ServicesActions
-  // | PriceListActions
+  | PriceListActions
   | UsersActions;
 
 export default store;
