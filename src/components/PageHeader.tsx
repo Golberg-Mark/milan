@@ -87,9 +87,9 @@ const PageHeader = () => {
         <PhotoWrapper onClick={toggleIsSettingsVisible} ref={settingsRef}>
           {user ? (
             <>
-              <Avatar>{getUserAvatar(user.name)}</Avatar>
+              <Avatar>{getUserAvatar(`${user.firstName} ${user.lastName}`)}</Avatar>
               <UserInfo withOrgName={!!user.organisations.length}>
-                <User>{user.name}</User>
+                <User>{`${user.firstName} ${user.lastName}`}</User>
                 {user.organisations.length ? (
                   <Organisation>
                     {user.organisations[0].name}
@@ -263,6 +263,7 @@ const UserInfo = styled.div<{ withOrgName: boolean }>`
 const User = styled.p`
   font-size: 14px;
   font-weight: 600;
+  white-space: nowrap;
 `;
 
 const Organisation = styled.p`

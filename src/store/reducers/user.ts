@@ -1,4 +1,5 @@
 import { ImmerReducer, createReducerFunction } from 'immer-reducer';
+import { ExistingRegions } from '@/utils/getRegionsData';
 
 export enum Roles {
   SYSTEM_ADMIN = 'system_admin',
@@ -37,7 +38,10 @@ export interface IPopupMessage {
 
 export interface User {
   id: number,
-  name: string,
+  firstName: string,
+  lastName: string,
+  phone: string,
+  state: ExistingRegions,
   email: string,
   role: Roles,
   organisations: {
