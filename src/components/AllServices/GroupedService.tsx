@@ -18,7 +18,7 @@ const GroupedService: React.FC<Props> = ({ name, services, serviceOnClick, onPin
       <Title>{name}</Title>
       <Line />
       <Services>
-        {services.map((service) => 
+        {services.map((service) =>
           <Service
             key={service.productId}
             service={service}
@@ -42,7 +42,7 @@ const Title = styled.div`
 `
 
 const Line = styled.div`
-  border: 1px solid #DCE4E8;
+  border-bottom: 2px solid #DCE4E8;
 `
 
 const Services = styled.div`
