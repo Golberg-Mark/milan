@@ -20,9 +20,6 @@ const TitleInputs: React.FC = () => {
   const dispatch = useDispatch<any>();
 
   const search = async () => {
-    dispatch(orderActions.setProducts(null));
-    dispatch(orderActions.setIsProductsLoading(true));
-
     /*dispatch(initializeOrderAction(
       'WA',
       'Title Reference',

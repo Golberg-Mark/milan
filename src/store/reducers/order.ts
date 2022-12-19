@@ -1,23 +1,20 @@
 import { ImmerReducer, createReducerFunction } from 'immer-reducer';
 
 export interface PlaceOrderProduct {
-  productId: number,
-  name?: string,
-  idNumber?: string,
-  price: string,
-  body?: any
+  productId: string;
+  input: object;
+  price: string;
+  itemMeta: string;
+  fulfilmentType: 'auto' | 'manual';
 }
 
 export interface PlaceOrder {
-  matter: string,
-  description: string,
-  region: string,
-  service: string,
-  totalPrice: string,
-  fulfilmentStatus: string,
-  products: PlaceOrderProduct[],
-  organisationId: number,
-  orderType: 'list' | 'regular'
+  matter: string;
+  description: string;
+  region: string;
+  orderItems: PlaceOrderProduct[];
+  organisationId: number;
+  userId: number;
 }
 
 export interface Product {
@@ -46,6 +43,7 @@ interface OrderState {
   orderId: string | null,
   orderProducts: PlaceOrderProduct[] | null,
   products: ProductWithMatchedPriceList[] | null,
+  services: ProductWithMatchedPriceList[] | null,
   isProductsLoading: boolean
 }
 
@@ -59,6 +57,7 @@ const InitialState: OrderState = {
   orderId: null,
   orderProducts: null,
   products: null,
+  services: null,
   isProductsLoading: false
 };
 
@@ -85,6 +84,10 @@ export class OrderReducer extends ImmerReducer<OrderState> {
 
   public setProducts(value: ProductWithMatchedPriceList[] | null) {
     this.draftState.products = value;
+  }
+
+  public setServices(value: ProductWithMatchedPriceList[] | null) {
+    this.draftState.services = value;
   }
 
   public setOrderId(value: string | null) {

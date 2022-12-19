@@ -35,6 +35,11 @@ export const selectProducts: Selector<State, ProductWithMatchedPriceList[] | nul
   ({ products }) => products
 );
 
+export const selectServices: Selector<State, ProductWithMatchedPriceList[] | null> = createSelector(
+  orderState,
+  ({ services }) => services
+);
+
 export const selectOrderId: Selector<State, string | null> = createSelector(
   orderState,
   ({ orderId }) => orderId

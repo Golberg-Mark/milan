@@ -7,6 +7,7 @@ import { userActions } from '@/store/actions/userActions';
 export const orderActions = createActionCreators(OrderReducer);
 
 export type OrderActions = ReturnType<typeof orderActions.setProducts>
+  | ReturnType<typeof orderActions.setServices>
   | ReturnType<typeof orderActions.setProductsPrice>
   | ReturnType<typeof orderActions.setMatter>
   | ReturnType<typeof orderActions.setDescription>
@@ -23,27 +24,34 @@ export const getOrganisationProductsAction = (): AsyncAction => async (
   { mainApiProtected }
 ) => {
   try {
-    const { id } = getState().user.user!.organisations[0];
+    const { id } = getState().user.user!.organisations[2];
     let products = await mainApiProtected.getOrganisationProducts(id);
     let priceList = await mainApiProtected.getPriceList(id);
     const results: ProductWithMatchedPriceList[] = [];
+    const services: ProductWithMatchedPriceList[] = [];
 
     if (priceList) {
       priceList.forEach((el, i) => {
         const isExist = products.find((product) => product.productId === el.productCode);
         if (isExist) {
-          results.push({
+          const regexp = new RegExp(/^refer to search.*$/);
+          const merged = {
             ...isExist,
             'priceExGST': priceList[i]['priceExGST'],
             'GST': priceList[i]['GST'],
             'priceInclGST': priceList[i]['priceInclGST'],
             'collection': priceList[i]['collection']
-          } as ProductWithMatchedPriceList);
+          };
+
+          if (regexp.test(merged.input1.toLowerCase())) {
+            services.push(merged as ProductWithMatchedPriceList);
+          } else results.push(merged as ProductWithMatchedPriceList);
         }
       });
     }
 
     dispatch(orderActions.setProducts(results));
+    dispatch(orderActions.setServices(services));
     dispatch(userActions.setPriceList(priceList));
   } catch (error: any) {
     console.log(error);
@@ -77,7 +85,7 @@ export const getOrderItemsAction = (region: string, service: string, searchPrice
 export const initializeOrderAction = (
   region: string,
   service: string,
-  searchPrice: string
+  orderItem: PlaceOrderProduct
 ): AsyncAction => async (
   dispatch,
   getState,
@@ -93,20 +101,13 @@ export const initializeOrderAction = (
       matter,
       description,
       region,
-      service,
-      totalPrice: searchPrice,
-      fulfilmentStatus: 'fulfiled',
-      organisationId: user!.organisations[0].id, /*TODO: change it after adding select organisation logic*/
-      orderType: 'list',
-      products: [{
-        productId: 1,
-        name: `${region}: ${service} search`,
-        price: searchPrice
-      }]
+      orderItems: [orderItem],
+      organisationId: user!.organisations[2].id,
+      userId: user!.id/*TODO: change it after adding select organisation logic*/
     };
-
-    const { products } = await mainApiProtected.placeOrder(order);
-    dispatch(orderActions.setOrderProducts(products));
+    console.log(order);
+    /*const { products } = await mainApiProtected.placeOrder(order);
+    dispatch(orderActions.setOrderProducts(products));*/
   } catch (error: any) {
     console.log(error);
   }
@@ -154,7 +155,7 @@ export const placeOrderAction = (
       totalPrice: (totalPrice + productsPrice).toFixed(2),
       fulfilmentStatus: 'fulfiled',
       products: filteredProducts,
-      organisationId: user!.organisations[0].id, /!*TODO: change it after adding select organisation logic*!/
+      organisationId: user!.organisations[2].id, /!*TODO: change it after adding select organisation logic*!/
       orderType: 'regular'
     };
 
