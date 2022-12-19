@@ -63,6 +63,10 @@ export class MainApiProtected extends HttpClientProtected {
     this.instance.post<IOrganisation>(`/organisations`, body)
   );
 
+  public getOrganisation = (id: number) => (
+    this.instance.get<IOrganisation>(`/organisations/${id}`)
+  );
+
   public assignPriceListToOrganisation = (id: number, priceListId: number, body: IAssignPriceList) => (
     this.instance.patch<IOrganisation>(`/organisations/price-list/${id}/${priceListId}`, body)
   );

@@ -242,7 +242,7 @@ const Organisations = () => {
                       <TRow
                         key={org.name + i}
                         isChecked={!!selectedOrganisations.find((el) => el === org.id)}
-                        onClick={() => navigate(`/organisations/${org.id}`)}
+                        onClick={() => navigate(`/settings/organisation-details/${org.id}`)}
                       >
                         <th>
                           <Checkbox

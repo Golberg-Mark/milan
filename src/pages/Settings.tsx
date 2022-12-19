@@ -12,6 +12,7 @@ import UsersIcon from '@/assets/icons/UsersIcon';
 import BillingIcon from '@/assets/icons/BillingIcon';
 import MyDetails from '@/components/Settings/MyDetails/MyDetails';
 import { Navigate } from 'react-router';
+import OrganisationDetail from '@/components/Settings/OrganisationDetail/OrganisationDetail';
 
 const Settings = () => {
   return (
@@ -31,7 +32,7 @@ const Settings = () => {
             </span>
             <RightArrowIcon />
           </StyledNavLink>
-          <StyledNavLink to="/settings/organisations-details">
+          <StyledNavLink to="/settings/organisation-details">
             <span>
               <OrganisationsIcon />
               Organisations Details
@@ -64,7 +65,7 @@ const Settings = () => {
           <Routes>
             <Route path="/" element={<Navigate to="/settings/my-details" />} />
             <Route path="/my-details" element={<MyDetails />} />
-            <Route path="/organisations-details" element={<div>Organisations Details</div>} />
+            <Route path="/organisation-details/*" element={<OrganisationDetail />} />
             <Route path="/preferences" element={<div>Preferences</div>} />
             <Route path="/users" element={<div>Users</div>} />
             <Route path="/billing" element={<div>Billing</div>} />

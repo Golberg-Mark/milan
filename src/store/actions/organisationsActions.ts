@@ -11,6 +11,7 @@ import { PopupTypes } from '@/store/reducers/user';
 export const organisationsActions = createActionCreators(OrganisationsReducer);
 
 export type OrganisationsActions = ReturnType<typeof organisationsActions.setOrganisations>
+ | ReturnType<typeof organisationsActions.setOrganisationDetails>
  | ReturnType<typeof organisationsActions.setIsLoading>;
 
 export const getOrganisationsAction = (): AsyncAction => async (
@@ -84,6 +85,21 @@ export const createOrganisationAction = (body: ICreateOrganisation): AsyncAction
   } catch (error: any) {
     console.log(error);
     dispatch(organisationsActions.setIsLoading(false));
+    return Promise.reject(error);
+  }
+};
+
+export const getOrganisationDetailsAction = (id: number): AsyncAction => async (
+  dispatch,
+  _,
+  { mainApiProtected }
+) => {
+  try {
+    const organisation = await mainApiProtected.getOrganisation(id);
+
+    console.log(organisation);
+  } catch (error: any) {
+    console.log(error);
     return Promise.reject(error);
   }
 };
